@@ -19,7 +19,7 @@ export default class extends BaseSchema {
       table
         .boolean('TET_ACTIVO')
         .notNullable()
-        .defaultTo('TET_ACTIVO');
+        .defaultTo(true);
 
       table
         .integer('TET_ORDEN')
