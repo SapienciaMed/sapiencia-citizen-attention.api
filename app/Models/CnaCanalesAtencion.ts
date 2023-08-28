@@ -7,13 +7,13 @@ export default class CnaCanalesAtencion extends BaseModel {
   @column({ isPrimary: true, columnName: 'CNA_CODIGO' })
   public cna_codigo: number;
 
-  @column({ columnName: 'CNA_CANAL', serializeAs: 'orden' })
+  @column({ columnName: 'CNA_CANAL', serializeAs: 'cna_canal' })
   public cna_canal: string;
 
-  @column({ columnName: 'CNA_ACTIVO', serializeAs: 'order' })
+  @column({ columnName: 'CNA_ACTIVO', serializeAs: 'cna_activo' })
   public cna_activo: boolean;
 
-  @column({ columnName: 'CNA_ORDEN', serializeAs: 'order' })
+  @column({ columnName: 'CNA_ORDEN', serializeAs: 'cna_orden' })
   public cna_orden: number;
 
 }

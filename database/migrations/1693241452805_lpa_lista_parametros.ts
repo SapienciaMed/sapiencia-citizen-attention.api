@@ -1,28 +1,27 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'CNA_CANALES_ATENCION'
+  protected tableName = 'LPA_LISTA_PARAMETROS'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-
+      
       table
-        .increments('CNA_CODIGO')
+        .increments('LPA_CODIGO')
         .primary()
         .notNullable()
-        .comment('LLave primaria');
+        .comment('llave primaria')
 
       table
-        .string('CNA_CANAL',50)
+        .text('LPA_DESCRIPCION')
         .notNullable();
 
       table
-        .boolean('CNA_ACTIVO')
-        .notNullable()
-        .defaultTo(true);
+        .text('LPA_VALOR')
+        .notNullable();
 
       table
-        .integer('CNA_ORDEN')
+        .integer('LPA_ID_APLICATIVO')
         .notNullable();
 
     })
