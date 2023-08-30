@@ -12,6 +12,12 @@ export default class PrgPrograma extends BaseModel {
   @column({ columnName:'PRG_DESCRIPCION', serializeAs:'' })
   public prg_descripcion: string;
 
+  @column({ columnName:'PRG_CLASIFICACION', serializeAs:'' })
+  public prg_clasificacion: number;
+
+  @column({ columnName:'PRG_DEPENDENCIA', serializeAs:'prg_dependencia' })
+  public prg_dependencia: number;
+
   @hasMany(() => ClpClasificacionPrograma, {
     localKey: 'prg_codigo',
     foreignKey: 'clp_codigo',

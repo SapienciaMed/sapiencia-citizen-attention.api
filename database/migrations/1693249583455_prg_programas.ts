@@ -21,6 +21,7 @@ export default class extends BaseSchema {
       .unsigned()
       .references('CLP_CODIGO')
       .inTable('CLP_CLASIFICACION_PROGRAMA')
+      .notNullable()
       .comment('llave foranea de la tabla clasificacion_programas(FK)');
 
     table
@@ -28,6 +29,7 @@ export default class extends BaseSchema {
       .unsigned()
       .references('DEP_CODIGO')
       .inTable('DEP_DEPENDENCIA')
+      .notNullable()
       .comment('llave foranea de la tabla dependencia(FK)');
 
     table
