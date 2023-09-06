@@ -28,3 +28,11 @@ Route.group(() => {
   Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
 }).prefix("/api/v1/business");
 // .middleware("auth");
+
+
+/* TYPOS DE SOLICITUDES */
+Route.group(() => {
+  Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
+})
+
+
