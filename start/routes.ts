@@ -28,3 +28,21 @@ Route.group(() => {
   Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
 }).prefix("/api/v1/business");
 // .middleware("auth");
+
+
+/************************** 
+******TABLAS MAESTRAS****** 
+**************************/
+Route.group(() => {
+  Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
+  Route.get("/get-type-docuement", "ListadoGenericosController.getTypeDocuement");
+  Route.get("/get-legal-entity", "TipoEntidadJuridicasController.getTypeEntidadJuridica");
+  Route.get("/get-response-medium", "MedioDeRespuestasController.getMedioDeRespuesta");
+  Route.get("/get-Programs", "ProgramasController.getPrograms");
+  Route.get("/get-solicitudes", "AsuntoSolicitudsController.asuntoSolicitud");
+  Route.get("/get-paises", "ListadoGenericosController.getPaises");
+  Route.get("/get-departamentos", "ListadoGenericosController.getDepartamentos");
+  Route.get("/get-municipios/:id", "ListadoGenericosController.getMunicipios");
+})
+
+
