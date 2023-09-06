@@ -3,14 +3,15 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import { EResponseCodes } from 'App/Constants/ResponseCodesEnum';
 import { ApiResponse } from 'App/Utils/ApiResponses';
 
-export default class TsoTipoSolicitudsController {
+export default class AsuntoSolicitudsController {
 
-    public async getTipoSolicitudes({ response }: HttpContextContract ) {
+    public async asuntoSolicitud({ response }: HttpContextContract ) {
         
         try {
-            const solicituds = await Database.from('TSO_TIPO_SOLICITUD').select('TSO_CODIGO','TSO_DESCRIPTION')
+            const solicitudes = await Database.from('ASO_ASUNTO_SOLICITUD')
+                                        .select('ASO_CODIGO','ASO_ASUNTO')
             return response.send({ 
-                data: solicituds,
+                data: solicitudes,
                 status: true
             });
 
@@ -19,7 +20,7 @@ export default class TsoTipoSolicitudsController {
             return response.badRequest(
                 new ApiResponse(null, EResponseCodes.FAIL, String(err))
               );
-            
+
         }
 
     };
