@@ -23,7 +23,7 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
       (daysParametrizationDetailsQuery) => {
         daysParametrizationDetailsQuery.preload("dayType");
       }
-    );
+    ).orderBy('year','desc');
     return res ? res.map((daysParametrization) => daysParametrization.serialize() as IDaysParametrization) : [];
   }
 

@@ -15,6 +15,9 @@ export default class extends BaseSchema {
       table
         .string('TDI_DESCRIPCION',100)
         .notNullable();
+      table
+        .string('TDI_DESCRIPCION_CORTA',100)
+        .notNullable();
 
       table
         .boolean('TDI_ACTIVO')
