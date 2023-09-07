@@ -21,13 +21,19 @@
 import Route from "@ioc:Adonis/Core/Route";
 
 Route.get("/", async () => {
-  return "Api contabilidad de SAPIENCIA";
+  return "Api atención ciudadana de SAPIENCIA";
 });
 
 Route.group(() => {
     Route.group(() => {
         Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
     }).prefix("/business");
+    Route.group(() => {
+        Route.get("/get-by-id/:id", "DaysParametrizationController.getDaysParametrizationById");
+        Route.get("/get-all", "DaysParametrizationController.getDaysParametrizations");
+        Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
+        Route.post("/create", "DaysParametrizationController.createDaysParametrization");
+    }).prefix("/day-parametrization");
 }).prefix("/api/v1/");
 // .middleware("auth");
 

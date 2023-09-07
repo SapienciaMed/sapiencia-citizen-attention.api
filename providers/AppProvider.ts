@@ -1,46 +1,51 @@
 import type { ApplicationContract } from "@ioc:Adonis/Core/Application";
 
 export default class AppProvider {
-  constructor(protected app: ApplicationContract) {}
+    constructor(protected app: ApplicationContract) {}
 
-  public async register() {
-    // Register your own bindings
+    public async register() {
+        // Register your own bindings
 
-    /**************************************************************************/
-    /******************************** SERVICES ********************************/
-    /**************************************************************************/
-    const BusinessService = await import("App/Services/BusinessService");
+        /**************************************************************************/
+        /******************************** SERVICES ********************************/
+        /**************************************************************************/
+        const BusinessService = await import("App/Services/BusinessService");
+        const DaysParametrizationService = await import("App/Services/DaysParametrizationService");
 
-    /**************************************************************************/
-    /************************ EXTERNAL SERVICES ********************************/
-    /**************************************************************************/
+        /**************************************************************************/
+        /************************ EXTERNAL SERVICES ********************************/
+        /**************************************************************************/
 
-    /**************************************************************************/
-    /******************************** REPOSITORIES ****************************/
-    /**************************************************************************/
-    const BusinessRepository = await import(
-      "App/Repositories/BusinessRepository"
-    );
+        /**************************************************************************/
+        /******************************** REPOSITORIES ****************************/
+        /**************************************************************************/
+        const BusinessRepository = await import("App/Repositories/BusinessRepository");
 
-    /**************************************************************************/
-    /******************************** CORE  ***********************************/
-    /**************************************************************************/
+        const DaysParametrizationRepository = await import("App/Repositories/DaysParametrizationRepository");
 
-    this.app.container.singleton(
-      "core.BusinessProvider",
-      () => new BusinessService.default(new BusinessRepository.default())
-    );
-  }
+        /**************************************************************************/
+        /******************************** CORE  ***********************************/
+        /**************************************************************************/
 
-  public async boot() {
-    // IoC container is ready
-  }
+        this.app.container.singleton(
+            "core.BusinessProvider",
+            () => new BusinessService.default(new BusinessRepository.default())
+        );
+        this.app.container.singleton(
+            "core.DaysParametrizationProvider",
+            () => new DaysParametrizationService.default(new DaysParametrizationRepository.default())
+        );
+    }
 
-  public async ready() {
-    // App is ready
-  }
+    public async boot() {
+        // IoC container is ready
+    }
 
-  public async shutdown() {
-    // Cleanup, since app is going down
-  }
+    public async ready() {
+        // App is ready
+    }
+
+    public async shutdown() {
+        // Cleanup, since app is going down
+    }
 }
