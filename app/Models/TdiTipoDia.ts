@@ -10,7 +10,7 @@ export default class TdiTipoDia extends BaseModel {
   @column({ columnName:'TDI_DESCRIPCION', serializeAs:'tdi_descripcion' })
   public tdi_descripcion: string;
 
-  @column({ columnName:'TDI_DESCRIPCION_CORTA', serializeAs:'tdi_descripcion' })
+  @column({ columnName:'TDI_DESCRIPCION_CORTA', serializeAs:'tdi_descripcion_corta' })
   public tdi_descripcion_corta: string;
 
   @column({ columnName:'TDI_ACTIVO', serializeAs:'tdi_activo' })
