@@ -51,6 +51,7 @@ Route.group(() => {
   Route.get("/get-paises", "ListadoGenericosController.getPaises");
   Route.get("/get-departamentos", "ListadoGenericosController.getDepartamentos");
   Route.get("/get-municipios/:id", "ListadoGenericosController.getMunicipios");
+  Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
 })
 
 
