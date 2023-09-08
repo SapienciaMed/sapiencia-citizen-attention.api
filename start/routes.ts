@@ -44,6 +44,7 @@ Route.group(() => {
   Route.get("/get-departamentos", "ListadoGenericosController.getDepartamentos");
   Route.get("/get-municipios/:id", "ListadoGenericosController.getMunicipios");
   Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
+  Route.get("/get-listaParametros", "ListaParametrosController.getListaParametros");
 })
 
 
