@@ -10,7 +10,7 @@ export default class ListadoGenericosController {
         try {
             const typeDocuments = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                         .where('LGE_AGRUPADOR','TIPOS_DOCUMENTOS')
-                                        .select('LGE_CODIGO','LGE_ELEMENTO_CODIGO')
+                                        .select('LGE_CODIGO','LGE_ELEMENTO_DESCRIPCION')
             return response.send({ 
                 data: typeDocuments,
                 status: true
@@ -31,7 +31,7 @@ export default class ListadoGenericosController {
         try {
             const paises = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                         .where('LGE_AGRUPADOR','PAISES')
-                                        .select('LGE_CODIGO','LGE_ELEMENTO_CODIGO')
+                                        .select('LGE_CODIGO','LGE_ELEMENTO_DESCRIPCION')
             return response.send({ 
                 data: paises,
                 status: true
