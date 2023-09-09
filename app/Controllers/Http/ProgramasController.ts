@@ -10,7 +10,9 @@ export default class ProgramasController {
         
         try {
             const programs = await Database.from('PRG_PROGRAMAS')
-                                        .select('PRG_CODIGO','PRG_DESCRIPCION')
+                                    .join('CLP_CLASIFICACION_PROGRAMA', 'PRG_PROGRAMAS.PRG_CLASIFICACION','CLP_CLASIFICACION_PROGRAMA.CLP_CODIGO')
+                                    .join('DEP_DEPENDENCIA','PRG_PROGRAMAS.PRG_DEPENDENCIA', 'DEP_DEPENDENCIA.DEP_CODIGO' )
+                                    .select('PRG_CODIGO','PRG_DESCRIPCION', 'CLP_CODIGO','CLP_DESCRIPCION','DEP_CODIGO','DEP_DESCRIPCION')
             return response.send({ 
                 data: programs,
                 status: true
