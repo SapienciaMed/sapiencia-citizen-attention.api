@@ -4,6 +4,7 @@ import { IDaysParametrization } from "App/Interfaces/DaysParametrizationInterfac
 import TdiTipoDia from "App/Models/TdiTipoDia";
 import DaysParametrization from "../Models/DaysParametrization";
 import { IDaysParametrizationRepository } from "./Contracts/IDaysParametrizationRepository";
+import DaysParametrizationDetail from "App/Models/DaysParametrizationDetail";
 
 export default class DaysParametrizationRepository implements IDaysParametrizationRepository {
   constructor() {}
@@ -41,16 +42,17 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
 
   async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
     const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
-    await dayParametrization.related("daysParametrizationDetails").createMany(
-      daysParametrization.daysParametrizationDetails.filter((detail: IDaysParametrizationDetail) => {
-        return detail?.id == undefined && detail?.id == null && detail?.id <= 0;
-      })
-    );
-    await dayParametrization.related("daysParametrizationDetails").updateOrCreateMany(
-      daysParametrization.daysParametrizationDetails.filter((detail: IDaysParametrizationDetail) => {
-        return detail?.id != undefined && detail?.id != null && detail?.id > 0;
-      })
-    );
+
+    for await (const daysParametrizationDetail of daysParametrization.daysParametrizationDetails) {
+        let newDetail = daysParametrizationDetail?.id ? await DaysParametrizationDetail.find(daysParametrizationDetail?.id) : new DaysParametrizationDetail();
+        if (newDetail) {
+            newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
+            newDetail.description = daysParametrizationDetail?.description ?? null;
+            newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
+            newDetail.daysParametrizationId = daysParametrization.id;
+            await newDetail.save();
+        }
+    };
     await dayParametrization.refresh();
     await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
       daysParametrizationDetailsQuery.preload("dayType");
