@@ -1,9 +1,8 @@
+import { IDayType } from "App/Interfaces/DayTypeInterfaces";
 import { IDaysParametrization } from "App/Interfaces/DaysParametrizationInterfaces";
+import TdiTipoDia from "App/Models/TdiTipoDia";
 import DaysParametrization from "../Models/DaysParametrization";
 import { IDaysParametrizationRepository } from "./Contracts/IDaysParametrizationRepository";
-import { IDayType } from "App/Interfaces/DayTypeInterfaces";
-import TdiTipoDia from "App/Models/TdiTipoDia";
-import { IDaysParametrizationDetail } from "App/Interfaces/DaysParametrizationDetailInterfaces";
 
 export default class DaysParametrizationRepository implements IDaysParametrizationRepository {
   constructor() {}
