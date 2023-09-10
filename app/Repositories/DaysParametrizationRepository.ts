@@ -42,9 +42,9 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
 
   async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
     const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
-    await dayParametrization.related('daysParametrizationDetails').createMany(daysParametrization.daysParametrizationDetails.map((detail:IDaysParametrizationDetail) => {
-        detail.detailDate = detail.detailDate;
-        return detail
+    await dayParametrization.related('daysParametrizationDetails').createMany(daysParametrization.daysParametrizationDetails.map((detail) => {
+        detail.detailDate = detail.detailDate.toDateString();
+        return detail;
     }))
     await dayParametrization.refresh();
     return dayParametrization ? (dayParametrization.serialize() as IDaysParametrization) : null;
