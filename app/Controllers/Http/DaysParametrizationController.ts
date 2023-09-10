@@ -1,6 +1,7 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import DaysParametrizationProvider from "@ioc:core.DaysParametrizationProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
+import { IDaysParametrization } from "App/Interfaces/DaysParametrizationInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 
 export default class DaysParametrizationController {
@@ -17,6 +18,15 @@ export default class DaysParametrizationController {
         try {
             const { year } = request.body();
             return response.send(await DaysParametrizationProvider.createDaysParametrization(year));
+        } catch (err) {
+            return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+        }
+    }
+    
+    public async updateDaysParametrization({ request, response }: HttpContextContract) {
+        try {
+            const { daysParametrization } = request.body();
+            return response.send(await DaysParametrizationProvider.updateDaysParametrization(daysParametrization));
         } catch (err) {
             return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
         }

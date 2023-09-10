@@ -47,4 +47,14 @@ export default class DaysParametrizationService implements IDaysParametrizationS
 
         return new ApiResponse(res, EResponseCodes.OK, "Año creado con exito");
     }
+
+    async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<ApiResponse<IDaysParametrization | null>> {
+        const res = await this.DaysParametrizationRepository.updateDaysParametrization(daysParametrization);
+
+        if (!res) {
+            return new ApiResponse({} as IDaysParametrization, EResponseCodes.FAIL, "No se puede crear el calendario");
+        }
+
+        return new ApiResponse(res, EResponseCodes.OK, "Calendario modificado con exito");
+    }
 }

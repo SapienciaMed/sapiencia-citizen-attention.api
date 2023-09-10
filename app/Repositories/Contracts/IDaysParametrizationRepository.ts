@@ -6,4 +6,5 @@ export interface IDaysParametrizationRepository {
     getDaysParametrizations(): Promise<IDaysParametrization[] | []>;
     getDayTypes(): Promise<IDayType[] | []>;
     createDaysParametrization(year: number): Promise<IDaysParametrization | null>;
+    updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null>
 }

@@ -38,4 +38,11 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
     });
     return res ? (res.serialize() as IDaysParametrization) : null;
   }
+
+  async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
+    const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
+    await dayParametrization.related('daysParametrizationDetails').createMany(daysParametrization.daysParametrizationDetails)
+    await dayParametrization.refresh();
+    return dayParametrization ? (dayParametrization.serialize() as IDaysParametrization) : null;
+  }
 }

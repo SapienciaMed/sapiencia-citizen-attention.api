@@ -3,8 +3,11 @@ import { IDaysParametrization } from "App/Interfaces/DaysParametrizationInterfac
 import { ApiResponse } from "App/Utils/ApiResponses";
 
 export interface IDaysParametrizationService {
-    getDaysParametrizationById(id: number): Promise<ApiResponse<IDaysParametrization | null>>;
-    getDaysParametrizations(): Promise<ApiResponse<IDaysParametrization[] | []>>;
-    getDayTypes(): Promise<ApiResponse<IDayType[] | []>>;
-    createDaysParametrization(year: number): Promise<ApiResponse<IDaysParametrization | null>>;
+  getDaysParametrizationById(id: number): Promise<ApiResponse<IDaysParametrization | null>>;
+  getDaysParametrizations(): Promise<ApiResponse<IDaysParametrization[] | []>>;
+  getDayTypes(): Promise<ApiResponse<IDayType[] | []>>;
+  createDaysParametrization(year: number): Promise<ApiResponse<IDaysParametrization | null>>;
+  updateDaysParametrization(
+    daysParametrization: IDaysParametrization
+  ): Promise<ApiResponse<IDaysParametrization | null>>;
 }

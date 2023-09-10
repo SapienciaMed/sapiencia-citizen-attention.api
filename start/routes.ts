@@ -33,6 +33,7 @@ Route.group(() => {
         Route.get("/get-all", "DaysParametrizationController.getDaysParametrizations");
         Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
         Route.post("/create", "DaysParametrizationController.createDaysParametrization");
+        Route.post("/update", "DaysParametrizationController.updateDaysParametrization");
     }).prefix("/day-parametrization");
 }).prefix("/api/v1/");
 // .middleware("auth");
