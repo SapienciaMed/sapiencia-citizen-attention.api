@@ -3,6 +3,7 @@ import DaysParametrization from "../Models/DaysParametrization";
 import { IDaysParametrizationRepository } from "./Contracts/IDaysParametrizationRepository";
 import { IDayType } from "App/Interfaces/DayTypeInterfaces";
 import TdiTipoDia from "App/Models/TdiTipoDia";
+import { IDaysParametrizationDetail } from "App/Interfaces/DaysParametrizationDetailInterfaces";
 
 export default class DaysParametrizationRepository implements IDaysParametrizationRepository {
   constructor() {}
@@ -41,7 +42,10 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
 
   async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
     const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
-    await dayParametrization.related('daysParametrizationDetails').createMany(daysParametrization.daysParametrizationDetails)
+    await dayParametrization.related('daysParametrizationDetails').createMany(daysParametrization.daysParametrizationDetails.map((detail:IDaysParametrizationDetail) => {
+        detail.detailDate = detail.detailDate;
+        return detail
+    }))
     await dayParametrization.refresh();
     return dayParametrization ? (dayParametrization.serialize() as IDaysParametrization) : null;
   }

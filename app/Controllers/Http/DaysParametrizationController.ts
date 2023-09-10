@@ -1,7 +1,6 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import DaysParametrizationProvider from "@ioc:core.DaysParametrizationProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
-import { IDaysParametrization } from "App/Interfaces/DaysParametrizationInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 
 export default class DaysParametrizationController {
