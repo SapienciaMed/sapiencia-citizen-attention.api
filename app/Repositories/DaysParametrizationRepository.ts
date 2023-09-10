@@ -1,8 +1,8 @@
-import { IDayType } from "App/Interfaces/DayTypeInterfaces";
 import { IDaysParametrization } from "App/Interfaces/DaysParametrizationInterfaces";
-import TdiTipoDia from "App/Models/TdiTipoDia";
 import DaysParametrization from "../Models/DaysParametrization";
 import { IDaysParametrizationRepository } from "./Contracts/IDaysParametrizationRepository";
+import { IDayType } from "App/Interfaces/DayTypeInterfaces";
+import TdiTipoDia from "App/Models/TdiTipoDia";
 
 export default class DaysParametrizationRepository implements IDaysParametrizationRepository {
   constructor() {}
@@ -18,17 +18,16 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
   }
 
   async getDaysParametrizations(): Promise<IDaysParametrization[] | []> {
-    const res = await DaysParametrization.query().preload(
-      "daysParametrizationDetails",
-      (daysParametrizationDetailsQuery) => {
+    const res = await DaysParametrization.query()
+      .preload("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
         daysParametrizationDetailsQuery.preload("dayType");
-      }
-    ).orderBy('year','desc');
+      })
+      .orderBy("year", "desc");
     return res ? res.map((daysParametrization) => daysParametrization.serialize() as IDaysParametrization) : [];
   }
 
   async getDayTypes(): Promise<IDayType[] | []> {
-    const res = await TdiTipoDia.query().orderBy('tdi_orden');
+    const res = await TdiTipoDia.query().orderBy("tdi_orden");
     return res ? res.map((dayType) => dayType.serialize() as IDayType) : [];
   }
 
@@ -41,11 +40,13 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
 
   async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
     const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
-    await dayParametrization.related('daysParametrizationDetails').createMany(daysParametrization.daysParametrizationDetails.map((detail) => {
-        detail.detailDate = detail.detailDate.toDateString();
-        return detail;
-    }))
+    await dayParametrization
+      .related("daysParametrizationDetails")
+      .updateOrCreateMany(daysParametrization.daysParametrizationDetails);
     await dayParametrization.refresh();
+    await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
+      daysParametrizationDetailsQuery.preload("dayType");
+    });
     return dayParametrization ? (dayParametrization.serialize() as IDaysParametrization) : null;
   }
 }
