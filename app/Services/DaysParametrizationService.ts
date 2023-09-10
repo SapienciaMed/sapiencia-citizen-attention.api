@@ -45,7 +45,7 @@ export default class DaysParametrizationService implements IDaysParametrizationS
             return new ApiResponse({} as IDaysParametrization, EResponseCodes.FAIL, "No se puede crear el año");
         }
 
-        return new ApiResponse(res, EResponseCodes.OK, "Año creado con exito");
+        return new ApiResponse(res, EResponseCodes.OK, "Año creado con éxito");
     }
 
     async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<ApiResponse<IDaysParametrization | null>> {
@@ -55,6 +55,6 @@ export default class DaysParametrizationService implements IDaysParametrizationS
             return new ApiResponse({} as IDaysParametrization, EResponseCodes.FAIL, "No se puede crear el calendario");
         }
 
-        return new ApiResponse(res, EResponseCodes.OK, "Calendario modificado con exito");
+        return new ApiResponse(res, EResponseCodes.OK, "Calendario modificado con éxito");
     }
 }
