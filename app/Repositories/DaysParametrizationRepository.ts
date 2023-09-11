@@ -47,8 +47,7 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
         let newDetail = daysParametrizationDetail?.id ? await DaysParametrizationDetail.find(daysParametrizationDetail?.id) : new DaysParametrizationDetail();
         if (newDetail) {
             newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
-            newDetail.description = daysParametrizationDetail?.description ?? null;
-            newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
+            newDetail.description = daysParametrizationDetail?.description;
             newDetail.detailDate = daysParametrizationDetail.detailDate;
             newDetail.daysParametrizationId = daysParametrization.id;
             await newDetail.save();
