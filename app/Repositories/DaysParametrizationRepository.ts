@@ -49,6 +49,7 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
             newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
             newDetail.description = daysParametrizationDetail?.description ?? null;
             newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
+            newDetail.detailDate = daysParametrizationDetail.detailDate;
             newDetail.daysParametrizationId = daysParametrization.id;
             await newDetail.save();
         }
