@@ -23,7 +23,7 @@ export default class DaysParametrizationDetail extends BaseModel {
   })
   public dayType: BelongsTo<typeof TdiTipoDia>;
 
-  @column.dateTime({ columnName: "PDD_FECHA", serializeAs: "detailDate" })
+  @column.date({ columnName: "PDD_FECHA", serializeAs: "detailDate" })
   public detailDate: DateTime;
 
   @column.dateTime({

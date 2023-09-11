@@ -15,7 +15,7 @@ export default class extends BaseSchema {
         .unsigned().references("TDI_TIPO_DIA.TDI_CODIGO")
         .comment("Código del tipo de dia (FK PDD_CODTDI_DIA)");
       table.text('PDD_DESCRIPCION').nullable()
-      table.timestamp("PDD_FECHA");
+      table.date("PDD_FECHA");
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
