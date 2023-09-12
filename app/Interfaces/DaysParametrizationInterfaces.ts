@@ -4,7 +4,7 @@ import { IDaysParametrizationDetail } from "./DaysParametrizationDetailInterface
 export interface IDaysParametrization {
   id: number;
   year: number;
-  daysParametrizationDetails: IDaysParametrizationDetail[] | [];
+  daysParametrizationDetails: IDaysParametrizationDetail[];
   createdAt: DateTime;
   updatedAt: DateTime;
 }

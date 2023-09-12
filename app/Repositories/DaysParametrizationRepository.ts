@@ -41,7 +41,8 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
 
   async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
     const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
-
+    
+    let notDeleteIds: number[]= [];
     for await (const daysParametrizationDetail of daysParametrization.daysParametrizationDetails) {
         let newDetail = daysParametrizationDetail?.id ? await DaysParametrizationDetail.find(daysParametrizationDetail?.id) : new DaysParametrizationDetail();
         if (newDetail) {
@@ -50,12 +51,22 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
             newDetail.detailDate = daysParametrizationDetail.detailDate;
             newDetail.daysParametrizationId = daysParametrization.id;
             await newDetail.save();
+            notDeleteIds.push(newDetail.id);
         }
     };
     await dayParametrization.refresh();
     await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
       daysParametrizationDetailsQuery.preload("dayType");
     });
+
+    let toDelete = dayParametrization.daysParametrizationDetails.filter(dayParametrization =>  !notDeleteIds.includes(dayParametrization.id));
+    if (toDelete.length>0) {
+        await DaysParametrizationDetail.query().whereIn('id',toDelete.map(dayParametrization => dayParametrization.id)).delete();
+        await dayParametrization.refresh();
+        await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
+            daysParametrizationDetailsQuery.preload("dayType");
+        });
+    }
     return dayParametrization ? (dayParametrization.serialize() as IDaysParametrization) : null;
   }
 }
