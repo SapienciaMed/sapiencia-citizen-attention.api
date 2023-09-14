@@ -20,7 +20,6 @@ export default class AppProvider {
         /******************************** REPOSITORIES ****************************/
         /**************************************************************************/
         const BusinessRepository = await import("App/Repositories/BusinessRepository");
-
         const DaysParametrizationRepository = await import("App/Repositories/DaysParametrizationRepository");
 
         /**************************************************************************/
