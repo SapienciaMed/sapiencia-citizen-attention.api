@@ -11,6 +11,8 @@ export default class AppProvider {
         /**************************************************************************/
         const BusinessService = await import("App/Services/BusinessService");
         const DaysParametrizationService = await import("App/Services/DaysParametrizationService");
+        const MasterTablesUtilityService = await import("app/Services/MasterTablesUtilityServices");
+        const PqrsdfService = await import("App/Services/PqrsdfServices");
 
         /**************************************************************************/
         /************************ EXTERNAL SERVICES ********************************/
@@ -21,6 +23,8 @@ export default class AppProvider {
         /**************************************************************************/
         const BusinessRepository = await import("App/Repositories/BusinessRepository");
         const DaysParametrizationRepository = await import("App/Repositories/DaysParametrizationRepository");
+        const MasterTablesUtilityRepository = await import("app/Repositories/MasterTablesUtilityRepository");
+        const PqrsdfRepository = await import("App/Repositories/PqrsdfRepository")
 
         /**************************************************************************/
         /******************************** CORE  ***********************************/
@@ -33,6 +37,14 @@ export default class AppProvider {
         this.app.container.singleton(
             "core.DaysParametrizationProvider",
             () => new DaysParametrizationService.default(new DaysParametrizationRepository.default())
+        );
+        this.app.container.singleton(
+            "core.MasterTablesUtilityProvider",
+            () => new MasterTablesUtilityService.default(new MasterTablesUtilityRepository.default())
+        );
+        this.app.container.singleton(
+            "core.PqrsdfProvider",
+            () => new PqrsdfService.default( new PqrsdfRepository.default())
         );
     }
 
