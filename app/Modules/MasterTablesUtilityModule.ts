@@ -1,6 +1,6 @@
 declare module "@ioc:core.MasterTablesUtilityProvider" {
-    import { IMasterTablesUtilityServices } from "App/Services/Contracts/IMasterTablesUtilityServices";
+    import { IMasterTablesUtilityService } from "App/Services/Contracts/IMasterTablesUtilityService";
 
-    const MasterTablesUtilityProvider: IMasterTablesUtilityServices;
+    const MasterTablesUtilityProvider: IMasterTablesUtilityService;
     export default MasterTablesUtilityProvider;
 }

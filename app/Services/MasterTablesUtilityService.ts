@@ -1,7 +1,7 @@
 import { IMasterTablesUtilityRepository } from "App/Repositories/Contracts/IMasterTablesUtilityRepository";
-import { IMasterTablesUtilityServices } from "./Contracts/IMasterTablesUtilityServices";
+import { IMasterTablesUtilityService } from "./Contracts/IMasterTablesUtilityService";
 
-export default class MasterTablesUtilityServices implements IMasterTablesUtilityServices {
+export default class MasterTablesUtilityService implements IMasterTablesUtilityService {
 
     constructor( private MasterTablesUtilityRepository: IMasterTablesUtilityRepository ){}
 
