@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import TejTipoEntidadJuridica from './TejTipoEntidadJuridica';
+import Pqrsdf from './Pqrsdf';
 
 export default class Person extends BaseModel {
   public static table = "PER_PERSONAS";
@@ -61,6 +62,12 @@ export default class Person extends BaseModel {
     foreignKey: "entityTypeId",
   })
   public entityType: BelongsTo<typeof TejTipoEntidadJuridica>;
+
+  @hasMany(() => Pqrsdf, {
+    localKey: "id",
+    foreignKey: "personId",
+  })
+  public pqrsdfs: HasMany<typeof Pqrsdf>;
 
   @column.dateTime({
     autoCreate: true,

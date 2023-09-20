@@ -21,4 +21,13 @@ export default class PqrsdfsController {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
+
+  public async createPqrsdf({ request, response }: HttpContextContract) {
+    try {
+      const { pqrsdf } = request.body();
+      return response.send(await PqrsdfProvider.createPqrsdf(pqrsdf));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
 }

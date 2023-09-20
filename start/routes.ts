@@ -40,6 +40,7 @@ Route.group(() => {
   Route.group(() => {
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
+    Route.post("/create", "PqrsdfsController.createPqrsdf");
   }).prefix("/pqrsdf");
 }).prefix("/api/v1/");
 // .middleware("auth");

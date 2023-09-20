@@ -3,11 +3,26 @@ import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import Database from "@ioc:Adonis/Lucid/Database";
+import Person from "App/Models/Person";
+import File from "App/Models/File";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
-  async createPqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null> {
-    return null;
+  async createPqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
+    let res: any;
+    await Database.transaction(async (trx) => {
+      if (pqrsdf?.person) {
+        const newPerson = (await Person.create(pqrsdf?.person)).useTransaction(trx);
+        const newFile = pqrsdf?.file ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
+        if (newFile) {
+          pqrsdf.fileId = newFile.id;
+        }
+        const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
+        res = await this.formatPqrsdf(newPqrsdf);
+      }
+    });
+    return res?.id ? res : null;
   }
 
   async getPqrsdfById(id: number): Promise<IPqrsdf | null> {
@@ -71,7 +86,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return [];
   }
 
-  async updatePqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null> {
-    return null;
+  async updatePqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
+    return pqrsdf;
   }
 }
