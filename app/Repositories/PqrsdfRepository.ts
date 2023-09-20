@@ -13,11 +13,18 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     let res: any;
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
-        const newPerson = (await Person.create(pqrsdf?.person)).useTransaction(trx);
-        const newFile = pqrsdf?.file ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
+        const newPerson = (await Person.create(pqrsdf.person)).useTransaction(trx);
+        //TODO UPLOAD
+        let upload = true;
+        //pqrsdf.file?.name = rutaResultadoDeUpload;
+        const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
+        const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
+        pqrsdf.filingNumber = lastFilingNumber?.filingNumber
+          ? lastFilingNumber.filingNumber
+          : parseInt(new Date().getFullYear().toString() + "02430001");
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
         res = await this.formatPqrsdf(newPqrsdf);
       }
