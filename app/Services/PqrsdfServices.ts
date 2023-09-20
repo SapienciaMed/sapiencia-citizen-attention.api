@@ -16,4 +16,17 @@ export default class PresdfServices implements IPqrsdfServices {
 
     return new ApiResponse(res, EResponseCodes.OK);
   }
+
+  public async getPqrsdfByIdentificationAndFilingNumber(
+    identification: number,
+    filingNumber: number
+  ): Promise<ApiResponse<IPqrsdf | null>> {
+    const res = await this.PqrsdfRepository.getPqrsdfByIdentificationAndFilingNumber(identification, filingNumber);
+
+    if (!res) {
+      return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
 }

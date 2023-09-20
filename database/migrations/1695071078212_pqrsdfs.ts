@@ -37,7 +37,8 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("llave foranea a la tabla tipos de solicitud (FK TSO_TIPOS_SOLICITUD)");
 
-      table.string("PQR_CLASIFICACION", 100).notNullable();
+      table.string("PQR_CLASIFICACION", 100).nullable();
+      table.bigInteger("PQR_NRO_RADICADO");
 
       table.string("PQR_DEPENDENCIA", 100).notNullable();
 

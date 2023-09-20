@@ -12,6 +12,7 @@ export interface IPqrsdf {
   responseMediumId: number;
   requestSubjectId: number;
   fileId: number;
+  filingNumber: number;
   clasification: string;
   dependency: string;
   description: string;

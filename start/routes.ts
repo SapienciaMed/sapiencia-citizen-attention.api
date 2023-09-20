@@ -39,6 +39,7 @@ Route.group(() => {
   /* PQRSDF */
   Route.group(() => {
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
+    Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
   }).prefix("/pqrsdf");
 }).prefix("/api/v1/");
 // .middleware("auth");

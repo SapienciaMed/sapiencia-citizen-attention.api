@@ -27,6 +27,9 @@ export default class Pqrsdf extends BaseModel {
   @column({ columnName: "PQR_CODARC_ARCHIVO", serializeAs: "fileId" })
   public fileId: number;
 
+  @column({ columnName: "PQR_NRO_RADICADO", serializeAs: "filingNumber" })
+  public filingNumber: number;
+
   @column({ columnName: "PQR_CLASIFICACION", serializeAs: "clasification" })
   public clasification: string;
 
