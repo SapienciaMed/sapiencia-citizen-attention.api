@@ -25,23 +25,27 @@ Route.get("/", async () => {
 });
 
 Route.group(() => {
-    Route.group(() => {
-        Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
-    }).prefix("/business");
-    Route.group(() => {
-        Route.get("/get-by-id/:id", "DaysParametrizationController.getDaysParametrizationById");
-        Route.get("/get-all", "DaysParametrizationController.getDaysParametrizations");
-        Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
-        Route.post("/create", "DaysParametrizationController.createDaysParametrization");
-        Route.post("/update", "DaysParametrizationController.updateDaysParametrization");
-    }).prefix("/day-parametrization");
+  Route.group(() => {
+    Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
+  }).prefix("/business");
+  /* Parametrización de días */
+  Route.group(() => {
+    Route.get("/get-by-id/:id", "DaysParametrizationController.getDaysParametrizationById");
+    Route.get("/get-all", "DaysParametrizationController.getDaysParametrizations");
+    Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
+    Route.post("/create", "DaysParametrizationController.createDaysParametrization");
+    Route.post("/update", "DaysParametrizationController.updateDaysParametrization");
+  }).prefix("/day-parametrization");
+  /* PQRSDF */
+  Route.group(() => {
+    Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
+  }).prefix("/pqrsdf");
 }).prefix("/api/v1/");
 // .middleware("auth");
 
-
-/************************** 
-******TABLAS MAESTRAS****** 
-**************************/
+/**************************
+ ******TABLAS MAESTRAS******
+ **************************/
 Route.group(() => {
   Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
   Route.get("/get-type-docuement", "ListadoGenericosController.getTypeDocuement");
@@ -54,6 +58,4 @@ Route.group(() => {
   Route.get("/get-municipios/:id", "ListadoGenericosController.getMunicipios");
   Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
   Route.get("/get-listaParametros", "ListaParametrosController.getListaParametros");
-})
-
-
+});

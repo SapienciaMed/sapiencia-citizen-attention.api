@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-      
+
       table
         .increments('ARC_CODIGO')
         .primary()
@@ -13,7 +13,7 @@ export default class extends BaseSchema {
         .comment('LLave primaria');
 
       table
-        .string('ARC_NOMBRE',100)
+        .string('ARC_NOMBRE')
         .notNullable();
 
       table

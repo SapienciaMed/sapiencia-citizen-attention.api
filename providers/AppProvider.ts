@@ -18,6 +18,8 @@ export default class AppProvider {
         /************************ EXTERNAL SERVICES ********************************/
         /**************************************************************************/
 
+        const GenericListsExternalService = await import("App/Services/External/GenericListsExternalService")
+
         /**************************************************************************/
         /******************************** REPOSITORIES ****************************/
         /**************************************************************************/
@@ -44,7 +46,9 @@ export default class AppProvider {
         );
         this.app.container.singleton(
             "core.PqrsdfProvider",
-            () => new PqrsdfService.default( new PqrsdfRepository.default())
+            () => new PqrsdfService.default( new PqrsdfRepository.default(
+              new GenericListsExternalService.default
+            ))
         );
     }
 

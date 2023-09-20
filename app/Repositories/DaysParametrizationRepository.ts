@@ -12,7 +12,7 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
     const daysParametrization = await DaysParametrization.find(id);
     if (daysParametrization) {
       await daysParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
-        daysParametrizationDetailsQuery.orderBy('detailDate','asc').preload("dayType");
+        daysParametrizationDetailsQuery.orderBy("detailDate", "asc").preload("dayType");
       });
     }
     return daysParametrization ? (daysParametrization.serialize() as IDaysParametrization) : null;
@@ -21,10 +21,12 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
   async getDaysParametrizations(): Promise<IDaysParametrization[] | []> {
     const daysParametrizations = await DaysParametrization.query()
       .preload("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
-        daysParametrizationDetailsQuery.orderBy('detailDate','asc').preload("dayType");
+        daysParametrizationDetailsQuery.orderBy("detailDate", "asc").preload("dayType");
       })
       .orderBy("year", "desc");
-    return daysParametrizations ? daysParametrizations.map((daysParametrization) => daysParametrization.serialize() as IDaysParametrization) : [];
+    return daysParametrizations
+      ? daysParametrizations.map((daysParametrization) => daysParametrization.serialize() as IDaysParametrization)
+      : [];
   }
 
   async getDayTypes(): Promise<IDayType[] | []> {
@@ -41,31 +43,40 @@ export default class DaysParametrizationRepository implements IDaysParametrizati
 
   async updateDaysParametrization(daysParametrization: IDaysParametrization): Promise<IDaysParametrization | null> {
     const dayParametrization = await DaysParametrization.findOrFail(daysParametrization.id);
-    
-    let notDeleteIds: number[]= [];
+
+    let notDeleteIds: number[] = [];
     for await (const daysParametrizationDetail of daysParametrization.daysParametrizationDetails) {
-        let newDetail = daysParametrizationDetail?.id ? await DaysParametrizationDetail.find(daysParametrizationDetail?.id) : new DaysParametrizationDetail();
-        if (newDetail) {
-            newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
-            newDetail.description = daysParametrizationDetail?.description;
-            newDetail.detailDate = daysParametrizationDetail.detailDate;
-            newDetail.daysParametrizationId = daysParametrization.id;
-            await newDetail.save();
-            notDeleteIds.push(newDetail.id);
-        }
-    };
+      let newDetail = daysParametrizationDetail?.id
+        ? await DaysParametrizationDetail.find(daysParametrizationDetail?.id)
+        : new DaysParametrizationDetail();
+      if (newDetail) {
+        newDetail.dayTypeId = daysParametrizationDetail.dayTypeId;
+        newDetail.description = daysParametrizationDetail?.description;
+        newDetail.detailDate = daysParametrizationDetail.detailDate;
+        newDetail.daysParametrizationId = daysParametrization.id;
+        await newDetail.save();
+        notDeleteIds.push(newDetail.id);
+      }
+    }
     await dayParametrization.refresh();
     await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
-      daysParametrizationDetailsQuery.orderBy('detailDate','asc').preload("dayType");
+      daysParametrizationDetailsQuery.orderBy("detailDate", "asc").preload("dayType");
     });
 
-    let toDelete = dayParametrization.daysParametrizationDetails.filter(dayParametrization =>  !notDeleteIds.includes(dayParametrization.id));
-    if (toDelete.length>0) {
-        await DaysParametrizationDetail.query().whereIn('id',toDelete.map(dayParametrization => dayParametrization.id)).delete();
-        await dayParametrization.refresh();
-        await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
-            daysParametrizationDetailsQuery.orderBy('detailDate','asc').preload("dayType");
-        });
+    let toDelete = dayParametrization.daysParametrizationDetails.filter(
+      (dayParametrization) => !notDeleteIds.includes(dayParametrization.id)
+    );
+    if (toDelete.length > 0) {
+      await DaysParametrizationDetail.query()
+        .whereIn(
+          "id",
+          toDelete.map((dayParametrization) => dayParametrization.id)
+        )
+        .delete();
+      await dayParametrization.refresh();
+      await dayParametrization.load("daysParametrizationDetails", (daysParametrizationDetailsQuery) => {
+        daysParametrizationDetailsQuery.orderBy("detailDate", "asc").preload("dayType");
+      });
     }
     return dayParametrization ? (dayParametrization.serialize() as IDaysParametrization) : null;
   }
