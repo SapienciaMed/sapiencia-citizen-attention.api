@@ -30,17 +30,18 @@ Route.group(() => {
   }).prefix("/business");
   /* Parametrización de días */
   Route.group(() => {
-    Route.get("/get-by-id/:id", "DaysParametrizationController.getDaysParametrizationById");
-    Route.get("/get-all", "DaysParametrizationController.getDaysParametrizations");
     Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
+    Route.get("/get-all", "DaysParametrizationController.getDaysParametrizations");
     Route.post("/create", "DaysParametrizationController.createDaysParametrization");
     Route.post("/update", "DaysParametrizationController.updateDaysParametrization");
+    Route.get("/get-by-id/:id", "DaysParametrizationController.getDaysParametrizationById");
   }).prefix("/day-parametrization");
   /* PQRSDF */
   Route.group(() => {
+    // Route.get("/get-all", "PqrsdfsController.getPrsdfs");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
-    Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
     Route.post("/create", "PqrsdfsController.createPqrsdf");
+    Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
   }).prefix("/pqrsdf");
 }).prefix("/api/v1/");
 // .middleware("auth");
