@@ -6,21 +6,23 @@ import { IFile } from "./FileInterfaces";
 import { IRequestType } from "./RequestTypeInterfaces";
 
 export interface IPqrsdf {
-  id: number;
+  id?: number;
   requestTypeId: number;
-  personId: number;
+  personId?: number;
   responseMediumId: number;
   requestSubjectId: number;
-  fileId: number;
-  filingNumber: number;
+  fileId?: number;
+  filingNumber?: number;
   clasification: string;
   dependency: string;
   description: string;
   requestType?: IRequestType;
   person?: IPerson;
+  answer?: string;
+  answerDate?: DateTime;
   responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;
   file?: IFile;
-  createdAt: DateTime;
-  updatedAt: DateTime;
+  createdAt?: DateTime;
+  updatedAt?: DateTime;
 }

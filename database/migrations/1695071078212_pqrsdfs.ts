@@ -40,6 +40,9 @@ export default class extends BaseSchema {
       table.string("PQR_CLASIFICACION", 100).nullable();
       table.bigInteger("PQR_NRO_RADICADO");
 
+      table.text("PQR_RESPUESTA").nullable();
+      table.date("PQR_FECHA_RESPUESTA").nullable();
+
       table.string("PQR_DEPENDENCIA", 100).notNullable();
 
       table.text("PQR_DESCRIPCION").notNullable();

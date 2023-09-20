@@ -39,6 +39,12 @@ export default class Pqrsdf extends BaseModel {
   @column({ columnName: "PQR_DESCRIPCION", serializeAs: "description" })
   public description: string;
 
+  @column({ columnName: "PQR_RESPUESTA", serializeAs: "answer" })
+  public answer: string;
+
+  @column.date({ columnName: "PQR_FECHA_RESPUESTA", serializeAs: "answerDate" })
+  public answerDate: DateTime;
+
 
   @belongsTo(() => TsoTipoSolicitud, {
     localKey: "tso_codigo",
