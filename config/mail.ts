@@ -18,7 +18,7 @@ export default mailConfig({
   | a mailer
   |
   */
-  mailer: 'smtp',
+  mailer: 'mailgun',
 
   /*
   |--------------------------------------------------------------------------
@@ -34,23 +34,23 @@ export default mailConfig({
   |
   */
   mailers: {
+
     /*
     |--------------------------------------------------------------------------
-    | Smtp
+    | Mailgun
     |--------------------------------------------------------------------------
     |
-    | Uses SMTP protocol for sending email
+		| Uses Mailgun service for sending emails.
+    |
+    | If you are using an EU domain. Ensure to change the baseUrl to hit the
+    | europe endpoint (https://api.eu.mailgun.net/v3).
     |
     */
-    smtp: {
-      driver: 'smtp',
-      host: Env.get('SMTP_HOST'),
-      port: Env.get('SMTP_PORT'),
-			auth: {
-				user: Env.get('SMTP_USERNAME'),
-				pass: Env.get('SMTP_PASSWORD'),
-				type: 'login',
-			}
+    mailgun: {
+      driver: 'mailgun',
+      baseUrl: 'https://api.mailgun.net/v3',
+      key: Env.get('MAILGUN_API_KEY'),
+      domain: Env.get('MAILGUN_DOMAIN'),
     },
   },
 })

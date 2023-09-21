@@ -30,6 +30,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           : parseInt(new Date().getFullYear().toString() + "02430001");
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
         res = await this.formatPqrsdf(newPqrsdf);
+
+        //TODO EMAIL
       }
 
     });

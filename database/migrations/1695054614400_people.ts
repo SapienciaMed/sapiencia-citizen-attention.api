@@ -6,7 +6,7 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments("PER_CODIGO");
-      table.string("PER_NUMERO_DOCUMENTO", 20);
+      table.string("PER_NUMERO_DOCUMENTO", 20).unique();
       table
         .integer("PER_CODTDO_TIPO_DOCUMENTO")
         .unsigned()
