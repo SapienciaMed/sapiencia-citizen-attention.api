@@ -22,9 +22,9 @@ export default class PqrsdfsController {
     }
   }
 
-  public async createPqrsdf({ request, response }: HttpContextContract) {
+  public async createPqrsdf({ request, response }: HttpContextContract) {    
     try {
-      const { pqrsdf } = request.body();
+      const { pqrsdf }  = request.body();
       return response.send(await PqrsdfProvider.createPqrsdf(pqrsdf));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));

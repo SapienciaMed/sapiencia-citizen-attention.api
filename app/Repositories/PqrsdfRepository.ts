@@ -10,10 +10,13 @@ import File from "App/Models/File";
 export default class PqrsdfRepository implements IPqrsdfRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
   async createPqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
+
     let res: any;
     await Database.transaction(async (trx) => {
+      
       if (pqrsdf?.person) {
         const newPerson = (await Person.create(pqrsdf.person)).useTransaction(trx);
+        
         //TODO UPLOAD
         let upload = true;
         //pqrsdf.file?.name = rutaResultadoDeUpload;
@@ -28,6 +31,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
         res = await this.formatPqrsdf(newPqrsdf);
       }
+
     });
     return res?.id ? res : null;
   }
