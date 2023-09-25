@@ -1,11 +1,20 @@
 import { IMasterTablesUtilityRepository } from "App/Repositories/Contracts/IMasterTablesUtilityRepository";
 import { IMasterTablesUtilityService } from "./Contracts/IMasterTablesUtilityService";
+import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces";
+import { ApiResponse } from "App/Utils/ApiResponses";
+import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 
 export default class MasterTablesUtilityService implements IMasterTablesUtilityService {
 
     constructor( private MasterTablesUtilityRepository: IMasterTablesUtilityRepository ){}
 
-    async getMaster() {
-       this.MasterTablesUtilityRepository;
+    public async getTypeRequest(): Promise<ApiResponse<ItypeRequest []|[] >> {
+        const resp = await this.MasterTablesUtilityRepository.getTypeRequest();
+        
+        if(!resp){
+            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de solicitud");
+        }
+        return new ApiResponse(resp, EResponseCodes.OK);
     }
+
 }
