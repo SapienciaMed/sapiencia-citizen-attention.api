@@ -36,7 +36,7 @@ export default class WorkEntityServices implements IWorkEntityServices {
     const res = await this.WorkEntityRepository.getWorkEntityTypes();
 
     if (!res.length) {
-      return new ApiResponse({} as IWorkEntityType[], EResponseCodes.FAIL, "Registros no encontrados");
+      return new ApiResponse([] as IWorkEntityType[], EResponseCodes.FAIL, "Registros no encontrados");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
