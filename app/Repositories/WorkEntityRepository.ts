@@ -1,12 +1,9 @@
-import Database from "@ioc:Adonis/Lucid/Database";
-import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { IUser, IUserFilters } from "App/Interfaces/UserInterfaces";
 import { IWorkEntity, IWorkEntityFilters } from "App/Interfaces/WorkEntityInterfaces";
-import File from "App/Models/File";
 import WorkEntity from "App/Models/WorkEntity";
 import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
-import { IWorkEntityRepository } from "./Contracts/IWorkEntityRepository";
-import { IUser, IUserFilters } from "App/Interfaces/UserInterfaces";
 import { IPagingData } from "App/Utils/ApiResponses";
+import { IWorkEntityRepository } from "./Contracts/IWorkEntityRepository";
 
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
