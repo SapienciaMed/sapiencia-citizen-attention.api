@@ -21,6 +21,11 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     return await this.formatWorkEntity(workEntity);
   }
 
+  async getWorkEntityByUserId(id: number): Promise<IWorkEntity | null> {
+    const workEntity = await WorkEntity.query().where('userId',id).first();
+    return await this.formatWorkEntity(workEntity);
+  }
+
   private async formatWorkEntities(workEntities: WorkEntity[], user: IUser | null = null): Promise<IWorkEntity[]> {
     let workEntitiesFormatted: IWorkEntity[] = [];
     for await (const workEntity of workEntities) {

@@ -8,14 +8,15 @@ export default class extends BaseSchema {
       table.increments("ENT_CODIGO");
       table
         .integer("ENT_CODUSR_USUARIO")
-        .unsigned()
+        .unsigned().unique()
         .comment("Este campo pertenece a la tabla usuarios ubicada en autenticacion-dev");
       table
         .integer("ENT_CODTET_TIPO_ENTIDAD_TRABAJO")
         .unsigned()
         .references("TET_TIPO_ENTIDAD_TRABAJO.TET_CODIGO")
         .comment("llave foranea de la tabla tipo de entidad(FK)");
-      table.integer("ENT_ORDEN").notNullable();
+      table.increments("ENT_ORDEN",{primaryKey:false}).notNullable();
+      table.boolean("ENT_ESTADO").defaultTo(true);
       table.string("ENT_NOMBRE_ENTIDAD", 200).notNullable().comment("Nombre de la entidad de trabajo");
 
       /**
