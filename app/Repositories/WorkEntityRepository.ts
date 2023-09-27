@@ -11,32 +11,8 @@ import { IPagingData } from "App/Utils/ApiResponses";
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
   async createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null> {
-    let res: any;
-    /* await Database.transaction(async (trx) => {
-      if (workEntity?.person) {
-        const existPerson = await Person.query().where("identification", workEntity.person.identification).first();
-        const newPerson = existPerson
-          ? existPerson.useTransaction(trx)
-          : (await Person.create(workEntity.person)).useTransaction(trx);
-
-        //TODO UPLOAD
-        let upload = true;
-        //workEntity.file?.name = rutaResultadoDeUpload;
-        const newFile = workEntity?.file && upload ? (await File.create(workEntity?.file)).useTransaction(trx) : null;
-        if (newFile) {
-          workEntity.fileId = newFile.id;
-        }
-        const lastFilingNumber = await WorkEntity.query().orderBy("filingNumber", "desc").first();
-        workEntity.filingNumber = lastFilingNumber?.filingNumber
-          ? lastFilingNumber.filingNumber
-          : parseInt(new Date().getFullYear().toString() + "02430001");
-        const newWorkEntity = await newPerson.related("workEntitys").create(workEntity);
-        res = await this.formatWorkEntity(newWorkEntity);
-
-        //TODO EMAIL
-      }
-    }); */
-    return res?.id ? res : null;
+    const res = await WorkEntity.create(workEntity);
+    return await this.formatWorkEntity(res);
   }
 
   async getUserByDocument(identification: string): Promise<IUser | null> {
@@ -45,9 +21,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getWorkEntityById(id: number): Promise<IWorkEntity | null> {
     const workEntity = await WorkEntity.find(id);
-    let serializeWorkEntity: IWorkEntity | null = await this.formatWorkEntity(workEntity);
-
-    return serializeWorkEntity?.id ? serializeWorkEntity : null;
+    return await this.formatWorkEntity(workEntity);
   }
 
   private async formatWorkEntities(workEntities: WorkEntity[], user: IUser | null = null): Promise<IWorkEntity[]> {
