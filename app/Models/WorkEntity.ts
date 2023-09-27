@@ -14,7 +14,7 @@ export default class WorkEntity extends BaseModel {
   @column({ columnName: "ENT_CODTET_TIPO_ENTIDAD_TRABAJO", serializeAs: "workEntityTypeId" })
   public workEntityTypeId: number;
 
-  @column({ columnName: "ENT_ORDEN", serializeAs: "order" })
+  @column({ columnName: "ENT_ORDEN", serializeAs: "order"})
   public order: number;
 
   @column({ columnName: "ENT_ESTADO", serializeAs: "status" })

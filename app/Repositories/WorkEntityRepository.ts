@@ -10,10 +10,12 @@ import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
   async createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null> {
+    const last = await WorkEntity.query().orderBy('id', 'desc').first()
     const res = await WorkEntity.create({
       name: workEntity?.name,
       workEntityTypeId: workEntity?.workEntityTypeId,
       userId: workEntity?.userId,
+      order: last?.id ?? 0
     });
     return await this.formatWorkEntity(res);
   }
