@@ -1,5 +1,4 @@
 import { IMasterTablesUtilityRepository } from "./Contracts/IMasterTablesUtilityRepository";
-import Database from "@ioc:Adonis/Lucid/Database";
 import TsoTipoSolicitud from "App/Models/TsoTipoSolicitud";
 import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces";
 

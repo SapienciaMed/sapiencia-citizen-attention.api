@@ -49,6 +49,13 @@ Route.group(() => {
     Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
   }).prefix("/utility");
 
+  /* Work entities */
+  Route.group(() => {
+    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById");
+    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
+    Route.post("/create", "WorkEntityController.createWorkEntity");
+    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
+  }).prefix("/work-entity");
 }).prefix("/api/v1/");
 // .middleware("auth");
 

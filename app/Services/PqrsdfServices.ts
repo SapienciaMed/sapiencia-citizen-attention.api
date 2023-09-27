@@ -4,7 +4,7 @@ import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 
-export default class PresdfServices implements IPqrsdfServices {
+export default class PqrsdfServices implements IPqrsdfServices {
   constructor(private PqrsdfRepository: IPqrsdfRepository) {}
 
   public async createPqrsdf(prsdf: IPqrsdf): Promise<ApiResponse<IPqrsdf | null>> {
