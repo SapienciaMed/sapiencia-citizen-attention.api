@@ -46,7 +46,7 @@ Route.group(() => {
   /* Work entities */
   Route.group(() => {
     Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById");
-    Route.get("/get-by-document/:identification", "WorkEntityController.getUserByDocument");
+    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
     Route.post("/create", "WorkEntityController.createWorkEntity");
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
   }).prefix("/work-entity");
