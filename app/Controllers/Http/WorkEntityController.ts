@@ -32,6 +32,14 @@ export default class WorkEntityController {
     }
   }
 
+  public async getWorkEntityTypes({ response }: HttpContextContract) {
+    try {
+      return response.send(await WorkEntityProvider.getWorkEntityTypes());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async createWorkEntity({ request, response }: HttpContextContract) {
     try {
       const { workEntity }  = request.body();

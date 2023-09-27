@@ -4,6 +4,8 @@ import WorkEntity from "App/Models/WorkEntity";
 import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IWorkEntityRepository } from "./Contracts/IWorkEntityRepository";
+import TetTipoEntidadTrabajo from "App/Models/TetTipoEntidadTrabajo";
+import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
 
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
@@ -21,8 +23,13 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     return await this.formatWorkEntity(workEntity);
   }
 
+  async getWorkEntityTypes(): Promise<IWorkEntityType[]> {
+    const res = await TetTipoEntidadTrabajo.query().orderBy("tet_orden");
+    return res.map((workEntityType) => workEntityType.serialize() as IWorkEntityType);
+  }
+
   async getWorkEntityByUserId(id: number): Promise<IWorkEntity | null> {
-    const workEntity = await WorkEntity.query().where('userId',id).first();
+    const workEntity = await WorkEntity.query().where("userId", id).first();
     return await this.formatWorkEntity(workEntity);
   }
 
