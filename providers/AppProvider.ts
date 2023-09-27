@@ -13,12 +13,14 @@ export default class AppProvider {
     const DaysParametrizationService = await import("App/Services/DaysParametrizationService");
     const MasterTablesUtilityService = await import("App/Services/MasterTablesUtilityService");
     const PqrsdfService = await import("App/Services/PqrsdfServices");
+    const WorkEntityService = await import("App/Services/WorkEntityServices");
 
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
 
     const GenericListsExternalService = await import("App/Services/External/GenericListsExternalService");
+    const AuthExternalService = await import("App/Services/External/AuthExternalService");
 
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
@@ -27,6 +29,7 @@ export default class AppProvider {
     const DaysParametrizationRepository = await import("App/Repositories/DaysParametrizationRepository");
     const MasterTablesUtilityRepository = await import("App/Repositories/MasterTablesUtilityRepository");
     const PqrsdfRepository = await import("App/Repositories/PqrsdfRepository");
+    const WorkEntityRepository = await import("App/Repositories/WorkEntityRepository");
 
     /**************************************************************************/
     /******************************** CORE  ***********************************/
@@ -47,6 +50,10 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.PqrsdfProvider",
       () => new PqrsdfService.default(new PqrsdfRepository.default(new GenericListsExternalService.default()))
+    );
+    this.app.container.singleton(
+      "core.WorkEntityProvider",
+      () => new WorkEntityService.default(new WorkEntityRepository.default(new AuthExternalService.default()))
     );
   }
 

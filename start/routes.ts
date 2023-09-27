@@ -43,6 +43,13 @@ Route.group(() => {
     Route.post("/create", "PqrsdfsController.createPqrsdf");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
   }).prefix("/pqrsdf");
+  /* Work entities */
+  Route.group(() => {
+    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById");
+    Route.get("/get-by-document/:identification", "WorkEntityController.getUserByDocument");
+    Route.post("/create", "WorkEntityController.createWorkEntity");
+    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
+  }).prefix("/work-entity");
 }).prefix("/api/v1/");
 // .middleware("auth");
 
