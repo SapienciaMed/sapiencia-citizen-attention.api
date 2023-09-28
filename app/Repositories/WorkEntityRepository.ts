@@ -58,7 +58,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     if (workEntity) {
       await workEntity.load("workEntityType");
       if (!user) {
-        user = (await this.AuthExternalService.getUserById(workEntity.id)).data;
+        user = (await this.AuthExternalService.getUserById(workEntity.userId)).data;
       }
 
       serializeWorkEntity = workEntity.serialize() as IWorkEntity;
