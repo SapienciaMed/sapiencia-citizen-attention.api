@@ -109,8 +109,8 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     const workEntitiesPagination = await query
       .orderBy("order", "desc")
       .paginate(filters?.page ?? 1, filters?.perPage ?? 10);
-    const { data, meta } = workEntitiesPagination.serialize();
-    let serializeWorkEntity = await this.formatWorkEntities(data as WorkEntity[], user);
+    const { meta } = workEntitiesPagination.serialize();
+    let serializeWorkEntity = await this.formatWorkEntities(workEntitiesPagination.all(), user);
 
     return {
       array: serializeWorkEntity,
