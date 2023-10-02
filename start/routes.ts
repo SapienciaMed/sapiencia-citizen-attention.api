@@ -43,6 +43,12 @@ Route.group(() => {
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
   }).prefix("/pqrsdf");
+
+  /* TABLAS MAESTRAS */
+  Route.group(()=>{
+    Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
+  }).prefix("/utility");
+
   /* Work entities */
   Route.group(() => {
     Route.post("/create", "WorkEntityController.createWorkEntity");
@@ -53,9 +59,11 @@ Route.group(() => {
   }).prefix("/work-entity");
 }).prefix("/api/v1/").middleware("auth");
 
+
 /**************************
  ******TABLAS MAESTRAS******
  **************************/
+
 Route.group(() => {
   Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
   Route.get("/get-type-docuement", "ListadoGenericosController.getTypeDocuement");
