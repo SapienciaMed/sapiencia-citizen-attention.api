@@ -51,8 +51,7 @@ Route.group(() => {
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
     Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
   }).prefix("/work-entity");
-}).prefix("/api/v1/");
-// .middleware("auth");
+}).prefix("/api/v1/").middleware("auth");
 
 /**************************
  ******TABLAS MAESTRAS******
