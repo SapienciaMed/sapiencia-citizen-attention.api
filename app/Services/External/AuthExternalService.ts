@@ -1,8 +1,8 @@
+import Env from "@ioc:Adonis/Core/Env";
 import { IUser, IUserFilters } from "App/Interfaces/UserInterfaces";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import axios, { AxiosInstance } from "axios";
 import { IAuthExternalService } from "./Contracts/IAuthExternalService";
-import Env from "@ioc:Adonis/Core/Env";
 
 export default class AuthExternalService implements IAuthExternalService {
   private apiAuth: AxiosInstance;
@@ -29,6 +29,17 @@ export default class AuthExternalService implements IAuthExternalService {
 
   public async getUserById(id: number): Promise<ApiResponse<IUser | null>> {
     const items = await this.apiAuth.get<ApiResponse<IUser | null>>(`user/get-by-id/${id}`, {
+      headers: {
+        permissions: Env.get("CURRENT_PERMISSIONS"),
+        Authorization: Env.get("CURRENT_AUTHORIZATION"),
+      },
+    });
+
+    return items.data;
+  }
+
+  public async getUsersByIds(ids: number[]): Promise<ApiResponse<IUser[]>> {
+    const items = await this.apiAuth.post<ApiResponse<IUser[]>>(`user/get-by-ids/`,{ids}, {
       headers: {
         permissions: Env.get("CURRENT_PERMISSIONS"),
         Authorization: Env.get("CURRENT_AUTHORIZATION"),
