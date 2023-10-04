@@ -121,6 +121,102 @@ export default class extends BaseSeeder {
         aso_orden:19
       },
 
+      {
+        aso_asunto:'Renovación del crédito y/o beca',
+        aso_dias_habiles:5,
+        aso_orden:20
+      },
+
+      {
+        aso_asunto:'Solicitud de prórroga de período de gracia',
+        aso_dias_habiles:5,
+        aso_orden:21
+      },
+
+      {
+        aso_asunto:'Solicitud de condonación del crédito',
+        aso_dias_habiles:5,
+        aso_orden:22
+      },
+
+      {
+        aso_asunto:'Solicitud paso al cobro',
+        aso_dias_habiles:5,
+        aso_orden:23
+      },
+
+      {
+        aso_asunto:'Aplazar – Adelantar servicio social',
+        aso_dias_habiles:5,
+        aso_orden:24
+      },
+
+      {
+        aso_asunto:'Información general servicio social o transferencia de conocimiento',
+        aso_dias_habiles:5,
+        aso_orden:25
+      },
+
+      {
+        aso_asunto:'Información giros pendientes / autorizados',
+        aso_dias_habiles:5,
+        aso_orden:26
+      },
+
+      {
+        aso_asunto:'Derecho de petición',
+        aso_dias_habiles:5,
+        aso_orden:27
+      },
+
+      {
+        aso_asunto:'Certificado débito 10%',
+        aso_dias_habiles:5,
+        aso_orden:28
+      },
+
+      {
+        aso_asunto:'Legalización fondo',
+        aso_dias_habiles:5,
+        aso_orden:29
+      },
+
+      {
+        aso_asunto:'Inscripción convocatoria',
+        aso_dias_habiles:5,
+        aso_orden:30
+      },
+
+      {
+        aso_asunto:'Otro',
+        aso_dias_habiles:5,
+        aso_orden:31
+      },
+
+      {
+        aso_asunto:'Certificado de beneficio',
+        aso_dias_habiles:5,
+        aso_orden:32
+      },
+
+      {
+        aso_asunto:'Solicitud de documentos y/o Expedientes',
+        aso_dias_habiles:5,
+        aso_orden:33
+      },
+
+      {
+        aso_asunto:'Solicitudes relacionadas al tema de convocatoria',
+        aso_dias_habiles:5,
+        aso_orden:34
+      },
+
+      {
+        aso_asunto:'Certificado del 10% de fondo EPM',
+        aso_dias_habiles:5,
+        aso_orden:35
+      },
+
     ]);
   }
 }

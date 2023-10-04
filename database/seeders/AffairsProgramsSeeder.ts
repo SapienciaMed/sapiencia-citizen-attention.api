@@ -216,79 +216,79 @@ export default class extends BaseSeeder {
       },
       {
         programId: 6,
-        affairId: 51, //Renovación del crédito y/o beca
+        affairId: 20, //Renovación del crédito y/o beca
       },
       {
         programId: 6,
-        affairId: 52, //Solicitud de prórroga de período de gracia
+        affairId: 21, //Solicitud de prórroga de período de gracia
       },
       {
         programId: 6,
-        affairId: 53, //Solicitud de condonación del crédito
+        affairId: 22, //Solicitud de condonación del crédito
       },
       {
         programId: 6,
-        affairId: 54, //Renuncia al fondo o a la beca
+        affairId: 23, //Renuncia al fondo o a la beca
       },
       {
         programId: 6,
-        affairId: 55, //Solicitud paso al cobro
+        affairId: 23, //Solicitud paso al cobro
       },
       {
         programId: 6,
-        affairId: 56, //Aplazar – Adelantar servicio social
+        affairId: 24, //Aplazar – Adelantar servicio social
       },
       {
         programId: 6,
-        affairId: 57, //Información general servicio social o transferencia de conocimiento
+        affairId: 25, //Información general servicio social o transferencia de conocimiento
       },
       {
         programId: 6,
-        affairId: 58, //Información giros pendientes / autorizados
+        affairId: 26, //Información giros pendientes / autorizados
       },
       {
         programId: 6,
-        affairId: 59, //Derecho de petición
+        affairId: 27, //Derecho de petición
       },
       {
         programId: 6,
-        affairId: 60, //Información general
+        affairId: 1, //Información general
       },
       {
         programId: 6,
-        affairId: 61, //Certificado débito 10%
+        affairId: 28, //Certificado débito 10%
       },
       {
         programId: 6,
-        affairId: 62, //Legalización fondo
+        affairId: 29, //Legalización fondo
       },
       {
         programId: 6,
-        affairId: 63, //Inscripción convocatoria
+        affairId: 30, //Inscripción convocatoria
       },
       {
         programId: 6,
-        affairId: 64, //Otro
+        affairId: 31, //Otro
       },
       {
         programId: 6,
-        affairId: 65, //Certificado de beneficio
+        affairId: 32, //Certificado de beneficio
       },
       {
         programId: 6,
-        affairId: 66, //Solicitud de documentos y/o Expedientes
+        affairId: 33, //Solicitud de documentos y/o Expedientes
       },
       {
         programId: 6,
-        affairId: 67, //Giro Adicional
+        affairId: 7, //Giro Adicional
       },
       {
         programId: 6,
-        affairId: 68, //Solicitudes relacionadas al tema de convocatoria
+        affairId: 34, //Solicitudes relacionadas al tema de convocatoria
       },
       {
         programId: 6,
-        affairId: 69, //Certificado del 10% de fondo EPM
+        affairId: 35, //Certificado del 10% de fondo EPM
       },
 
       //PRESUPUESTO PARTICIPATIVO
@@ -310,81 +310,81 @@ export default class extends BaseSeeder {
       },
       {
         programId: 7,
-        affairId: 74, //Renovación del crédito y/o beca
+        affairId: 20, //Renovación del crédito y/o beca
       },
       {
         programId: 7,
-        affairId: 75, //Solicitud de prórroga de período de gracia
+        affairId: 21, //Solicitud de prórroga de período de gracia
       },
       {
         programId: 7,
-        affairId: 76, //Solicitud de condonación del crédito
+        affairId: 22, //Solicitud de condonación del crédito
       },
       {
         programId: 7,
-        affairId: 77, //Renuncia al fondo o a la beca
+        affairId: 23, //Renuncia al fondo o a la beca
       },
       {
         programId: 7,
-        affairId: 78, //Solicitud paso al cobro
+        affairId: 23, //Solicitud paso al cobro
       },
       {
         programId: 7,
-        affairId: 79, //Aplazar – Adelantar servicio social
+        affairId: 24, //Aplazar – Adelantar servicio social
       },
       {
         programId: 7,
-        affairId: 80, //Información general servicio social o transferencia de conocimiento
+        affairId: 25, //Información general servicio social o transferencia de conocimiento
       },
       {
         programId: 7,
-        affairId: 81, //Información giros pendientes / autorizados
+        affairId: 26, //Información giros pendientes / autorizados
       },
       {
         programId: 7,
-        affairId: 82, //Derecho de petición
+        affairId: 27, //Derecho de petición
       },
       {
         programId: 7,
-        affairId: 83, //Información general
+        affairId: 1, //Información general
       },
       {
         programId: 7,
-        affairId: 84, //Certificado débito 10%
+        affairId: 28, //Certificado débito 10%
       },
       {
         programId: 7,
-        affairId: 85, //Legalización fondo
+        affairId: 29, //Legalización fondo
       },
       {
         programId: 7,
-        affairId: 86, //Inscripción convocatoria
+        affairId: 30, //Inscripción convocatoria
       },
       {
         programId: 7,
-        affairId: 87, //Otro
+        affairId: 31, //Otro
       },
       {
         programId: 7,
-        affairId: 88, //Certificado de beneficio
+        affairId: 32, //Certificado de beneficio
       },
       {
         programId: 7,
-        affairId: 89, //Solicitud de documentos y/o Expedientes
+        affairId: 33, //Solicitud de documentos y/o Expedientes
       },
       {
         programId: 7,
-        affairId: 90, //Giro Adicional
+        affairId: 7, //Giro Adicional
       },
       {
         programId: 7,
-        affairId: 91, //Solicitudes relacionadas al tema de convocatoria
+        affairId: 34, //Solicitudes relacionadas al tema de convocatoria
       },
 
       //Becas Tecnologías
       {
         programId: 8,
-        affairId: 92, //Información general
+        affairId: 1, //Información general
       },
       {
         programId: 8,
@@ -408,7 +408,7 @@ export default class extends BaseSeeder {
       },
       {
         programId: 8,
-        affairId: 98, //Derecho de petición
+        affairId: 27, //Derecho de petición
       },
       {
         programId: 8,
@@ -446,7 +446,7 @@ export default class extends BaseSeeder {
       },
       {
         programId: 9,
-        affairId: 107, //Derecho de petición
+        affairId: 27, //Derecho de petición
       },
       {
         programId: 9,
@@ -460,7 +460,7 @@ export default class extends BaseSeeder {
       //Talento Especializado
       {
         programId: 10,
-        affairId: 110, //Información general
+        affairId: 1, //Información general
       },
       {
         programId: 10,
