@@ -67,6 +67,60 @@ export default class extends BaseSeeder {
         aso_orden:10
       },
 
+      {
+        aso_asunto:'Cambio de actividades de transferencia',
+        aso_dias_habiles:5,
+        aso_orden:11
+      },
+
+      {
+        aso_asunto:'Certificado del fondo-dolares',
+        aso_dias_habiles:5,
+        aso_orden:12
+      },
+
+      {
+        aso_asunto:'Solicitud de condonación',
+        aso_dias_habiles:5,
+        aso_orden:13
+      },
+
+      {
+        aso_asunto:'Certificado de declaración de renta',
+        aso_dias_habiles:5,
+        aso_orden:14
+      },
+
+      {
+        aso_asunto:'Prorroga al proceso de condonación',
+        aso_dias_habiles:5,
+        aso_orden:15
+      },
+
+      {
+        aso_asunto:'Renovación extemporanea',
+        aso_dias_habiles:5,
+        aso_orden:16
+      },
+
+      {
+        aso_asunto:'Certificado del fondo',
+        aso_dias_habiles:5,
+        aso_orden:17
+      },
+
+      {
+        aso_asunto:'Cambio de propuesta de trabajo de grado',
+        aso_dias_habiles:5,
+        aso_orden:18
+      },
+
+      {
+        aso_asunto:'Información general del fondo',
+        aso_dias_habiles:5,
+        aso_orden:19
+      },
+
     ]);
   }
 }
