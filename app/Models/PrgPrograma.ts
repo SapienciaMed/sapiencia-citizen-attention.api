@@ -10,10 +10,10 @@ export default class PrgPrograma extends BaseModel {
   @column({ isPrimary: true, columnName:'PRG_CODIGO' })
   public prg_codigo: number;
 
-  @column({ columnName:'PRG_DESCRIPCION', serializeAs:'' })
+  @column({ columnName:'PRG_DESCRIPCION', serializeAs:'prg_descripcion' })
   public prg_descripcion: string;
 
-  @column({ columnName:'PRG_CLASIFICACION', serializeAs:'' })
+  @column({ columnName:'PRG_CLASIFICACION', serializeAs:'prg_clasificacion' })
   public prg_clasificacion: number;
 
   @column({ columnName:'PRG_DEPENDENCIA', serializeAs:'prg_dependencia' })

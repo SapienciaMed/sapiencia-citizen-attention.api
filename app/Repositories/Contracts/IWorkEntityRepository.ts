@@ -1,3 +1,4 @@
+import { IProgram } from "App/Interfaces/ProgramInterfaces";
 import { IUser } from "App/Interfaces/UserInterfaces";
 import { IWorkEntity, IWorkEntityFilters } from "App/Interfaces/WorkEntityInterfaces";
 import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
@@ -8,6 +9,7 @@ export interface IWorkEntityRepository {
   getWorkEntityById(id: number): Promise<IWorkEntity | null>;
   getWorkEntityTypes(): Promise<IWorkEntityType[]>;
   getWorkEntityByUserId(id: number): Promise<IWorkEntity | null>;
+  getProgramsAffairs(): Promise<IProgram[]>
   getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>>;
   createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
   updateWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;

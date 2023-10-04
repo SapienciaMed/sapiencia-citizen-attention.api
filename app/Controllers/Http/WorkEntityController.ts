@@ -40,6 +40,14 @@ export default class WorkEntityController {
     }
   }
 
+  public async getProgramsAffairs({ response }: HttpContextContract) {
+    try {
+      return response.send(await WorkEntityProvider.getProgramsAffairs());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async createWorkEntity({ request, response }: HttpContextContract) {
     try {
       const { workEntity }  = request.body();
