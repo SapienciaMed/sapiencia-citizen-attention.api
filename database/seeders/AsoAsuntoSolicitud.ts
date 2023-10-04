@@ -5,8 +5,11 @@ export default class extends BaseSeeder {
   public async run () {
     // Write your database queries inside the run method
 
-    await AsoAsuntoSolicitud.createMany([
-
+    await AsoAsuntoSolicitud.updateOrCreateMany([
+      'aso_asunto',
+      'aso_orden',
+      'aso_dias_habiles'
+    ],[
       {
         aso_asunto:'Información general',
         aso_dias_habiles:5,
@@ -282,7 +285,6 @@ export default class extends BaseSeeder {
         aso_dias_habiles:5,
         aso_orden:46
       },
-
     ]);
   }
 }
