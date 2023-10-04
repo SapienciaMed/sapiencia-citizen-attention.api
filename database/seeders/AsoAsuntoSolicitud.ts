@@ -217,6 +217,72 @@ export default class extends BaseSeeder {
         aso_orden:35
       },
 
+      {
+        aso_asunto:'Suspensión especial',
+        aso_dias_habiles:5,
+        aso_orden:36
+      },
+
+      {
+        aso_asunto:'Cancelación temporal-Antes de matrícula',
+        aso_dias_habiles:5,
+        aso_orden:37
+      },
+
+      {
+        aso_asunto:'Cancelación temporal-Después de matrícula',
+        aso_dias_habiles:5,
+        aso_orden:38
+      },
+
+      {
+        aso_asunto:'Cambio de programa',
+        aso_dias_habiles:5,
+        aso_orden:39
+      },
+
+      {
+        aso_asunto:'Proceso de renovación-Créditos aprobados',
+        aso_dias_habiles:5,
+        aso_orden:40
+      },
+
+      {
+        aso_asunto:'Proceso de renovación-Créditos matriculados',
+        aso_dias_habiles:5,
+        aso_orden:41
+      },
+
+      {
+        aso_asunto:'Renuncia a la beca',
+        aso_dias_habiles:5,
+        aso_orden:42
+      },
+
+      {
+        aso_asunto:'Renuncia al proceso',
+        aso_dias_habiles:5,
+        aso_orden:43
+      },
+
+      {
+        aso_asunto:'Inscripción de última convocatoria',
+        aso_dias_habiles:5,
+        aso_orden:44
+      },
+
+      {
+        aso_asunto:'Matrícula última convocatoria',
+        aso_dias_habiles:5,
+        aso_orden:45
+      },
+
+      {
+        aso_asunto:'Renuncia como beneficiario',
+        aso_dias_habiles:5,
+        aso_orden:46
+      },
+
     ]);
   }
 }

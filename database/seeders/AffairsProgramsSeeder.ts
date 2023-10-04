@@ -302,7 +302,7 @@ export default class extends BaseSeeder {
       },
       {
         programId: 7,
-        affairId: 72, //Suspensión especial
+        affairId: 36, //Suspensión especial
       },
       {
         programId: 7,
@@ -388,23 +388,23 @@ export default class extends BaseSeeder {
       },
       {
         programId: 8,
-        affairId: 93, //Cancelación temporal-Antes de matrícula
+        affairId: 37, //Cancelación temporal-Antes de matrícula
       },
       {
         programId: 8,
-        affairId: 94, //Cancelación temporal-Después de matrícula
+        affairId: 38, //Cancelación temporal-Después de matrícula
       },
       {
         programId: 8,
-        affairId: 95, //Cambio de programa
+        affairId: 39, //Cambio de programa
       },
       {
         programId: 8,
-        affairId: 96, //Proceso de renovación-Créditos aprobados
+        affairId: 40, //Proceso de renovación-Créditos aprobados
       },
       {
         programId: 8,
-        affairId: 97, //Proceso de renovación-Créditos matriculados
+        affairId: 41, //Proceso de renovación-Créditos matriculados
       },
       {
         programId: 8,
@@ -412,11 +412,11 @@ export default class extends BaseSeeder {
       },
       {
         programId: 8,
-        affairId: 99, //Renuncia a la beca
+        affairId: 42, //Renuncia a la beca
       },
       {
         programId: 8,
-        affairId: 100, //Renuncia al proceso
+        affairId: 43, //Renuncia al proceso
       },
 
        //Matricula Cero
@@ -430,19 +430,19 @@ export default class extends BaseSeeder {
       },
       {
         programId: 9,
-        affairId: 103, //Suspensión especial
-      },
-      {
-        programId: 8,
-        affairId: 104, //Cambio de programa
+        affairId: 36, //Suspensión especial
       },
       {
         programId: 9,
-        affairId: 105, //Proceso de renovación-Créditos aprobados
+        affairId: 39, //Cambio de programa
       },
       {
         programId: 9,
-        affairId: 106, //Proceso de renovación-Créditos matriculados
+        affairId: 40, //Proceso de renovación-Créditos aprobados
+      },
+      {
+        programId: 9,
+        affairId: 41, //Proceso de renovación-Créditos matriculados
       },
       {
         programId: 9,
@@ -450,11 +450,11 @@ export default class extends BaseSeeder {
       },
       {
         programId: 9,
-        affairId: 108, //Renuncia a la beca
+        affairId: 42, //Renuncia a la beca
       },
       {
         programId: 9,
-        affairId: 109, //Renuncia al proceso
+        affairId: 43, //Renuncia al proceso
       },
 
       //Talento Especializado
@@ -464,15 +464,15 @@ export default class extends BaseSeeder {
       },
       {
         programId: 10,
-        affairId: 111, //Inscripción de última convocatoria
+        affairId: 44, //Inscripción de última convocatoria
       },
       {
         programId: 10,
-        affairId: 112, //Matrícula última convocatoria
+        affairId: 45, //Matrícula última convocatoria
       },
       {
         programId: 10,
-        affairId: 113, //Renuncia como beneficiario
+        affairId: 46, //Renuncia como beneficiario
       },
 
     ]);
