@@ -49,7 +49,10 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
   private async formatWorkEntities(workEntities: WorkEntity[], user: IUser | null = null): Promise<IWorkEntity[]> {
     let workEntitiesFormatted: IWorkEntity[] = [];
     let ids = workEntities.map(workentity => workentity.userId);
-    const users = user ? [user] : (await this.AuthExternalService.getUsersByIds(ids)).data;
+    let users = user ? [user] : [];
+    if (!users.length) {
+      users = (await this.AuthExternalService.getUsersByIds(ids)).data;
+    }
     for await (const workEntity of workEntities) {
       let workEntityFormatted = await this.formatWorkEntity(workEntity, users.filter(user=> user.id == workEntity.userId)[0]);
       if (workEntityFormatted) {
