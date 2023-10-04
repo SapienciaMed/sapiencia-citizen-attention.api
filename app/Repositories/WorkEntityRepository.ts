@@ -7,6 +7,7 @@ import { IWorkEntityRepository } from "./Contracts/IWorkEntityRepository";
 import TetTipoEntidadTrabajo from "App/Models/TetTipoEntidadTrabajo";
 import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
 import PrgPrograma from "App/Models/PrgPrograma";
+import { IProgram } from "App/Interfaces/ProgramInterfaces";
 
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
@@ -35,9 +36,9 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     return res.map((workEntityType) => workEntityType.serialize() as IWorkEntityType);
   }
 
-  async getProgramsAffairs(): Promise<IWorkEntityType[]> {
+  async getProgramsAffairs(): Promise<IProgram[]> {
     const res = await PrgPrograma.query().preload("affairs");
-    return res.map((workEntityType) => workEntityType.serialize() as IWorkEntityType);
+    return res.map((program) => program.serialize() as IProgram);
   }
 
   async getWorkEntityByUserId(id: number): Promise<IWorkEntity | null> {

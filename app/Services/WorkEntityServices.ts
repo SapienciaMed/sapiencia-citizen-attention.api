@@ -5,6 +5,7 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { IWorkEntityFilters, IWorkEntity } from "App/Interfaces/WorkEntityInterfaces";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
+import { IProgram } from "App/Interfaces/ProgramInterfaces";
 
 export default class WorkEntityServices implements IWorkEntityServices {
   constructor(private WorkEntityRepository: IWorkEntityRepository) {}
@@ -37,6 +38,16 @@ export default class WorkEntityServices implements IWorkEntityServices {
 
     if (!res.length) {
       return new ApiResponse([] as IWorkEntityType[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getProgramsAffairs(): Promise<ApiResponse<IProgram[]>> {
+    const res = await this.WorkEntityRepository.getProgramsAffairs();
+
+    if (!res.length) {
+      return new ApiResponse([] as IProgram[], EResponseCodes.FAIL, "Registros no encontrados");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
