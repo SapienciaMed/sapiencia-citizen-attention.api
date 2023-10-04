@@ -6,6 +6,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { IWorkEntityRepository } from "./Contracts/IWorkEntityRepository";
 import TetTipoEntidadTrabajo from "App/Models/TetTipoEntidadTrabajo";
 import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
+import PrgPrograma from "App/Models/PrgPrograma";
 
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
@@ -31,6 +32,11 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getWorkEntityTypes(): Promise<IWorkEntityType[]> {
     const res = await TetTipoEntidadTrabajo.query().orderBy("tet_orden");
+    return res.map((workEntityType) => workEntityType.serialize() as IWorkEntityType);
+  }
+
+  async getProgramsAffairs(): Promise<IWorkEntityType[]> {
+    const res = await PrgPrograma.query().preload("affairs");
     return res.map((workEntityType) => workEntityType.serialize() as IWorkEntityType);
   }
 
