@@ -39,7 +39,7 @@ export default class AuthExternalService implements IAuthExternalService {
   }
 
   public async getUsersByIds(ids: number[]): Promise<ApiResponse<IUser[]>> {
-    const items = await this.apiAuth.post<ApiResponse<IUser[]>>(`user/get-by-ids/`,{ids}, {
+    const items = await this.apiAuth.post<ApiResponse<IUser[]>>(`user/get-by-ids/`,{ids: ids}, {
       headers: {
         permissions: Env.get("CURRENT_PERMISSIONS"),
         Authorization: Env.get("CURRENT_AUTHORIZATION"),

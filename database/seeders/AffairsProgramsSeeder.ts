@@ -49,171 +49,170 @@ export default class extends BaseSeeder {
       //Becas mejores Deportistas
       {
         programId: 2,
-        affairId: 11, //información general
+        affairId: 1, //información general
       },
       {
         programId: 2,
-        affairId: 12, //suspensiones temporales
+        affairId: 2, //suspensiones temporales
       },
       {
         programId: 2,
-        affairId: 13, //suspensiones especiales
+        affairId: 3, //suspensiones especiales
       },
       {
         programId: 2,
-        affairId: 14, //renuncias
+        affairId: 4, //renuncias
       },
       {
         programId: 2,
-        affairId: 15, //cambio de programa y univesidad
+        affairId: 5, //cambio de programa y univesidad
       },
       {
         programId: 2,
-        affairId: 16, //pago intersemestral
+        affairId: 6, //pago intersemestral
       },
       {
         programId: 2,
-        affairId: 17, //giro adicional 
+        affairId: 7, //giro adicional
       },
       {
         programId: 2,
-        affairId: 18, //renovación extemporanea
+        affairId: 8, //renovación extemporanea
       },
       {
         programId: 2,
-        affairId: 19, //Resolución de terminación
+        affairId: 9, //Resolución de terminación
       },
-
       //Enlaza mundos
       {
         programId: 3,
-        affairId: 20, //información general
+        affairId: 1, //información general
       },
       {
         programId: 3,
-        affairId: 21, //cambio de actividades de transferencia
+        affairId: 11, //cambio de actividades de transferencia
       },
       {
         programId: 3,
-        affairId: 22, //suspensiones especiales
+        affairId: 3, //suspensiones especiales
       },
       {
         programId: 3,
-        affairId: 23, //renuncias
+        affairId: 4, //renuncias
       },
       {
         programId: 3,
-        affairId: 24, //Certificado del fondo- dolares
+        affairId: 12, //certificado del fondo-dolares
       },
       {
         programId: 3,
-        affairId: 25, //Solicitud de condonación
+        affairId: 13, //solicitud de condonación
       },
       {
         programId: 3,
-        affairId: 26, //Certificado de declaración de renta
+        affairId: 14, //certificado de declaración de renta
       },
       {
         programId: 3,
-        affairId: 27, //prorroga al proceso de condonación
+        affairId: 15, //prorroga al proceso de condonación
       },
 
       //Formación Avanzada
       {
         programId: 4,
-        affairId: 28, //información general
+        affairId: 1, //información general
       },
       {
         programId: 4,
-        affairId: 29, //suspensiones temporales
+        affairId: 2, //suspensiones temporales
       },
       {
         programId: 4,
-        affairId: 30, //suspensiones especiales
+        affairId: 3, //suspensiones especiales
       },
       {
         programId: 4,
-        affairId: 31, //renuncias
+        affairId: 4, //renuncias
       },
       {
         programId: 4,
-        affairId: 32, //giro adicional 
+        affairId: 7, //giro adicional
       },
       {
         programId: 4,
-        affairId: 33, //renovación extemporanea
+        affairId: 16, //renovación extemporanea
       },
       {
         programId: 4,
-        affairId: 34, //Solicitud de condonación
+        affairId: 13, //solicitud de condonación
       },
       {
         programId: 4,
-        affairId: 35, //Certificado del fondo
+        affairId: 17, //certificado del fondo
       },
       {
         programId: 4,
-        affairId: 36, //cambio de propuesta de trabajo de grado
+        affairId: 18, //cambio de propuesta de trabajo de grado
       },
       {
         programId: 4,
-        affairId: 37, //prorroga al proceso de condonación
+        affairId: 15, //prorroga al proceso de condonación
       },
 
       //Extendiendo Fronteras Educativas
       {
         programId: 5,
-        affairId: 38, //información general
+        affairId: 5, //información general
       },
       {
         programId: 5,
-        affairId: 39, //suspensiones temporales
+        affairId: 2, //suspensiones temporales
       },
       {
         programId: 5,
-        affairId: 40, //suspensiones especiales
+        affairId: 3, //suspensiones especiales
       },
       {
         programId: 5,
-        affairId: 41, //rennuncias
+        affairId: 4, //renuncias
       },
       {
         programId: 5,
-        affairId: 42, //cambio de actividades de transferencia
+        affairId: 11, //cambio de actividades de transferencia
       },
       {
         programId: 5,
-        affairId: 43, //Certificado de declaración de renta
+        affairId: 14, //certificado de declaración de renta
       },
       {
         programId: 5,
-        affairId: 44, //renovación extemporanea
+        affairId: 8, //renovación extemporanea
       },
       {
         programId: 5,
-        affairId: 45, //Solicitud de condonación
+        affairId: 13, //solicitud de condonación
       },
       {
         programId: 5,
-        affairId: 46, //prorroga al proceso de condonación
+        affairId: 15, //prorroga al proceso de condonación
       },
 
       //EPM
       {
         programId: 6,
-        affairId: 47, //Información general del fondo
+        affairId: 19, //Información general del fondo
+      },
+      {
+        programId: 1,
+        affairId: 2, //suspensiones temporales
+      },
+      {
+        programId: 1,
+        affairId: 3, //suspensiones especiales
       },
       {
         programId: 6,
-        affairId: 48, //Suspensión temporal
-      },
-      {
-        programId: 6,
-        affairId: 49, //Suspensión especial
-      },
-      {
-        programId: 6,
-        affairId: 50, //Cambio de programa y/o universidad
+        affairId: 5, //Cambio de programa y/o universidad
       },
       {
         programId: 6,
@@ -295,11 +294,11 @@ export default class extends BaseSeeder {
       //PRESUPUESTO PARTICIPATIVO
       {
         programId: 7,
-        affairId: 70, //Información general del fondo
+        affairId: 19, //Información general del fondo
       },
       {
         programId: 7,
-        affairId: 71, //Suspensión temporal
+        affairId: 20, //Suspensión temporal
       },
       {
         programId: 7,
@@ -307,7 +306,7 @@ export default class extends BaseSeeder {
       },
       {
         programId: 7,
-        affairId: 73, //Cambio de programa y/o universidad
+        affairId: 5, //Cambio de programa y/o universidad
       },
       {
         programId: 7,
@@ -423,11 +422,11 @@ export default class extends BaseSeeder {
        //Matricula Cero
       {
         programId: 9,
-        affairId: 101, //Información general
+        affairId: 1, //Información general
       },
       {
         programId: 9,
-        affairId: 102, //Suspensión temporal
+        affairId: 20, //Suspensión temporal
       },
       {
         programId: 9,

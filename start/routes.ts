@@ -53,6 +53,7 @@ Route.group(() => {
   Route.group(() => {
     Route.post("/create", "WorkEntityController.createWorkEntity");
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
+    Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
     Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById");
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
     Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
