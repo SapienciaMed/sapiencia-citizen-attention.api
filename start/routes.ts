@@ -51,11 +51,11 @@ Route.group(() => {
 
   /* Work entities */
   Route.group(() => {
-    Route.post("/create", "WorkEntityController.createWorkEntity");
+    Route.post("/create", "WorkEntityController.createWorkEntity").middleware("auth:ENTIDADES_TRABAJO_CREAR");
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
     Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
-    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById");
-    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
+    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
+    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
     Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
   }).prefix("/work-entity");
 }).prefix("/api/v1/").middleware("auth");
