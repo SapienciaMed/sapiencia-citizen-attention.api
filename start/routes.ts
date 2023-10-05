@@ -56,7 +56,7 @@ Route.group(() => {
     Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
     Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
-    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
+    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
   }).prefix("/work-entity");
 }).prefix("/api/v1/").middleware("auth");
 
