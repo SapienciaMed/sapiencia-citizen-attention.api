@@ -84,10 +84,21 @@ export default class WorkEntityServices implements IWorkEntityServices {
   }
 
   public async updateWorkEntity(workEntity: IWorkEntity): Promise<ApiResponse<IWorkEntity | null>> {
-    const res = await this.WorkEntityRepository.updateWorkEntity(workEntity);
-    if (!res) {
-      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "No se puede actualizar la entidad de trabajo");
+    let response: ApiResponse<IWorkEntity | null> = new ApiResponse(null, EResponseCodes.OK, "Entidad de trabajo actualizada con éxito");
+    const existWorkEntity = await this.WorkEntityRepository.getWorkEntityById(workEntity?.id ?? 0);
+    if (existWorkEntity?.id) {
+      const existEntity = await this.WorkEntityRepository.getWorkEntityByUserId(workEntity.userId);
+      if (existEntity && existWorkEntity.userId!=workEntity.userId) {
+        response = new ApiResponse(
+          {} as IWorkEntity,
+          EResponseCodes.FAIL,
+          "El usuario con este número de documento ya está asociado a otra entidad"
+        );
+      }else if (!existEntity || existEntity.userId==workEntity.userId) {
+        const res = await this.WorkEntityRepository.updateWorkEntity(workEntity);
+        response.data = res
+      }
     }
-    return new ApiResponse(res, EResponseCodes.OK, "Entidad de trabajo actualizada con éxito");
+    return response;
   }
 }

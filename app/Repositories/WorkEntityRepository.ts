@@ -24,6 +24,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       await EntityAffairsProgram.createMany(
         workEntity.affairsPrograms.map((affairProgram) => {
           affairProgram.workEntityId = res.id;
+          delete affairProgram.id;
           return affairProgram;
         })
       );
@@ -168,6 +169,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       await EntityAffairsProgram.createMany(
         workEntity.affairsPrograms.map((affairProgram) => {
           affairProgram.workEntityId = res.id;
+          delete affairProgram.id;
           return affairProgram;
         })
       );
