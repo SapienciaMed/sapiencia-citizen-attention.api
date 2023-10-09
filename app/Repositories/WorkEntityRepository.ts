@@ -170,6 +170,8 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
         workEntity.affairsPrograms.map((affairProgram) => {
           affairProgram.workEntityId = res.id;
           delete affairProgram.id;
+          delete affairProgram.createdAt;
+          delete affairProgram.updatedAt;
           return affairProgram;
         })
       );
