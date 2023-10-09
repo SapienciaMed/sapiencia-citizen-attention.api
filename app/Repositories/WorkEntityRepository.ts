@@ -101,7 +101,10 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     return serializeWorkEntity;
   }
 
-  async getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>> {
+  async getUserByFilters(filters: IWorkEntityFilters): Promise<{
+    filterUser: boolean;
+    user: IUser|null;
+  }> {
     let userFilters: IUserFilters = {
       page: 1,
       perPage: 1,
@@ -111,13 +114,20 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       names: filters?.names,
     };
     let filterUser = false;
-    let user: any = null;
+    let user: IUser|null = null;
     if (userFilters?.email || userFilters?.lastNames || userFilters?.names || userFilters?.numberDocument) {
       filterUser = true;
       const existUser = await this.AuthExternalService.searchUser(userFilters);
       user = existUser.data.array[0];
     }
+    return {
+      filterUser,
+      user,
+    };
+  }
 
+  async getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>> {
+    let { filterUser, user } = await this.getUserByFilters(filters);
     if (filterUser && !user) {
       return {
         array: [],
@@ -161,10 +171,15 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     res.name = workEntity.name;
     res.userId = workEntity.userId;
     await res.save();
-    await res.load("affairsPrograms")
-    await EntityAffairsProgram.query().whereIn("id",res.affairsPrograms.map((affairProgram)=>{
-      return affairProgram.id;
-    })).delete();
+    await res.load("affairsPrograms");
+    await EntityAffairsProgram.query()
+      .whereIn(
+        "id",
+        res.affairsPrograms.map((affairProgram) => {
+          return affairProgram.id;
+        })
+      )
+      .delete();
     if (workEntity?.affairsPrograms) {
       await EntityAffairsProgram.createMany(
         workEntity.affairsPrograms.map((affairProgram) => {

@@ -6,6 +6,7 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IWorkEntityServices {
   getUserByDocument(identification: string): Promise<ApiResponse<IUser | null>>;
+  getUserByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IUser | null>>;
   getWorkEntityTypes(): Promise<ApiResponse<IWorkEntityType[]>>;
   getProgramsAffairs(): Promise<ApiResponse<IProgram[]>>
   getWorkEntityById(id: number): Promise<ApiResponse<IWorkEntity | null>>;

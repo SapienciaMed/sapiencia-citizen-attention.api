@@ -32,6 +32,15 @@ export default class WorkEntityController {
     }
   }
 
+  public async getUserByFilters({ request, response }: HttpContextContract) {
+    try {
+      const filters  = request.body() as IWorkEntityFilters;
+      return response.send(await WorkEntityProvider.getUserByFilters(filters));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async getWorkEntityTypes({ response }: HttpContextContract) {
     try {
       return response.send(await WorkEntityProvider.getWorkEntityTypes());

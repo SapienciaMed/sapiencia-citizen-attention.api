@@ -6,10 +6,14 @@ import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IWorkEntityRepository {
   getUserByDocument(identification: string): Promise<IUser | null>;
+  getUserByFilters(filters: IWorkEntityFilters): Promise<{
+    filterUser: boolean;
+    user: IUser | null;
+  }>;
   getWorkEntityById(id: number): Promise<IWorkEntity | null>;
   getWorkEntityTypes(): Promise<IWorkEntityType[]>;
   getWorkEntityByUserId(id: number): Promise<IWorkEntity | null>;
-  getProgramsAffairs(): Promise<IProgram[]>
+  getProgramsAffairs(): Promise<IProgram[]>;
   getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>>;
   createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
   updateWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
