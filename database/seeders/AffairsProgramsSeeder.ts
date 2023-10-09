@@ -203,11 +203,11 @@ export default class extends BaseSeeder {
         affairId: 19, //Información general del fondo
       },
       {
-        programId: 1,
+        programId: 6,
         affairId: 2, //suspensiones temporales
       },
       {
-        programId: 1,
+        programId: 6,
         affairId: 3, //suspensiones especiales
       },
       {

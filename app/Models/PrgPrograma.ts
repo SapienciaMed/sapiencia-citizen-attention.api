@@ -39,7 +39,10 @@ export default class PrgPrograma extends BaseModel {
     relatedKey: 'aso_codigo',
     pivotForeignKey: 'PRA_CODPRG_PROGRAMA',
     serializeAs:'affairs',
-    pivotRelatedForeignKey: 'PRA_CODASO_ASUNTO_SOLICITUD'
+    pivotRelatedForeignKey: 'PRA_CODASO_ASUNTO_SOLICITUD',
+    pivotColumns:[
+      'PRA_CODIGO'
+    ]
   })
   public affairs: ManyToMany<typeof AsoAsuntoSolicitud>;
 

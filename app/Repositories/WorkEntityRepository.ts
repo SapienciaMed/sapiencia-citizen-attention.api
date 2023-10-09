@@ -8,6 +8,7 @@ import TetTipoEntidadTrabajo from "App/Models/TetTipoEntidadTrabajo";
 import { IWorkEntityType } from "App/Interfaces/WorkEntityTypeInterface";
 import PrgPrograma from "App/Models/PrgPrograma";
 import { IProgram } from "App/Interfaces/ProgramInterfaces";
+import EntityAffairsProgram from "App/Models/EntityAffairsProgram";
 
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
@@ -19,6 +20,12 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       userId: workEntity?.userId,
       order: last?.id ?? 0
     });
+    if (workEntity?.affairsPrograms) {
+      await EntityAffairsProgram.createMany(workEntity.affairsPrograms.map((affairProgram)=>{
+        affairProgram.workEntityId = res.id
+        return affairProgram;
+      }))
+    }
     return await this.formatWorkEntity(res);
   }
 
@@ -38,7 +45,15 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getProgramsAffairs(): Promise<IProgram[]> {
     const res = await PrgPrograma.query().preload("affairs");
-    return res.map((program) => program.serialize() as IProgram);
+    return res.map((program) => {
+      let serializeProgram:IProgram = program.serialize();
+      program.affairs.forEach((affairProgram,index) => {
+        if (serializeProgram?.affairs && serializeProgram.affairs[index]) {
+          serializeProgram.affairs[index].affairProgramId = affairProgram?.$extras?.pivot_PRA_CODIGO
+        }
+      });
+      return serializeProgram
+    });
   }
 
   async getWorkEntityByUserId(id: number): Promise<IWorkEntity | null> {
@@ -69,6 +84,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     let serializeWorkEntity: any;
     if (workEntity) {
       await workEntity.load("workEntityType");
+      await workEntity.load("affairsPrograms");
       if (!user) {
         user = (await this.AuthExternalService.getUserById(workEntity.userId)).data;
       }
