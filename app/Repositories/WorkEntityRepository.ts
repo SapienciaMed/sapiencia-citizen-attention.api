@@ -13,18 +13,20 @@ import EntityAffairsProgram from "App/Models/EntityAffairsProgram";
 export default class WorkEntityRepository implements IWorkEntityRepository {
   constructor(private AuthExternalService: IAuthExternalService) {}
   async createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null> {
-    const last = await WorkEntity.query().orderBy('id', 'desc').first()
+    const last = await WorkEntity.query().orderBy("id", "desc").first();
     const res = await WorkEntity.create({
       name: workEntity?.name,
       workEntityTypeId: workEntity?.workEntityTypeId,
       userId: workEntity?.userId,
-      order: last?.id ?? 0
+      order: last?.id ?? 0,
     });
     if (workEntity?.affairsPrograms) {
-      await EntityAffairsProgram.createMany(workEntity.affairsPrograms.map((affairProgram)=>{
-        affairProgram.workEntityId = res.id
-        return affairProgram;
-      }))
+      await EntityAffairsProgram.createMany(
+        workEntity.affairsPrograms.map((affairProgram) => {
+          affairProgram.workEntityId = res.id;
+          return affairProgram;
+        })
+      );
     }
     return await this.formatWorkEntity(res);
   }
@@ -46,13 +48,13 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
   async getProgramsAffairs(): Promise<IProgram[]> {
     const res = await PrgPrograma.query().preload("affairs");
     return res.map((program) => {
-      let serializeProgram:IProgram = program.serialize();
-      program.affairs.forEach((affairProgram,index) => {
+      let serializeProgram: IProgram = program.serialize();
+      program.affairs.forEach((affairProgram, index) => {
         if (serializeProgram?.affairs && serializeProgram.affairs[index]) {
-          serializeProgram.affairs[index].affairProgramId = affairProgram?.$extras?.pivot_PRA_CODIGO
+          serializeProgram.affairs[index].affairProgramId = affairProgram?.$extras?.pivot_PRA_CODIGO;
         }
       });
-      return serializeProgram
+      return serializeProgram;
     });
   }
 
@@ -63,13 +65,16 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   private async formatWorkEntities(workEntities: WorkEntity[], user: IUser | null = null): Promise<IWorkEntity[]> {
     let workEntitiesFormatted: IWorkEntity[] = [];
-    let ids = workEntities.map(workentity => workentity.userId);
+    let ids = workEntities.map((workentity) => workentity.userId);
     let users = user ? [user] : [];
     if (!users.length) {
       users = (await this.AuthExternalService.getUsersByIds(ids)).data;
     }
     for await (const workEntity of workEntities) {
-      let workEntityFormatted = await this.formatWorkEntity(workEntity, users.filter(user=> user.id == workEntity.userId)[0]);
+      let workEntityFormatted = await this.formatWorkEntity(
+        workEntity,
+        users.filter((user) => user.id == workEntity.userId)[0]
+      );
       if (workEntityFormatted) {
         workEntitiesFormatted.push(workEntityFormatted);
       }
@@ -151,6 +156,22 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
   }
 
   async updateWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null> {
-    return workEntity;
+    const res = await WorkEntity.findOrFail(workEntity?.id);
+    res.name = workEntity.name;
+    res.userId = workEntity.userId;
+    await res.save();
+    await res.load("affairsPrograms")
+    await EntityAffairsProgram.query().whereIn("id",res.affairsPrograms.map((affairProgram)=>{
+      return affairProgram.id;
+    })).delete();
+    if (workEntity?.affairsPrograms) {
+      await EntityAffairsProgram.createMany(
+        workEntity.affairsPrograms.map((affairProgram) => {
+          affairProgram.workEntityId = res.id;
+          return affairProgram;
+        })
+      );
+    }
+    return await this.formatWorkEntity(res);
   }
 }
