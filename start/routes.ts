@@ -52,7 +52,7 @@ Route.group(() => {
   /* Work entities */
   Route.group(() => {
     Route.post("/create", "WorkEntityController.createWorkEntity").middleware("auth:ENTIDADES_TRABAJO_CREAR");
-    Route.post("/create", "WorkEntityController.updateWorkEntity").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
+    Route.post("/update", "WorkEntityController.updateWorkEntity").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
     Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
     Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
