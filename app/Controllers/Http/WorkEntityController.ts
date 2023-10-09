@@ -56,4 +56,13 @@ export default class WorkEntityController {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
+
+  public async updateWorkEntity({ request, response }: HttpContextContract) {
+    try {
+      const { workEntity }  = request.body();
+      return response.send(await WorkEntityProvider.updateWorkEntity(workEntity));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
 }
