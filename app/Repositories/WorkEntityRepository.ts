@@ -132,6 +132,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>> {
     let { filterUser, user } = await this.getUserByFilters(filters);
+    user = user as (IUser|null)
     if (filterUser && !user) {
       return {
         array: [],
