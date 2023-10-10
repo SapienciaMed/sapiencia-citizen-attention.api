@@ -65,10 +65,10 @@ export default class WorkEntityServices implements IWorkEntityServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async getUserByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IUser | null>> {
-    const res = await this.WorkEntityRepository.getUserByFilters(filters);
-    if (!res.user) {
-      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Registro no encontrado");
+  public async getUserByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IUser | (IUser | null)[] | null>> {
+    const res = await this.WorkEntityRepository.getUserByFilters(filters, true);
+    if (!res.user || (Array.isArray(res.user) && !res.user?.length)) {
+      return new ApiResponse(null, EResponseCodes.FAIL, "Registro no encontrado");
     }
 
     return new ApiResponse(res.user, EResponseCodes.OK);

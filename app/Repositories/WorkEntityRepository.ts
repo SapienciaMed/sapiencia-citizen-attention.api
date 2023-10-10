@@ -101,9 +101,9 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     return serializeWorkEntity;
   }
 
-  async getUserByFilters(filters: IWorkEntityFilters): Promise<{
+  async getUserByFilters(filters: IWorkEntityFilters, all: boolean=false): Promise<{
     filterUser: boolean;
-    user: IUser|null;
+    user: IUser|(IUser | null)[]|null;
   }> {
     let userFilters: IUserFilters = {
       page: 1,
@@ -114,11 +114,15 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       names: filters?.names,
     };
     let filterUser = false;
-    let user: IUser|null = null;
+    let user: IUser|(IUser | null)[]|null = null;
     if (userFilters?.email || userFilters?.lastNames || userFilters?.names || userFilters?.numberDocument) {
       filterUser = true;
       const existUser = await this.AuthExternalService.searchUser(userFilters);
-      user = existUser.data.array[0];
+      if (all) {
+        user = existUser.data.array;
+      }else{
+        user = existUser.data.array[0];
+      }
     }
     return {
       filterUser,

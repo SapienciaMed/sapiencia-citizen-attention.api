@@ -6,9 +6,12 @@ import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IWorkEntityRepository {
   getUserByDocument(identification: string): Promise<IUser | null>;
-  getUserByFilters(filters: IWorkEntityFilters): Promise<{
+  getUserByFilters(
+    filters: IWorkEntityFilters,
+    all: boolean
+  ): Promise<{
     filterUser: boolean;
-    user: IUser | null;
+    user: IUser | (IUser | null)[] | null;
   }>;
   getWorkEntityById(id: number): Promise<IWorkEntity | null>;
   getWorkEntityTypes(): Promise<IWorkEntityType[]>;
