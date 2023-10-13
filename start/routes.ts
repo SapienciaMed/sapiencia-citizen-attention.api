@@ -47,6 +47,7 @@ Route.group(() => {
   /* TABLAS MAESTRAS */
   Route.group(()=>{
     Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
+    Route.get("/document-types", "MasterTablesUtilitiesController.getDocumentTypes");
   }).prefix("/utility");
 
   /* Work entities */

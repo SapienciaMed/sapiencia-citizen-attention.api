@@ -11,6 +11,14 @@ export default class MasterTablesUtilitiesController {
       } catch (err) {
         return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
       }
-  }
+  };
+
+  public async getDocumentTypes({ response }: HttpContextContract) {
+    try {
+      response.send( await MasterTablesUtilityProvider.getTypeDocument())
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+};
 
 }
