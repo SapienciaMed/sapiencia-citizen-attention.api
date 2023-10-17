@@ -43,6 +43,7 @@ Route.group(() => {
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
     Route.get("/get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
+    Route.post("/update-person", "PqrsdfsController.updatePerson");
   }).prefix("/pqrsdf");
 
   /* TABLAS MAESTRAS */

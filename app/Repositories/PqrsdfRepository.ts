@@ -15,8 +15,11 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
         const existPerson = await Person.query().where("identification", pqrsdf.person.identification).first();
+        if (existPerson) {
+          await this.updatePerson(pqrsdf?.person);
+        }
         const newPerson = existPerson
-          ? existPerson.useTransaction(trx)
+          ? await existPerson.useTransaction(trx).refresh()
           : (await Person.create(pqrsdf.person)).useTransaction(trx);
 
         //TODO UPLOAD
