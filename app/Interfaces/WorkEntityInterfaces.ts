@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { IWorkEntityType } from "./WorkEntityTypeInterface";
 import { IUser } from "./UserInterfaces";
-import { IPqrsdf } from "./PqrsdfInterfaces";
+// import { IPqrsdf } from "./PqrsdfInterfaces";
 
 export interface IWorkEntity {
   id?: number;
