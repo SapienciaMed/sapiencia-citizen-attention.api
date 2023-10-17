@@ -7,6 +7,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import Person from "App/Models/Person";
 import File from "App/Models/File";
 import { IPerson } from "App/Interfaces/PersonInterfaces";
+import WorkEntity from "App/Models/WorkEntity";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -29,6 +30,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
+        pqrsdf.responsibleId = (await this.getResponsible(pqrsdf.requestSubjectId))?.id ?? 1;
         const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
         pqrsdf.filingNumber = lastFilingNumber?.filingNumber
           ? lastFilingNumber.filingNumber
@@ -40,6 +42,28 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       }
     });
     return res?.id ? res : null;
+  }
+
+  async getResponsible(affair: number): Promise<WorkEntity | null> {
+    const responsibles = await WorkEntity.query()
+      .whereHas("affairsPrograms", (query) => {
+        query.whereHas("affairsProgram", (q) => {
+          q.where("PRA_CODASO_ASUNTO_SOLICITUD", affair);
+        });
+      })
+      .preload("pqrsdfs");
+    let max = 0;
+    let finalResponsible: any;
+    responsibles.forEach((responsible) => {
+      if (!finalResponsible?.id) {
+        finalResponsible = responsible;
+        max = responsible.pqrsdfs.length;
+      }
+      if (responsible.pqrsdfs.length <= max) {
+        finalResponsible = responsible;
+      }
+    });
+    return finalResponsible;
   }
 
   async getPqrsdfById(id: number): Promise<IPqrsdf | null> {

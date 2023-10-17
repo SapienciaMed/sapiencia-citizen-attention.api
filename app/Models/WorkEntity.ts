@@ -2,6 +2,7 @@ import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from "@ioc:
 import { DateTime } from "luxon";
 import EntityAffairsProgram from "./EntityAffairsProgram";
 import TetTipoEntidadTrabajo from "./TetTipoEntidadTrabajo";
+import Pqrsdf from "./Pqrsdf";
 
 export default class WorkEntity extends BaseModel {
   public static table = "ENT_ENTIDAD_TRABAJO";
@@ -35,6 +36,12 @@ export default class WorkEntity extends BaseModel {
     foreignKey: "workEntityId",
   })
   public affairsPrograms: HasMany<typeof EntityAffairsProgram>;
+
+  @hasMany(() => Pqrsdf, {
+    localKey: "id",
+    foreignKey: "responsibleId",
+  })
+  public pqrsdfs: HasMany<typeof Pqrsdf>;
 
   @column.dateTime({
     autoCreate: true,
