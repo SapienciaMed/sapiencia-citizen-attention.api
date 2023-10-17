@@ -35,6 +35,15 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  public async updatePerson(person: IPerson): Promise<ApiResponse<IPerson | null>> {
+    const res = await this.PqrsdfRepository.updatePerson(person);
+    if (!res) {
+      return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
   public async getPqrsdfByIdentificationAndFilingNumber(
     identification: number,
     filingNumber: number

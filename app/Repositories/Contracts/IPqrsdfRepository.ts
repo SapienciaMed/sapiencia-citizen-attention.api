@@ -6,6 +6,7 @@ export interface IPqrsdfRepository {
   getPqrsdfByIdentificationAndFilingNumber(identification: number, filingNumber: number): Promise<IPqrsdf | null>;
   getPqrsdfs(): Promise<IPqrsdf[] | []>;
   getPersonByDocument(identification: number): Promise<IPerson | null>;
+  updatePerson(person: IPerson): Promise<IPerson | null>;
   createPqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;
   updatePqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;
 }

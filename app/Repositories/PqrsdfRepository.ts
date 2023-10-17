@@ -113,6 +113,15 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return person?.id ? await this.formatPerson(person) : null;
   }
 
+  async updatePerson(personData: IPerson): Promise<IPerson | null> {
+    const person = await Person.query().where("identification", personData.identification).firstOrFail();
+    if (person) {
+      await person.merge(personData).save();
+    }
+
+    return person?.id ? await this.formatPerson(person) : null;
+  }
+
   async getPqrsdfByIdentificationAndFilingNumber(
     identification: number,
     filingNumber: number
