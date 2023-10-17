@@ -42,10 +42,11 @@ Route.group(() => {
     Route.post("/create", "PqrsdfsController.createPqrsdf");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
+    Route.get("/get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
   }).prefix("/pqrsdf");
 
   /* TABLAS MAESTRAS */
-  Route.group(()=>{
+  Route.group(() => {
     Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
   }).prefix("/utility");
 
@@ -56,12 +57,19 @@ Route.group(() => {
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
     Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
     Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
-    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
-    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
-    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
+    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
+    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
+    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
   }).prefix("/work-entity");
-}).prefix("/api/v1/").middleware("auth");
-
+})
+  .prefix("/api/v1/")
+  .middleware("auth");
 
 /**************************
  ******TABLAS MAESTRAS******
