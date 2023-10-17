@@ -6,6 +6,8 @@ import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import Database from "@ioc:Adonis/Lucid/Database";
 import Person from "App/Models/Person";
 import File from "App/Models/File";
+import { IPerson } from "App/Interfaces/PersonInterfaces";
+import WorkEntity from "App/Models/WorkEntity";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -14,8 +16,11 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
         const existPerson = await Person.query().where("identification", pqrsdf.person.identification).first();
+        if (existPerson) {
+          await this.updatePerson(pqrsdf?.person);
+        }
         const newPerson = existPerson
-          ? existPerson.useTransaction(trx)
+          ? await existPerson.useTransaction(trx).refresh()
           : (await Person.create(pqrsdf.person)).useTransaction(trx);
 
         //TODO UPLOAD
@@ -25,6 +30,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
+        pqrsdf.responsibleId = (await this.getResponsible(pqrsdf.requestSubjectId))?.id ?? 1;
         const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
         pqrsdf.filingNumber = lastFilingNumber?.filingNumber
           ? lastFilingNumber.filingNumber
@@ -38,6 +44,28 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return res?.id ? res : null;
   }
 
+  async getResponsible(affair: number): Promise<WorkEntity | null> {
+    const responsibles = await WorkEntity.query()
+      .whereHas("affairsPrograms", (query) => {
+        query.whereHas("affairsProgram", (q) => {
+          q.where("PRA_CODASO_ASUNTO_SOLICITUD", affair);
+        });
+      })
+      .preload("pqrsdfs");
+    let max = 0;
+    let finalResponsible: any;
+    responsibles.forEach((responsible) => {
+      if (!finalResponsible?.id) {
+        finalResponsible = responsible;
+        max = responsible.pqrsdfs.length;
+      }
+      if (responsible.pqrsdfs.length <= max) {
+        finalResponsible = responsible;
+      }
+    });
+    return finalResponsible;
+  }
+
   async getPqrsdfById(id: number): Promise<IPqrsdf | null> {
     const pqrsdf = await Pqrsdf.find(id);
     let serializePqrsdf: IPqrsdf | null = await this.formatPqrsdf(pqrsdf);
@@ -45,8 +73,34 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return serializePqrsdf?.id ? serializePqrsdf : null;
   }
 
+  private async formatPerson(person: Person | null): Promise<IPerson | null> {
+    let serializePerson: any = null;
+    if (person) {
+      await person.load("entityType");
+
+      serializePerson = person.serialize() as IPerson;
+
+      const municipalities = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.MUNICIPALITIES);
+      const documentTypes = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DOCUMENT_TYPES);
+      const departments = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DEPARTMENTS);
+      const countries = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.COUNTRIES);
+
+      serializePerson.documentType = documentTypes.data.find(
+        (documentType) => documentType.id == serializePerson?.documentTypeId
+      );
+      serializePerson.department = departments.data.find(
+        (department) => department.id == serializePerson?.departmentId
+      );
+      serializePerson.municipality = municipalities.data.find(
+        (municipality) => municipality.id == serializePerson?.municipalityId
+      );
+      serializePerson.country = countries.data.find((country) => country.id == serializePerson?.countryId);
+    }
+    return serializePerson;
+  }
+
   private async formatPqrsdf(pqrsdf: Pqrsdf | null): Promise<IPqrsdf | null> {
-    let serializePqrsdf: any;
+    let serializePqrsdf: any = null;
     if (pqrsdf) {
       await pqrsdf.load("person", (person) => {
         person.preload("entityType");
@@ -78,6 +132,21 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       }
     }
     return serializePqrsdf;
+  }
+
+  async getPersonByDocument(identification: number): Promise<IPerson | null> {
+    const person = await Person.query().where("identification", identification).firstOrFail();
+
+    return person?.id ? await this.formatPerson(person) : null;
+  }
+
+  async updatePerson(personData: IPerson): Promise<IPerson | null> {
+    const person = await Person.query().where("identification", personData.identification).firstOrFail();
+    if (person) {
+      await person.merge(personData).save();
+    }
+
+    return person?.id ? await this.formatPerson(person) : null;
   }
 
   async getPqrsdfByIdentificationAndFilingNumber(
