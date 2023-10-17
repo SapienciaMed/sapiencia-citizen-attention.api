@@ -13,6 +13,15 @@ export default class PqrsdfsController {
     }
   }
 
+  public async getPersonByDocument({ request, response }: HttpContextContract) {
+    try {
+      const { identification } = request.params();
+      return response.send(await PqrsdfProvider.getPersonByDocument(identification));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async getPqrsdfByIdentificationAndFilingNumber({ request, response }: HttpContextContract) {
     try {
       const { identification, filingNumber } = request.all();
@@ -22,7 +31,7 @@ export default class PqrsdfsController {
     }
   }
 
-  public async createPqrsdf({ request, response }: HttpContextContract) {    
+  public async createPqrsdf({ request, response }: HttpContextContract) {
     try {
       const { pqrsdf }  = request.body();
       return response.send(await PqrsdfProvider.createPqrsdf(pqrsdf));

@@ -3,6 +3,7 @@ import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPerson } from "App/Interfaces/PersonInterfaces";
 
 export default class PqrsdfServices implements IPqrsdfServices {
   constructor(private PqrsdfRepository: IPqrsdfRepository) {}
@@ -20,6 +21,15 @@ export default class PqrsdfServices implements IPqrsdfServices {
 
     if (!res) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getPersonByDocument(identification: number): Promise<ApiResponse<IPerson | null>> {
+    const res = await this.PqrsdfRepository.getPersonByDocument(identification);
+    if (!res) {
+      return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Registro no encontrado");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
