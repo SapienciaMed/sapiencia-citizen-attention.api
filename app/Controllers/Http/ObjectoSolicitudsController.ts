@@ -6,11 +6,11 @@ import { ApiResponse } from 'App/Utils/ApiResponses';
 export default class ObjectoSolicitudsController {
 
     public async getObjectoSolicitud({ response }: HttpContextContract ) {
-        
+
         try {
             const paises = await Database.from('OBS_OBJECTO_SOLICITUD')
-                                       .select('OBS_CODIGO','OBS_DESCRIPCION','OBS_TERMINO_DIAS_HABILES')
-            return response.send({ 
+                                       .select('OBS_CODIGO','OBS_DESCRIPCION','OBS_TERMINO_DIAS')
+            return response.send({
                 data: paises,
                 status: true
             });

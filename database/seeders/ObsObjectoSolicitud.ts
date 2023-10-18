@@ -9,25 +9,25 @@ export default class extends BaseSeeder {
 
       {
         obs_description:'Información General o Particular',
-        obs_termino_dias_habiles: 15,
+        obs_termino_dias: 15,
         obs_orden: 1
       },
 
       {
         obs_description:'Petición de documentos (Copias)',
-        obs_termino_dias_habiles: 10,
+        obs_termino_dias: 10,
         obs_orden: 2
       },
 
       {
         obs_description:'Consultas Especializadas (Conceptos)',
-        obs_termino_dias_habiles: 30,
+        obs_termino_dias: 30,
         obs_orden: 3
       },
 
       {
         obs_description:'Quejas',
-        obs_termino_dias_habiles: 15,
+        obs_termino_dias: 15,
         obs_orden: 4
       }
 
