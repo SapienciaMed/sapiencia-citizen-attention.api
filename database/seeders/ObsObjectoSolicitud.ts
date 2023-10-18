@@ -44,7 +44,7 @@ export default class extends BaseSeeder {
         obs_termino_dias: 60,
         obs_orden: 7,
         obs_tipo_dias: "Calendario"
-      },
+      }
     ]);
   }
 }
