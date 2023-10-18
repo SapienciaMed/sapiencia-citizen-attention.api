@@ -6,8 +6,9 @@ import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import Database from "@ioc:Adonis/Lucid/Database";
 import Person from "App/Models/Person";
 import File from "App/Models/File";
-import { IPerson } from "App/Interfaces/PersonInterfaces";
+import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import WorkEntity from "App/Models/WorkEntity";
+import { IPagingData } from "App/Utils/ApiResponses";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -42,6 +43,58 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       }
     });
     return res?.id ? res : null;
+  }
+
+  async getPeopleByFilters(filters: IPersonFilters): Promise<IPagingData<IPerson | null>> {
+    const query = Person.query();
+    let isFiltered: boolean = false;
+    if (filters?.documentTypeId) {
+      query.where("documentTypeId", filters?.documentTypeId);
+      isFiltered = true;
+    }
+    if (filters?.name) {
+      query.whereRaw(`CONCAT(PER_PRIMER_NOMBRE, " ", PER_SEGUNDO_NOMBRE) like "%${filters.name}%"`);
+      isFiltered = true;
+    }
+    if (filters?.surname) {
+      query.whereRaw(`CONCAT(PER_PRIMER_APELLIDO, " ", PER_SEGUNDO_APELLIDO) like "%${filters.surname}%"`);
+      isFiltered = true;
+    }
+    if (filters?.identification) {
+      query.where("identification", filters.identification);
+      isFiltered = true;
+    }
+    if (filters?.email) {
+      query.whereILike("email", `%${filters.email}`);
+      isFiltered = true;
+    }
+    if (filters?.contactNumber) {
+      query.where("firstContactNumber", filters.contactNumber).orWhere("secondContactNumber", filters.contactNumber);
+      isFiltered = true;
+    }
+
+    if (!isFiltered) {
+      return {
+        array: [],
+        meta: {
+          total: 0,
+        },
+      };
+    }
+    const peoplePagination = await query.orderBy("id", "desc").paginate(filters?.page ?? 1, filters?.perPage ?? 10);
+    const { meta } = peoplePagination.serialize();
+    let serializePeople: IPerson[] = [];
+
+    for await (const person of peoplePagination.all()) {
+      let serializePerson = await this.formatPerson(person);
+      if (serializePerson) {
+        serializePeople.push(serializePerson);
+      }
+    }
+    return {
+      array: serializePeople,
+      meta,
+    };
   }
 
   async getResponsible(affair: number): Promise<WorkEntity | null> {

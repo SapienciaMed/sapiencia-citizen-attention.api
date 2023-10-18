@@ -1,9 +1,9 @@
-import { ApiResponse } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
-import { IPerson } from "App/Interfaces/PersonInterfaces";
+import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 
 export default class PqrsdfServices implements IPqrsdfServices {
   constructor(private PqrsdfRepository: IPqrsdfRepository) {}
@@ -30,6 +30,16 @@ export default class PqrsdfServices implements IPqrsdfServices {
     const res = await this.PqrsdfRepository.getPersonByDocument(identification);
     if (!res) {
       return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPagingData<IPerson | null>>> {
+    const res = await this.PqrsdfRepository.getPeopleByFilters(filters);
+
+    if (!res.array.length) {
+      return new ApiResponse(res, EResponseCodes.FAIL, "Registros no encontrados");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);

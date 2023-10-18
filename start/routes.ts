@@ -41,6 +41,7 @@ Route.group(() => {
     // Route.get("/get-all", "PqrsdfsController.getPrsdfs");
     Route.post("/create", "PqrsdfsController.createPqrsdf");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
+    Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
     Route.get("/get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
     Route.post("/update-person", "PqrsdfsController.updatePerson");
