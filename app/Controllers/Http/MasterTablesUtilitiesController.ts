@@ -19,6 +19,14 @@ export default class MasterTablesUtilitiesController {
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
-};
+  };
+
+  public async getTensionChannels({ response }: HttpContextContract) {
+    try {
+      response.send( await MasterTablesUtilityProvider.getTensionChannels())
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  };
 
 }

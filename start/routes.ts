@@ -76,6 +76,7 @@ Route.group(() => {
 Route.group(()=>{
   Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
   Route.get("/document-types", "MasterTablesUtilitiesController.getDocumentTypes");
+  Route.get("/channel-attention", "MasterTablesUtilitiesController.getTensionChannels");
 }).prefix("/api/v1/utility");
 
 

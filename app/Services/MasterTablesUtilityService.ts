@@ -27,4 +27,14 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
         return new ApiResponse(resp, EResponseCodes.OK);
     }
 
+    public async getTensionChannels(): Promise<ApiResponse<ItypeRequest[] | []>> {
+
+        const resp = await this.MasterTablesUtilityRepository.getAttentionChannels();
+        
+        if(!resp){
+            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+        }
+        return new ApiResponse(resp, EResponseCodes.OK);
+    }
+
 }
