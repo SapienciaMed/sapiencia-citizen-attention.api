@@ -47,13 +47,6 @@ Route.group(() => {
     Route.post("/update-person", "PqrsdfsController.updatePerson");
   }).prefix("/pqrsdf");
 
-<<<<<<< HEAD
-=======
-  /* TABLAS MAESTRAS */
-  Route.group(() => {
-    Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
-  }).prefix("/utility");
->>>>>>> eb05afaacecd5246e36793f53e80fadd10560117
 
   /* Work entities */
   Route.group(() => {
