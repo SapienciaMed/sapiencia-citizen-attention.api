@@ -29,4 +29,14 @@ export default class MasterTablesUtilitiesController {
     }
   };
 
+  public async getAttentionChannelsDetails({ request , response }: HttpContextContract) {
+    const { id } = request.params()
+    
+    try {
+      response.send( await MasterTablesUtilityProvider.getAttentionChannelsDetails(id))
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  };
+
 }

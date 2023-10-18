@@ -1,6 +1,7 @@
 import { IMasterTablesUtilityRepository } from "./Contracts/IMasterTablesUtilityRepository";
 import TsoTipoSolicitud from "App/Models/TsoTipoSolicitud";
 import CnaCanalesAtencion from "App/Models/CnaCanalesAtencion";
+import CadCanalesAtencionDetalle from "App/Models/CadCanalesAtencionDetalle";
 import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces";
 import Database from "@ioc:Adonis/Lucid/Database";
 
@@ -33,9 +34,18 @@ export default class MasterTablesUtilityRepository implements IMasterTablesUtili
         const tensionChannels = await CnaCanalesAtencion.query().select('cna_codigo','cna_canal')
         resp = tensionChannels
 
-        return resp ? resp : null;
+        return resp ? resp : null;  
+    };
 
-         
-    }
+    async getAttentionChannelsDetails(id:number): Promise<ItypeRequest[] | []> {
+        let resp: any;
+
+        const tensionChannels = await CadCanalesAtencionDetalle.query()
+                                        .where("cad_id_canal", "=" , id)
+                                        .select("cad_codigo","cad_nombre")
+        resp = tensionChannels
+
+        return resp ? resp : null;  
+    };
 
 }

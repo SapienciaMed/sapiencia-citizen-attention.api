@@ -4,4 +4,5 @@ export interface IMasterTablesUtilityRepository{
     getTypeRequest(): Promise< ItypeRequest[] | [] >;
     getTypeDocuemnt(): Promise< ItypeRequest[] | [] >;
     getAttentionChannels(): Promise< ItypeRequest[] | [] >;
+    getAttentionChannelsDetails(id:number): Promise< ItypeRequest[] | [] >;
 }

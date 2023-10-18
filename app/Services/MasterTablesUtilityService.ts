@@ -37,4 +37,13 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
         return new ApiResponse(resp, EResponseCodes.OK);
     }
 
+    public async getAttentionChannelsDetails(id: number): Promise<ApiResponse<ItypeRequest[] | []>> {
+        const resp = await this.MasterTablesUtilityRepository.getAttentionChannelsDetails(id);
+        
+        if(!resp){
+            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+        }
+        return new ApiResponse(resp, EResponseCodes.OK);
+    }
+
 }
