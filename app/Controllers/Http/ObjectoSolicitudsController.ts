@@ -9,7 +9,7 @@ export default class ObjectoSolicitudsController {
 
         try {
             const paises = await Database.from('OBS_OBJECTO_SOLICITUD')
-                                       .select('OBS_CODIGO','OBS_DESCRIPCION','OBS_TERMINO_DIAS')
+                                       .select('OBS_CODIGO','OBS_DESCRIPCION','OBS_TERMINO_DIAS', 'OBS_TIPO_DIAS')
             return response.send({
                 data: paises,
                 status: true
