@@ -8,7 +8,6 @@ import { IWorkEntity } from "./WorkEntityInterfaces";
 
 export interface IPqrsdf {
   id?: number;
-  isPerson?: boolean;
   requestTypeId: number;
   personId?: number;
   responseMediumId: number;
