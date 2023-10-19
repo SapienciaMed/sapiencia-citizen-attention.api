@@ -1,3 +1,4 @@
+import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
@@ -223,5 +224,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async updatePqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
     return pqrsdf;
+  }
+
+  async uploadFile(file: MultipartFileContract): Promise<MultipartFileContract | null> {
+    return file;
   }
 }

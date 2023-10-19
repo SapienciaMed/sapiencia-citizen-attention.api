@@ -4,6 +4,7 @@ import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
+import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 
 export default class PqrsdfServices implements IPqrsdfServices {
   constructor(private PqrsdfRepository: IPqrsdfRepository) {}
@@ -62,6 +63,15 @@ export default class PqrsdfServices implements IPqrsdfServices {
 
     if (!res) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async uploadFile(file: MultipartFileContract): Promise<ApiResponse<MultipartFileContract | null>> {
+    const res = file;
+    if (!res) {
+      return new ApiResponse({} as MultipartFileContract, EResponseCodes.FAIL, "Registro no encontrado");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);

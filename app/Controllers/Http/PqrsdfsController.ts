@@ -58,4 +58,21 @@ export default class PqrsdfsController {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
+
+  public async uploadFile({ request, response }: HttpContextContract) {
+    const archivo = request.file('archivo');
+
+    console.log(archivo);
+    
+    if (!archivo) {
+      return response.status(400).send('No se ha enviado ningún archivo.');
+    }
+
+    try {
+      return response.send(await PqrsdfProvider.uploadFile(archivo));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
 }

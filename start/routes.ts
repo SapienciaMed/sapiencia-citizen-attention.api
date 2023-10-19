@@ -28,6 +28,7 @@ Route.group(() => {
   Route.group(() => {
     Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
   }).prefix("/business");
+
   /* Parametrización de días */
   Route.group(() => {
     Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
@@ -45,6 +46,7 @@ Route.group(() => {
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
     Route.get("/get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
     Route.post("/update-person", "PqrsdfsController.updatePerson");
+    Route.post("/upload", "PqrsdfsController.uploadFile");
   }).prefix("/pqrsdf");
 
 
