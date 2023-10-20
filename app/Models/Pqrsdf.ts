@@ -5,6 +5,7 @@ import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
 import MreMedioRespuesta from "./MreMedioRespuesta";
 import Person from "./Person";
 import TsoTipoSolicitud from "./TsoTipoSolicitud";
+import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
 import WorkEntity from "./WorkEntity";
 import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
 
@@ -53,10 +54,19 @@ export default class Pqrsdf extends BaseModel {
   @column.date({ columnName: "PQR_FECHA_RESPUESTA", serializeAs: "answerDate" })
   public answerDate: DateTime;
 
+  @column({ columnName: "PQR_CODCAD_CANALES_ATENCION_DETALLE_PQRSDF", serializeAs: "idCanalesAttencion" })
+  public idCanalesAttencion: number;
 
-  @belongsTo(() => TsoTipoSolicitud, {
+  @belongsTo(() => CadCanalesAtencionDetalle, {
     localKey: "tso_codigo",
     foreignKey: "requestTypeId",
+  })
+  public canalesAttencion: BelongsTo<typeof CadCanalesAtencionDetalle>;
+
+
+  @belongsTo(() => TsoTipoSolicitud, {
+    localKey: "cad_codigo",
+    foreignKey: "idCanalesAttencion",
   })
   public requestType: BelongsTo<typeof TsoTipoSolicitud>;
 
@@ -110,4 +120,5 @@ export default class Pqrsdf extends BaseModel {
     serializeAs: "updatedAt",
   })
   public updatedAt: DateTime;
+  
 }

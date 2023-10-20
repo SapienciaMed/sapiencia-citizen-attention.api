@@ -16,7 +16,7 @@ export interface IPqrsdf {
   requestSubjectId: number;
   fileId?: number;
   filingNumber?: number;
-  idCanalesAtencion?:number;
+  idCanalesAttencion?:number;
   clasification: string;
   dependency: string;
   description: string;
