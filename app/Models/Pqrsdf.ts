@@ -58,15 +58,15 @@ export default class Pqrsdf extends BaseModel {
   public idCanalesAttencion: number;
 
   @belongsTo(() => CadCanalesAtencionDetalle, {
-    localKey: "tso_codigo",
-    foreignKey: "requestTypeId",
+    localKey: "cad_codigo",
+    foreignKey: "idCanalesAttencion",
   })
   public canalesAttencion: BelongsTo<typeof CadCanalesAtencionDetalle>;
 
 
   @belongsTo(() => TsoTipoSolicitud, {
-    localKey: "cad_codigo",
-    foreignKey: "idCanalesAttencion",
+    localKey: "tso_codigo",
+    foreignKey: "requestTypeId",
   })
   public requestType: BelongsTo<typeof TsoTipoSolicitud>;
 
