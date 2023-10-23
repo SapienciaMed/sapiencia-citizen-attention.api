@@ -14,8 +14,9 @@ export interface IPqrsdf {
   responsibleId?: number;
   requestSubjectId: number;
   fileId?: number;
+  statusId?: number;
   filingNumber?: number;
-  idCanalesAttencion?:number;
+  idCanalesAttencion?: number;
   clasification: string;
   dependency: string;
   description: string;
@@ -25,8 +26,16 @@ export interface IPqrsdf {
   answerDate?: DateTime;
   responseMedium?: IResponseMedium;
   responsible?: IWorkEntity;
+  status?: IPqrsdfStatus;
   requestSubject?: IRequestSubject;
   file?: IFile;
   createdAt?: DateTime;
   updatedAt?: DateTime;
+}
+
+export interface IPqrsdfStatus {
+  lep_codigo: number;
+  lep_estado: string;
+  lep_activo: boolean;
+  lep_orden: number;
 }
