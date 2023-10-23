@@ -43,11 +43,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
-        pqrsdf.responsibleId = (await this.getResponsible(pqrsdf.requestSubjectId))?.id ?? 1;
+        const responsible = await this.getResponsible(pqrsdf.requestSubjectId)
+        pqrsdf.responsibleId = responsible?.id ?? 1;
         const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
         pqrsdf.filingNumber = lastFilingNumber?.filingNumber
           ? lastFilingNumber.filingNumber
           : parseInt(new Date().getFullYear().toString() + "02430001");
+          pqrsdf.statusId = responsible?.workEntityType?.associatedStatusId;
+
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
         res = await this.formatPqrsdf(newPqrsdf);
 
@@ -116,7 +119,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           q.where("PRA_CODASO_ASUNTO_SOLICITUD", affair);
         });
       })
-      .preload("pqrsdfs");
+      .preload("pqrsdfs").preload("workEntityType");
     let max = 0;
     let finalResponsible: any;
     responsibles.forEach((responsible) => {
