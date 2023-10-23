@@ -12,5 +12,5 @@ export interface IPqrsdfRepository {
   updatePerson(person: IPerson): Promise<IPerson | null>;
   createPqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;
   updatePqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;
-  uploadFile(file:MultipartFileContract): Promise<MultipartFileContract | null>;
+  uploadFile(file:MultipartFileContract): Promise<boolean>;
 }

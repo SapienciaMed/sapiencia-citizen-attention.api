@@ -68,10 +68,11 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async uploadFile(file: MultipartFileContract): Promise<ApiResponse<MultipartFileContract | null>> {
-    const res = file;
+  public async uploadFile(file: MultipartFileContract): Promise<ApiResponse<boolean>> {
+    const res = await this.PqrsdfRepository.uploadFile(file)
+
     if (!res) {
-      return new ApiResponse({} as MultipartFileContract, EResponseCodes.FAIL, "Registro no encontrado");
+      return new ApiResponse({} as boolean, EResponseCodes.FAIL, "Registro no encontrado");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);

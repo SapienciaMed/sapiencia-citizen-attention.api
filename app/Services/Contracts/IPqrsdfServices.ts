@@ -13,5 +13,5 @@ export interface IPqrsdfServices {
     identification: number,
     filingNumber: number
   ): Promise<ApiResponse<IPqrsdf | null>>;
-  uploadFile(file:MultipartFileContract): Promise<ApiResponse<MultipartFileContract | null>>;
+  uploadFile(file:MultipartFileContract): Promise<ApiResponse<boolean>>;
 }

@@ -1,5 +1,6 @@
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { Storage } from '@google-cloud/storage';
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
@@ -11,8 +12,18 @@ import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import WorkEntity from "App/Models/WorkEntity";
 import { IPagingData } from "App/Utils/ApiResponses";
 
+const keyFilename = process.env.GCLOUD_KEYFILE;
+const bucketName = process.env.GCLOUD_BUCKET ?? "";
+
+
 export default class PqrsdfRepository implements IPqrsdfRepository {
-  constructor(private GenericListsExternalService: IGenericListsExternalService) {}
+
+  storage: Storage;
+
+  constructor(
+    private GenericListsExternalService: IGenericListsExternalService
+    ) { this.storage = new Storage({ keyFilename }); }
+
   async createPqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
     let res: any;
     await Database.transaction(async (trx) => {
@@ -226,7 +237,17 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return pqrsdf;
   }
 
-  async uploadFile(file: MultipartFileContract): Promise<MultipartFileContract | null> {
-    return file;
+  async uploadFile(file: MultipartFileContract): Promise<boolean> {
+
+    try {
+      const bucket = this.storage.bucket(bucketName);
+      if (!file.tmpPath) return false;
+      const [fileCloud] = await bucket.upload(file.tmpPath, {
+          destination: `${'proyectos-digitales/'}${file.clientName}`,
+      });
+      return !!fileCloud;
+  } catch (error) {
+      return false;
+  }
   }
 }
