@@ -5,6 +5,9 @@ import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
 import MreMedioRespuesta from "./MreMedioRespuesta";
 import Person from "./Person";
 import TsoTipoSolicitud from "./TsoTipoSolicitud";
+import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
+import WorkEntity from "./WorkEntity";
+import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -20,6 +23,12 @@ export default class Pqrsdf extends BaseModel {
 
   @column({ columnName: "PQR_CODMRE_MRE_RESPUESTA", serializeAs: "responseMediumId" })
   public responseMediumId: number;
+
+  @column({ columnName: "PQR_CODLEP_LISTADO_ESTADO_PQRSDF", serializeAs: "statusId" })
+  public statusId: number;
+
+  @column({ columnName: "PQR_CODENT_ENTIDAD_TRABAJO", serializeAs: "responsibleId" })
+  public responsibleId: number;
 
   @column({ columnName: "PQR_CODASO_ASO_ASUNTO_SOLICITUD", serializeAs: "requestSubjectId" })
   public requestSubjectId: number;
@@ -45,6 +54,15 @@ export default class Pqrsdf extends BaseModel {
   @column.date({ columnName: "PQR_FECHA_RESPUESTA", serializeAs: "answerDate" })
   public answerDate: DateTime;
 
+  @column({ columnName: "PQR_CODCAD_CANALES_ATENCION_DETALLE_PQRSDF", serializeAs: "idCanalesAttencion" })
+  public idCanalesAttencion: number;
+
+  @belongsTo(() => CadCanalesAtencionDetalle, {
+    localKey: "cad_codigo",
+    foreignKey: "idCanalesAttencion",
+  })
+  public canalesAttencion: BelongsTo<typeof CadCanalesAtencionDetalle>;
+
 
   @belongsTo(() => TsoTipoSolicitud, {
     localKey: "tso_codigo",
@@ -63,6 +81,18 @@ export default class Pqrsdf extends BaseModel {
     foreignKey: "responseMediumId",
   })
   public responseMedium: BelongsTo<typeof MreMedioRespuesta>;
+
+  @belongsTo(() => WorkEntity, {
+    localKey: "id",
+    foreignKey: "responsibleId",
+  })
+  public responsible: BelongsTo<typeof WorkEntity>;
+
+  @belongsTo(() => LepListadoEstadoPqrsdf, {
+    localKey: "lep_codigo",
+    foreignKey: "statusId",
+  })
+  public status: BelongsTo<typeof LepListadoEstadoPqrsdf>;
 
   @belongsTo(() => AsoAsuntoSolicitud, {
     localKey: "aso_codigo",
@@ -90,4 +120,5 @@ export default class Pqrsdf extends BaseModel {
     serializeAs: "updatedAt",
   })
   public updatedAt: DateTime;
+  
 }

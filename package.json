@@ -27,6 +27,7 @@
     "@adonisjs/lucid": "^18.3.0",
     "@adonisjs/mail": "^8.2.1",
     "@adonisjs/repl": "^3.1.11",
+    "@google-cloud/storage": "^7.3.1",
     "adonis5-swagger": "^1.4.1",
     "axios": "^1.5.0",
     "japa": "^4.0.0",

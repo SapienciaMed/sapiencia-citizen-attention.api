@@ -1,18 +1,19 @@
-import { BaseModel, HasMany, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, HasMany, ManyToMany, column, hasMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import ClpClasificacionPrograma from './ClpClasificacionPrograma';
 import DepDependencia from './DepDependencia';
+import AsoAsuntoSolicitud from './AsoAsuntoSolicitud';
 
 export default class PrgPrograma extends BaseModel {
-  
+
   public static table = 'PRG_PROGRAMAS';
 
   @column({ isPrimary: true, columnName:'PRG_CODIGO' })
   public prg_codigo: number;
 
-  @column({ columnName:'PRG_DESCRIPCION', serializeAs:'' })
+  @column({ columnName:'PRG_DESCRIPCION', serializeAs:'prg_descripcion' })
   public prg_descripcion: string;
 
-  @column({ columnName:'PRG_CLASIFICACION', serializeAs:'' })
+  @column({ columnName:'PRG_CLASIFICACION', serializeAs:'prg_clasificacion' })
   public prg_clasificacion: number;
 
   @column({ columnName:'PRG_DEPENDENCIA', serializeAs:'prg_dependencia' })
@@ -31,6 +32,19 @@ export default class PrgPrograma extends BaseModel {
     serializeAs: 'depDependencia'
   })
   public depDependencia: HasMany<typeof DepDependencia>;
+
+  @manyToMany(() => AsoAsuntoSolicitud, {
+    pivotTable: 'PRA_PROGRAMA_ASUNTOS',
+    localKey: 'prg_codigo',
+    relatedKey: 'aso_codigo',
+    pivotForeignKey: 'PRA_CODPRG_PROGRAMA',
+    serializeAs:'affairs',
+    pivotRelatedForeignKey: 'PRA_CODASO_ASUNTO_SOLICITUD',
+    pivotColumns:[
+      'PRA_CODIGO'
+    ]
+  })
+  public affairs: ManyToMany<typeof AsoAsuntoSolicitud>;
 
   @column({ columnName:'PRG_ACTIVO', serializeAs:'prg_activo' })
   public prg_activo: boolean;

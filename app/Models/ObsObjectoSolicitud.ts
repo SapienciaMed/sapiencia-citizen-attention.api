@@ -10,8 +10,11 @@ export default class ObsObjectoSolicitud extends BaseModel {
   @column({ columnName: 'OBS_DESCRIPCION', serializeAs:'obs_description' })
   public obs_description: string;
 
-  @column({ columnName:'OBS_TERMINO_DIAS_HABILES', serializeAs:'obs_termino_dias_habiles'})
-  public obs_termino_dias_habiles: number;
+  @column({ columnName:'OBS_TERMINO_DIAS', serializeAs:'obs_termino_dias'})
+  public obs_termino_dias: number;
+
+  @column({ columnName:'OBS_TIPO_DIAS', serializeAs:'obs_tipo_dias'})
+  public obs_tipo_dias: string;
 
   @column({ columnName:'OBS_ACTIVO', serializeAs:'obs_activo'})
   public obs_activo: boolean;

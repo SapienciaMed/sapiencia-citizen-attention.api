@@ -28,6 +28,7 @@ Route.group(() => {
   Route.group(() => {
     Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
   }).prefix("/business");
+
   /* Parametrización de días */
   Route.group(() => {
     Route.get("/get-day-types", "DaysParametrizationController.getDayTypes");
@@ -41,21 +42,48 @@ Route.group(() => {
     // Route.get("/get-all", "PqrsdfsController.getPrsdfs");
     Route.post("/create", "PqrsdfsController.createPqrsdf");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
+    Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
+    Route.get("/get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
+    Route.post("/update-person", "PqrsdfsController.updatePerson");
+    Route.post("/upload", "PqrsdfsController.uploadFile");
   }).prefix("/pqrsdf");
+
+
   /* Work entities */
   Route.group(() => {
-    Route.post("/create", "WorkEntityController.createWorkEntity");
+    Route.post("/create", "WorkEntityController.createWorkEntity").middleware("auth:ENTIDADES_TRABAJO_CREAR");
+    Route.post("/update", "WorkEntityController.updateWorkEntity").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
-    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById");
-    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters");
-    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument");
+    Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
+    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
+    Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
+    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
+    Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
   }).prefix("/work-entity");
-}).prefix("/api/v1/").middleware("auth");
+})
+  .prefix("/api/v1/")
+  .middleware("auth");
 
 /**************************
  ******TABLAS MAESTRAS******
  **************************/
+  /* TABLAS MAESTRAS */
+Route.group(()=>{
+  Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
+  Route.get("/document-types", "MasterTablesUtilitiesController.getDocumentTypes");
+  Route.get("/channel-attention", "MasterTablesUtilitiesController.getTensionChannels");
+  Route.get("/channel-attention-details/:id", "MasterTablesUtilitiesController.getAttentionChannelsDetails");
+}).prefix("/api/v1/utility");
+
+
+
 Route.group(() => {
   Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
   Route.get("/get-type-docuement", "ListadoGenericosController.getTypeDocuement");

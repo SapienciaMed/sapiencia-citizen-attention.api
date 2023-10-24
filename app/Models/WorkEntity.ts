@@ -1,6 +1,8 @@
+import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
-import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
+import EntityAffairsProgram from "./EntityAffairsProgram";
 import TetTipoEntidadTrabajo from "./TetTipoEntidadTrabajo";
+import Pqrsdf from "./Pqrsdf";
 
 export default class WorkEntity extends BaseModel {
   public static table = "ENT_ENTIDAD_TRABAJO";
@@ -14,7 +16,7 @@ export default class WorkEntity extends BaseModel {
   @column({ columnName: "ENT_CODTET_TIPO_ENTIDAD_TRABAJO", serializeAs: "workEntityTypeId" })
   public workEntityTypeId: number;
 
-  @column({ columnName: "ENT_ORDEN", serializeAs: "order"})
+  @column({ columnName: "ENT_ORDEN", serializeAs: "order" })
   public order: number;
 
   @column({ columnName: "ENT_ESTADO", serializeAs: "status" })
@@ -28,6 +30,18 @@ export default class WorkEntity extends BaseModel {
     foreignKey: "workEntityTypeId",
   })
   public workEntityType: BelongsTo<typeof TetTipoEntidadTrabajo>;
+
+  @hasMany(() => EntityAffairsProgram, {
+    localKey: "id",
+    foreignKey: "workEntityId",
+  })
+  public affairsPrograms: HasMany<typeof EntityAffairsProgram>;
+
+  @hasMany(() => Pqrsdf, {
+    localKey: "id",
+    foreignKey: "responsibleId",
+  })
+  public pqrsdfs: HasMany<typeof Pqrsdf>;
 
   @column.dateTime({
     autoCreate: true,
