@@ -14,6 +14,7 @@ export default class AppProvider {
     const MasterTablesUtilityService = await import("App/Services/MasterTablesUtilityService");
     const PqrsdfService = await import("App/Services/PqrsdfServices");
     const WorkEntityService = await import("App/Services/WorkEntityServices");
+    const AuthService = await import("App/Services/AuthService");
 
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
@@ -25,6 +26,7 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
+    const UserRepository = await import("App/Repositories/UserRepository");
     const BusinessRepository = await import("App/Repositories/BusinessRepository");
     const DaysParametrizationRepository = await import("App/Repositories/DaysParametrizationRepository");
     const MasterTablesUtilityRepository = await import("App/Repositories/MasterTablesUtilityRepository");
@@ -54,6 +56,10 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.WorkEntityProvider",
       () => new WorkEntityService.default(new WorkEntityRepository.default(new AuthExternalService.default()))
+    );
+    this.app.container.singleton(
+      "core.AuthProvider",
+      () => new AuthService.default(new UserRepository.default())
     );
   }
 

@@ -69,3 +69,11 @@ Route.group(() => {
   Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
   Route.get("/get-listaParametros", "ListaParametrosController.getListaParametros");
 });
+
+// *************************************************************************
+// ************************* ROUTES Auth ***********************************
+// *************************************************************************
+
+Route.group(() => {
+    Route.post("/signin", "AuthBeneficiariosController.signIn");
+}).prefix("/api/v1/auth");
