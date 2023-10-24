@@ -62,7 +62,7 @@ export default class PqrsdfsController {
 
   public async uploadFile({ request, response }: HttpContextContract) {
     const files = request.files('files');
-    const { id } = request.params();
+  
     if(files) {
       const results = await Promise.all(
         files.map(async (file) => {
