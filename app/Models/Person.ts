@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, HasMany, beforeSave, belongsTo, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
+
 import Hash from "@ioc:Adonis/Core/Hash";
 import TejTipoEntidadJuridica from './TejTipoEntidadJuridica';
 import Pqrsdf from './Pqrsdf';
