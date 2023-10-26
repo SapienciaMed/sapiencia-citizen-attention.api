@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
 import PrgPrograma from "./PrgPrograma";
 import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
-
+//
 export default class AffairsProgram extends BaseModel {
   public static table = "PRA_PROGRAMA_ASUNTOS";
 
