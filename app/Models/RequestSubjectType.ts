@@ -4,7 +4,7 @@ import ObsObjectoSolicitud from "./ObsObjectoSolicitud";
 import PrgPrograma from "./PrgPrograma";
 
 export default class RequestSubjectType extends BaseModel {
-  public static table = "TUS_TIPO_USUARIO";
+  public static table = "TAS_TIPO_ASUNTO_SOLICITUD";
 
   @column({ isPrimary: true, columnName: "TAS_CODIGO", serializeAs: "id" })
   public id: number;

@@ -19,6 +19,7 @@ export default class extends BaseSchema {
         .unsigned()
         .references("TAS_CODIGO")
         .inTable("TAS_TIPO_ASUNTO_SOLICITUD")
+        .withKeyName("FK_TAS_TIPO_ASUNTO_SOLICITUD")
         .comment("llave foranea de la tabla tipo de asunto solicitud(FK)");
     });
   }
