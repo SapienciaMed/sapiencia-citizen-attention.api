@@ -40,7 +40,7 @@ Route.group(() => {
   /* Tipos de asuntos de solicitud */
   Route.group(() => {
     Route.get("/get-by-id/:id", "RequestSubjectTypeController.getRequestSubjectTypeById");
-    Route.get("/get-all", "RequestSubjectTypeController.getRequestSubjectTypeByFilters ") ;
+    Route.get("/get-by-filters", "RequestSubjectTypeController.getRequestSubjectTypeByFilters ") ;
     Route.get("/get-request-objects", "RequestSubjectTypeController.getRequestObjects");
     Route.post("/create", "RequestSubjectTypeController.createRequestSubjectType");
     Route.post("/update", "RequestSubjectTypeController.updateRequestSubjectType");
