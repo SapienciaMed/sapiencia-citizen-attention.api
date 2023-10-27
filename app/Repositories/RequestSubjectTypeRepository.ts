@@ -28,6 +28,11 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     return await this.formatRequestSubjectType(res);
   }
 
+  async getRequestSubjectTypeByName(name: string): Promise<IRequestSubjectType | null> {
+    const requestSubjectType = await RequestSubjectType.query().where("name", name).first();
+    return requestSubjectType as IRequestSubjectType;
+  }
+
   async getRequestSubjectTypeById(id: number): Promise<IRequestSubjectType | null> {
     const requestSubjectType = await RequestSubjectType.find(id);
     return await this.formatRequestSubjectType(requestSubjectType);

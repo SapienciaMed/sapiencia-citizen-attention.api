@@ -14,11 +14,23 @@ export default class RequestSubjectTypeServices implements IRequestSubjectTypeSe
   public async createRequestSubjectType(
     requestSubjectType: IRequestSubjectType
   ): Promise<ApiResponse<IRequestSubjectType | null>> {
-    const res = await this.RequestSubjectTypeRepository.createRequestSubjectType(requestSubjectType);
-    if (!res) {
-      return new ApiResponse({} as IRequestSubjectType, EResponseCodes.FAIL, "No se puede crear el tipo de asunto");
+    let response: ApiResponse<IRequestSubjectType | null> = new ApiResponse(null, EResponseCodes.OK, "Tipo de asunto creado con éxito");
+    const existRequestSubjectType = await this.RequestSubjectTypeRepository.getRequestSubjectTypeByName(requestSubjectType?.name);
+    if (existRequestSubjectType?.id) {
+      response.operation.message = "Ya existe un tipo de asunto con este nombre.";
+      response.operation.title = "¡Asunto existente!";
+      response.operation.code = EResponseCodes.FAIL
+    }else{
+      const res = await this.RequestSubjectTypeRepository.createRequestSubjectType(requestSubjectType);
+      if (!res) {
+        response.operation.message = "No se puede crear el tipo de asunto";
+        response.operation.code = EResponseCodes.FAIL
+      }else{
+        response.data = res
+      }
     }
-    return new ApiResponse(res, EResponseCodes.OK, "Tipo de asunto creado con éxito");
+
+    return response;
   }
 
   public async getRequestObjects(): Promise<ApiResponse<IRequestObject[]>> {
