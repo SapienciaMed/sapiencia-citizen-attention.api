@@ -1,16 +1,16 @@
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from "@google-cloud/storage";
-import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
-import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
-import Pqrsdf from "App/Models/Pqrsdf";
-import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
-import Person from "App/Models/Person";
-import File from "App/Models/File";
+import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
+import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import File from "App/Models/File";
+import Person from "App/Models/Person";
+import Pqrsdf from "App/Models/Pqrsdf";
 import WorkEntity from "App/Models/WorkEntity";
+import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import { IPagingData } from "App/Utils/ApiResponses";
+import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
 const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
