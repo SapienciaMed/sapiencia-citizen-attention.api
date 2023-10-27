@@ -4,6 +4,7 @@ import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
+import { IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 
 export default class PqrsdfsController {
   public async getPrsdfById({ request, response }: HttpContextContract) {
@@ -92,6 +93,15 @@ export default class PqrsdfsController {
       return response.badRequest(
         new ApiResponse(false, EResponseCodes.FAIL, "Sin archivos para cargar.")
       );
+    }
+  };
+
+  public async getPqrsdfByRequest({request, response}: HttpContextContract){
+    const filters  = request.body() as IrequestPqrsdf;
+    try {
+      return response.send(await PqrsdfProvider.getPqrsdfByRequest(filters));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
 

@@ -2,7 +2,7 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
-import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 
@@ -77,4 +77,15 @@ export default class PqrsdfServices implements IPqrsdfServices {
 
     return new ApiResponse(res, EResponseCodes.OK);
   }
+
+  public async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByReques | null >> {
+    const res = await this.PqrsdfRepository.getPqrsdfByRequest(filters);
+
+    if (!res) {
+      return new ApiResponse({} as IpqrsdfByReques, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  };
+
 }
