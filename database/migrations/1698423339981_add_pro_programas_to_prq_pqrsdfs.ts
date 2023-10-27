@@ -1,21 +1,22 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'add_pro_programas_to_prq_pqrsdfs'
+  protected tableName = 'PQR_PQRSDF'
 
   public async up () {
-    this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
+    this.schema.alterTable(this.tableName, (table) => {
+      table
+        .integer("PQR_CODPRG_PROGRAMA")
+        .unsigned()
+        .references("PRG_CODIGO")
+        .inTable("PRG_PROGRAMAS")
+        .comment("llave foranea de la tabla PQRSDF (FK_PROGRAMA)")
+        .nullable();
 
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
-      table.timestamp('created_at', { useTz: true })
-      table.timestamp('updated_at', { useTz: true })
     })
   }
 
   public async down () {
-    this.schema.dropTable(this.tableName)
+    //this.schema.dropTable(this.tableName)
   }
 }

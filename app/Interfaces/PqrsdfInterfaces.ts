@@ -60,5 +60,5 @@ export interface IpqrsdfByReques{
     LEP_ESTADO?: string;
     OBS_TIPO_DIAS?: string;
     OBS_TERMINO_DIAS?: number;
-
+    PRG_DESCRIPCION?: String;
 }
