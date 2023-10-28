@@ -12,6 +12,7 @@ export default class Auth {
     guards: string[]
   ) {
     const { authorization, permissions } = ctx.request.headers();
+    
     const key = Env.get("APP_KEY");
 
     try {

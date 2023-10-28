@@ -1,4 +1,6 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import jwt from "jsonwebtoken";
+import Env from "@ioc:Adonis/Core/Env";
 import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
@@ -97,7 +99,16 @@ export default class PqrsdfsController {
   };
 
   public async getPqrsdfByRequest({request, response}: HttpContextContract){
+
+    const req = request.headers();
+    const key = Env.get("APP_KEY");
+
+    const token = req.authorization?.replace("Bearer ", "");
+    
+    const { id } = jwt.verify(token!,key) as { id: number; document: string };;
+    
     const filters  = request.body() as IrequestPqrsdf;
+    filters.userId = id
     try {
       return response.send(await PqrsdfProvider.getPqrsdfByRequest(filters));
     } catch (err) {
