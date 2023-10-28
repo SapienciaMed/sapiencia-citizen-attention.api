@@ -9,6 +9,7 @@ export interface IPerson {
   entityTypeId: number;
   entityType?: ILegalEntityType;
   identification: string;
+  password: string;
   firstName: string;
   secondName: string;
   firstSurname: string;

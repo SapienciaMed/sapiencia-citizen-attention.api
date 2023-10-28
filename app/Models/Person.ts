@@ -1,7 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, HasMany, beforeSave, belongsTo, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
+
+import Hash from "@ioc:Adonis/Core/Hash";
 import TejTipoEntidadJuridica from './TejTipoEntidadJuridica';
 import Pqrsdf from './Pqrsdf';
+
 
 export default class Person extends BaseModel {
   public static table = "PER_PERSONAS";
@@ -42,7 +45,9 @@ export default class Person extends BaseModel {
   @column({ columnName: "PER_CORREO_ELECTRONICO", serializeAs: "email" })
   public email: string;
 
-  @column({ columnName: "PER_DIRECCION_RESIDENCIA", serializeAs: "address" })
+  @column({ columnName: "PER_CONTRASENA", serializeAs: null })
+  public password: string;
+
   public address: string;
 
   @column({ columnName: "PQR_CODPAI_PAIS", serializeAs: "countryId" })
@@ -83,4 +88,11 @@ export default class Person extends BaseModel {
     serializeAs: "updatedAt",
   })
   public updatedAt: DateTime;
+
+  @beforeSave()
+  public static async hashPassword(user: Person) {
+    if (user.$dirty.password) {
+      user.password = await Hash.make(user.password);
+    }
+  }
 }

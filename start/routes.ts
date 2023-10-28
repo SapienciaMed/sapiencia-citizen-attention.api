@@ -37,9 +37,16 @@ Route.group(() => {
     Route.post("/update", "DaysParametrizationController.updateDaysParametrization");
     Route.get("/get-by-id/:id", "DaysParametrizationController.getDaysParametrizationById");
   }).prefix("/day-parametrization");
+  /* Tipos de asuntos de solicitud */
+  Route.group(() => {
+    Route.get("/get-by-id/:id", "RequestSubjectTypeController.getRequestSubjectTypeById");
+    Route.get("/get-by-filters", "RequestSubjectTypeController.getRequestSubjectTypeByFilters ") ;
+    Route.get("/get-request-objects", "RequestSubjectTypeController.getRequestObjects");
+    Route.post("/create", "RequestSubjectTypeController.createRequestSubjectType");
+    Route.post("/update", "RequestSubjectTypeController.updateRequestSubjectType");
+  }).prefix("/request-subject-type");
   /* PQRSDF */
   Route.group(() => {
-    // Route.get("/get-all", "PqrsdfsController.getPrsdfs");
     Route.post("/create", "PqrsdfsController.createPqrsdf");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
@@ -49,7 +56,6 @@ Route.group(() => {
     Route.post("/upload", "PqrsdfsController.uploadFile");
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
   }).prefix("/pqrsdf");
-
 
   /* Work entities */
   Route.group(() => {
@@ -75,15 +81,13 @@ Route.group(() => {
 /**************************
  ******TABLAS MAESTRAS******
  **************************/
-  /* TABLAS MAESTRAS */
-Route.group(()=>{
+/* TABLAS MAESTRAS */
+Route.group(() => {
   Route.get("/request-types", "MasterTablesUtilitiesController.getRequestTypes");
   Route.get("/document-types", "MasterTablesUtilitiesController.getDocumentTypes");
   Route.get("/channel-attention", "MasterTablesUtilitiesController.getTensionChannels");
   Route.get("/channel-attention-details/:id", "MasterTablesUtilitiesController.getAttentionChannelsDetails");
 }).prefix("/api/v1/utility");
-
-
 
 Route.group(() => {
   Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
@@ -98,3 +102,11 @@ Route.group(() => {
   Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
   Route.get("/get-listaParametros", "ListaParametrosController.getListaParametros");
 });
+
+// *************************************************************************
+// ************************* ROUTES Auth ***********************************
+// *************************************************************************
+
+Route.group(() => {
+    Route.post("/signin", "AuthBeneficiariosController.signIn");
+}).prefix("/api/v1/auth");

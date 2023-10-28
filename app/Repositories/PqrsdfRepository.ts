@@ -1,28 +1,27 @@
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
-import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from '@google-cloud/storage';
-import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import Database from "@ioc:Adonis/Lucid/Database";
-import Person from "App/Models/Person";
-import File from "App/Models/File";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
+import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import File from "App/Models/File";
+import Person from "App/Models/Person";
 import WorkEntity from "App/Models/WorkEntity";
 import { IPagingData } from "App/Utils/ApiResponses";
+import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
 const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
-
 export default class PqrsdfRepository implements IPqrsdfRepository {
-
   storage: Storage;
 
-  constructor(
-    private GenericListsExternalService: IGenericListsExternalService
-    ) { this.storage = new Storage({ keyFilename }); }
+  constructor(private GenericListsExternalService: IGenericListsExternalService) {
+    this.storage = new Storage({ keyFilename });
+  }
 
   async createPqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
     let res: any;
@@ -43,13 +42,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
-        const responsible = await this.getResponsible(pqrsdf.requestSubjectId)
+        const responsible = await this.getResponsible(pqrsdf.requestSubjectId);
         pqrsdf.responsibleId = responsible?.id ?? 1;
         const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
         pqrsdf.filingNumber = lastFilingNumber?.filingNumber
           ? lastFilingNumber.filingNumber
           : parseInt(new Date().getFullYear().toString() + "02430001");
-          pqrsdf.statusId = responsible?.workEntityType?.associatedStatusId;
+        pqrsdf.statusId = responsible?.workEntityType?.associatedStatusId;
 
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
         res = await this.formatPqrsdf(newPqrsdf);
@@ -114,12 +113,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async getResponsible(affair: number): Promise<WorkEntity | null> {
     const responsibles = await WorkEntity.query()
+      .where("status", 1)
       .whereHas("affairsPrograms", (query) => {
         query.whereHas("affairsProgram", (q) => {
           q.where("PRA_CODASO_ASUNTO_SOLICITUD", affair);
         });
       })
-      .preload("pqrsdfs").preload("workEntityType");
+      .preload("pqrsdfs")
+      .preload("workEntityType");
     let max = 0;
     let finalResponsible: any;
     responsibles.forEach((responsible) => {
@@ -241,12 +242,11 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   }
 
   async uploadFile(file: MultipartFileContract): Promise<boolean> {
-
     try {
       const bucket = this.storage.bucket(bucketName);
       if (!file.tmpPath) return false;
       const [fileCloud] = await bucket.upload(file.tmpPath, {
-          destination: `${'proyectos-digitales/'}${file.clientName}`,
+        destination: `${"proyectos-digitales/"}${file.clientName}`,
       });
       return !!fileCloud;
     } catch (error) {
