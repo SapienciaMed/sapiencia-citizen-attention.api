@@ -33,6 +33,13 @@ export interface IPqrsdf {
   updatedAt?: DateTime;
 }
 
+export interface IPqrsdfFilters {
+  page: number,
+  perPage: number
+  identification?: string
+  programId?: number
+}
+
 export interface IPqrsdfStatus {
   lep_codigo: number;
   lep_estado: string;

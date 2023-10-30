@@ -47,6 +47,7 @@ Route.group(() => {
   }).prefix("/request-subject-type");
   /* PQRSDF */
   Route.group(() => {
+    Route.post('/get-paginated', 'PqrsdfsController.getPqrsdfPaginated')
     Route.post("/create", "PqrsdfsController.createPqrsdf");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
@@ -76,7 +77,7 @@ Route.group(() => {
   }).prefix("/work-entity");
 })
   .prefix("/api/v1/")
-  .middleware("auth");
+  // .middleware("auth");
 
 /**************************
  ******TABLAS MAESTRAS******

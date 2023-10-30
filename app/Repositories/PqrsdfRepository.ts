@@ -1,5 +1,5 @@
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
-import { IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from '@google-cloud/storage';
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
@@ -21,6 +21,33 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   constructor(private GenericListsExternalService: IGenericListsExternalService) {
     this.storage = new Storage({ keyFilename });
+  }
+
+  async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
+    const query = Pqrsdf.query()
+      .preload("person")
+      .preload("status")
+      .preload("canalesAttencion")
+      .preload("requestSubject")
+      .preload("responseMedium")
+      .preload("requestType")
+      .preload("program")
+
+    if (filters.identification) {
+      query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
+    }
+
+    if (filters.programId) {
+      query.where("programId", filters.programId);
+    }
+
+    const res = await query.paginate(filters.page, filters.perPage);
+    const { data, meta } = res.serialize();
+
+    return {
+      array: data as IPqrsdf[],
+      meta,
+    };
   }
 
   async createPqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {

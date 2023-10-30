@@ -24,7 +24,7 @@ export default class AuthValidator {
    *    ```
    */
   public schema = schema.create({
-    numberDocument: schema.string([rules.maxLength(15)]),
+    identification: schema.string([rules.maxLength(15)]),
     password: schema.string([rules.maxLength(100)]),
   });
 
