@@ -77,7 +77,7 @@ Route.group(() => {
   }).prefix("/work-entity");
 })
   .prefix("/api/v1/")
-  // .middleware("auth");
+  .middleware("auth");
 
 /**************************
  ******TABLAS MAESTRAS******
