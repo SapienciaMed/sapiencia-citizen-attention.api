@@ -29,7 +29,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
   }
 
   async getRequestSubjectTypeByName(name: string): Promise<IRequestSubjectType | null> {
-    const requestSubjectType = await AsoAsuntoSolicitud.query().where("name", name).first();
+    const requestSubjectType = await AsoAsuntoSolicitud.query().where("aso_asunto", name).first();
     return requestSubjectType as IRequestSubjectType;
   }
 
