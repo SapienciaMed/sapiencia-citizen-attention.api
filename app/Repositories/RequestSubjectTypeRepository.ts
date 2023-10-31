@@ -4,15 +4,15 @@ import {
   IRequestSubjectTypeFilters,
 } from "App/Interfaces/RequestSubjectTypeInterfaces";
 import ObsObjectoSolicitud from "App/Models/ObsObjectoSolicitud";
-import RequestSubjectType from "App/Models/RequestSubjectType";
+import AsoAsuntoSolicitud from "App/Models/AsoAsuntoSolicitud";
 import RequestSubjectTypeProgram from "App/Models/RequestSubjectTypeProgram";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IRequestSubjectTypeRepository } from "./Contracts/IRequestSubjectTypeRepository";
 
 export default class RequestSubjectTypeRepository implements IRequestSubjectTypeRepository {
   async createRequestSubjectType(requestSubjectType: IRequestSubjectType): Promise<IRequestSubjectType | null> {
-    const res = await RequestSubjectType.create({
-      name: requestSubjectType?.name,
+    const res = await AsoAsuntoSolicitud.create({
+      aso_asunto: requestSubjectType?.aso_asunto,
       requestObjectId: requestSubjectType?.requestObjectId,
     });
     if (requestSubjectType?.programs) {
@@ -20,7 +20,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
         requestSubjectType.programs.map((program) => {
           return {
             programId: program.prg_codigo,
-            requestSubjectId: res.id,
+            requestSubjectId: res.aso_codigo,
           };
         })
       );
@@ -29,12 +29,12 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
   }
 
   async getRequestSubjectTypeByName(name: string): Promise<IRequestSubjectType | null> {
-    const requestSubjectType = await RequestSubjectType.query().where("name", name).first();
+    const requestSubjectType = await AsoAsuntoSolicitud.query().where("name", name).first();
     return requestSubjectType as IRequestSubjectType;
   }
 
   async getRequestSubjectTypeById(id: number): Promise<IRequestSubjectType | null> {
-    const requestSubjectType = await RequestSubjectType.find(id);
+    const requestSubjectType = await AsoAsuntoSolicitud.find(id);
     return await this.formatRequestSubjectType(requestSubjectType);
   }
 
@@ -43,7 +43,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     return res.map((requestObject) => requestObject.serialize() as IRequestObject);
   }
 
-  private async formatRequestSubjectTypes(requestSubjectTypes: RequestSubjectType[]): Promise<IRequestSubjectType[]> {
+  private async formatRequestSubjectTypes(requestSubjectTypes: AsoAsuntoSolicitud[]): Promise<IRequestSubjectType[]> {
     let requestSubjectTypesFormatted: IRequestSubjectType[] = [];
     for await (const requestSubjectType of requestSubjectTypes) {
       let requestSubjectTypeFormatted = await this.formatRequestSubjectType(requestSubjectType);
@@ -55,7 +55,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
   }
 
   private async formatRequestSubjectType(
-    requestSubjectType: RequestSubjectType | null
+    requestSubjectType: AsoAsuntoSolicitud | null
   ): Promise<IRequestSubjectType | null> {
     let serializeRequestSubjectType: any;
     if (requestSubjectType) {
@@ -70,12 +70,12 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
   async getRequestSubjectTypeByFilters(
     filters: IRequestSubjectTypeFilters
   ): Promise<IPagingData<IRequestSubjectType | null>> {
-    const query = RequestSubjectType.query();
-    if (filters?.name) {
-      query.whereILike("name", `%${filters.name}%`);
+    const query = AsoAsuntoSolicitud.query();
+    if (filters?.aso_asunto) {
+      query.whereILike("aso_asunto", `%${filters.aso_asunto}%`);
     }
-    if (filters?.id) {
-      query.where("id", filters.id);
+    if (filters?.aso_codigo) {
+      query.where("aso_codigo", filters.aso_codigo);
     }
     if (filters?.requestObjectId) {
       query.where("requestObjectId", filters.requestObjectId);
@@ -104,8 +104,8 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
   }
 
   async updateRequestSubjectType(requestSubjectType: IRequestSubjectType): Promise<IRequestSubjectType | null> {
-    const res = await RequestSubjectType.findOrFail(requestSubjectType?.id);
-    res.name = requestSubjectType.name;
+    const res = await AsoAsuntoSolicitud.findOrFail(requestSubjectType?.aso_codigo);
+    res.aso_asunto = requestSubjectType.aso_asunto;
     res.requestObjectId = requestSubjectType.requestObjectId;
     await res.save();
     await res.load("programs");
@@ -122,7 +122,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
         requestSubjectType.programs.map((program) => {
           return {
             programId: program.prg_codigo,
-            requestSubjectId: res.id,
+            requestSubjectId: res.aso_codigo,
           };
         })
       );

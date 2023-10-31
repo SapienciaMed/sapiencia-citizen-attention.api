@@ -2,12 +2,18 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
-import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 
 export default class PqrsdfServices implements IPqrsdfServices {
   constructor(private PqrsdfRepository: IPqrsdfRepository) {}
+
+  async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>> {
+    const res = await this.PqrsdfRepository.getPqrsdfPaginated(filters);
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
 
   public async createPqrsdf(prsdf: IPqrsdf): Promise<ApiResponse<IPqrsdf | null>> {
     const res = await this.PqrsdfRepository.createPqrsdf(prsdf);

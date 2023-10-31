@@ -1,7 +1,5 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import Hash from "@ioc:Adonis/Core/Hash";
-import { DateTime } from "luxon";
-
 import Person from 'App/Models/Person';
 
 export default class extends BaseSeeder {

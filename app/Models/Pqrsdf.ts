@@ -8,6 +8,7 @@ import TsoTipoSolicitud from "./TsoTipoSolicitud";
 import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
 import WorkEntity from "./WorkEntity";
 import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
+import PrgPrograma from "./PrgPrograma";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -56,6 +57,16 @@ export default class Pqrsdf extends BaseModel {
 
   @column({ columnName: "PQR_CODCAD_CANALES_ATENCION_DETALLE_PQRSDF", serializeAs: "idCanalesAttencion" })
   public idCanalesAttencion: number;
+
+  @column({ columnName: "PQR_CODPRG_PROGRAMA", serializeAs: "programId" })
+  public programId: number;
+
+  @belongsTo(() => PrgPrograma, {
+    localKey: "prg_codigo",
+    foreignKey: "programId",
+  })
+  public program: BelongsTo<typeof PrgPrograma>;
+  
 
   @belongsTo(() => CadCanalesAtencionDetalle, {
     localKey: "cad_codigo",

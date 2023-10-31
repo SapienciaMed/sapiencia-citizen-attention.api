@@ -7,8 +7,20 @@ import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 import { IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
 
 export default class PqrsdfsController {
+  public async getPqrsdfPaginated({ request, response }: HttpContextContract) {
+    try {
+
+      const data = await request.validate(PqrsdfFiltersValidator);
+      return response.send(await PqrsdfProvider.getPqrsdfPaginated(data));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+
   public async getPrsdfById({ request, response }: HttpContextContract) {
     try {
       const { id } = request.params();
