@@ -15,8 +15,8 @@ export default class RequestSubjectTypeServices implements IRequestSubjectTypeSe
     requestSubjectType: IRequestSubjectType
   ): Promise<ApiResponse<IRequestSubjectType | null>> {
     let response: ApiResponse<IRequestSubjectType | null> = new ApiResponse(null, EResponseCodes.OK, "Tipo de asunto creado con éxito");
-    const existRequestSubjectType = await this.RequestSubjectTypeRepository.getRequestSubjectTypeByName(requestSubjectType?.name);
-    if (existRequestSubjectType?.id) {
+    const existRequestSubjectType = await this.RequestSubjectTypeRepository.getRequestSubjectTypeByName(requestSubjectType?.aso_asunto);
+    if (existRequestSubjectType?.aso_codigo) {
       response.operation.message = "Ya existe un tipo de asunto con este nombre.";
       response.operation.title = "¡Asunto existente!";
       response.operation.code = EResponseCodes.FAIL
