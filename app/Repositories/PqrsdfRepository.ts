@@ -280,15 +280,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
   }
 
-<<<<<<< HEAD
   async getPqrsdfByRequest(filters:IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
     const {userId, typeReques} = filters;
     
-=======
-  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
-    const { userId, typeReques } = filters;
-
->>>>>>> 4578ad64adb5a081442518bb481ee7ad18de8cfa
     let res: any;
 
     try {
@@ -297,34 +291,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
           .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
           .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-          .join(
-            "OBS_OBJECTO_SOLICITUD",
-            " ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
-            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
-          )
-          .join(
-            "LEP_LISTADO_ESTADO_PQRSDF",
-            " PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
-            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
-          )
+          .join("OBS_OBJECTO_SOLICITUD","ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD","OBS_OBJECTO_SOLICITUD.OBS_CODIGO")
+          .join("LEP_LISTADO_ESTADO_PQRSDF","PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF","LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO")
           .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
           .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
           .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "!=", 3)
-          .select(
-            "PQR_CODIGO",
-            "PQR_NRO_RADICADO",
-            "PQR_FECHA_CREACION",
-            "PER_NUMERO_DOCUMENTO",
-            "PER_PRIMER_NOMBRE",
-            "PER_SEGUNDO_NOMBRE",
-            "PER_PRIMER_APELLIDO",
-            "PER_SEGUNDO_APELLIDO",
-            "ASO_ASUNTO",
-            "LEP_ESTADO",
-            "OBS_TIPO_DIAS",
-            "OBS_TERMINO_DIAS",
-            "PRG_DESCRIPCION"
-          );
+          .select("PQR_CODIGO","PQR_NRO_RADICADO","PQR_FECHA_CREACION","PER_NUMERO_DOCUMENTO","PER_PRIMER_NOMBRE",
+                  "PER_SEGUNDO_NOMBRE","PER_PRIMER_APELLIDO","PER_SEGUNDO_APELLIDO","ASO_ASUNTO","LEP_ESTADO","OBS_TIPO_DIAS",
+                  "OBS_TERMINO_DIAS","PRG_DESCRIPCION");
       }
 
       if (userId && typeReques === 3) {
