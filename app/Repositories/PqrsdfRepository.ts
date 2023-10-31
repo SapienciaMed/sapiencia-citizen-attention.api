@@ -255,7 +255,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   }
 
   async getPqrsdfByRequest(filters:IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
-    const {userId, typeReques} =filters;
+    const {userId, typeReques} = filters;
     
     let res: any;
 
