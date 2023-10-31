@@ -12,9 +12,6 @@ export default class AsoAsuntoSolicitud extends BaseModel {
   @column({ columnName: "ASO_ASUNTO", serializeAs: "aso_asunto" })
   public aso_asunto: string;
 
-  @column({ columnName: "ASO_DIAS_HABILES", serializeAs: "aso_dias_habiles" })
-  public aso_dias_habiles: number;
-
   @column({ columnName: "ASO_ACTIVO", serializeAs: "aso_activo" })
   public aso_activo: boolean;
 
