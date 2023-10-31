@@ -29,7 +29,7 @@ export default class AsoAsuntoSolicitud extends BaseModel {
 
   @manyToMany(() => PrgPrograma, {
     pivotTable: "ASP_ASUNTO_SOLICITUD_PROGRAMA",
-    localKey: "id",
+    localKey: "aso_codigo",
     relatedKey: "prg_codigo",
     pivotForeignKey: "ASP_ASUNTO_SOLICITUD",
     serializeAs: "programs",
