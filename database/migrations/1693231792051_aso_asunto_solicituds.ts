@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-      
+
       table
         .increments('ASO_CODIGO')
         .primary()
@@ -14,10 +14,6 @@ export default class extends BaseSchema {
 
       table
         .string('ASO_ASUNTO',100)
-        .notNullable();
-
-      table
-        .integer('ASO_DIAS_HABILES')
         .notNullable();
 
       table
