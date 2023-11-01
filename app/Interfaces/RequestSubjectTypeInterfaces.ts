@@ -17,7 +17,7 @@ export interface IRequestSubjectTypeFilters{
   aso_codigo?: number;
   aso_asunto?: string;
   requestObjectId?: number;
-  programs?: number[];
+  programId?: number;
   page?: number;
   perPage?: number;
 }

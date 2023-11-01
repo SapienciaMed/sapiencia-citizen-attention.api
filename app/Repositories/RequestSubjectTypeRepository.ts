@@ -80,15 +80,9 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     if (filters?.requestObjectId) {
       query.where("requestObjectId", filters.requestObjectId);
     }
-    if (filters?.programs) {
-      query.whereHas("programs", (programsQuery) => {
-        filters.programs?.forEach((program, index) => {
-          if (index > 0) {
-            programsQuery.orWhere("prg_codigo", program);
-          } else {
-            programsQuery.where("prg_codigo", program);
-          }
-        });
+    if (filters?.programId) {
+      query.whereHas("programs", (programQuery) => {
+        programQuery.where("prg_codigo", String(filters.programId));
       });
     }
     const requestSubjectTypesPagination = await query
