@@ -92,7 +92,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
       });
     }
     const requestSubjectTypesPagination = await query
-      .orderBy("order", "desc")
+      .orderBy("aso_codigo", "desc")
       .paginate(filters?.page ?? 1, filters?.perPage ?? 10);
     const { meta } = requestSubjectTypesPagination.serialize();
     let serializeRequestSubjectType = await this.formatRequestSubjectTypes(requestSubjectTypesPagination.all());

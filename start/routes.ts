@@ -42,7 +42,7 @@ Route.group(() => {
     Route.get("/get-by-id/:id", "RequestSubjectTypeController.getRequestSubjectTypeById").middleware(
       "auth:TIPO_DE_ASUNTO_CONSULTAR"
     );
-    Route.post("/get-by-filters", "RequestSubjectTypeController.getRequestSubjectTypeByFilters ").middleware(
+    Route.post("/get-by-filters", "RequestSubjectTypeController.getRequestSubjectTypeByFilters").middleware(
       "auth:TIPO_DE_ASUNTO_CONSULTAR"
     );
     Route.get("/get-request-objects", "RequestSubjectTypeController.getRequestObjects");
