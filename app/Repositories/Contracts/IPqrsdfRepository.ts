@@ -1,5 +1,5 @@
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 import { IPagingData } from "App/Utils/ApiResponses";
 
@@ -15,4 +15,5 @@ export interface IPqrsdfRepository {
   updatePqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;
   uploadFile(file:MultipartFileContract): Promise<boolean>;
   getPqrsdfByRequest(filters:IrequestPqrsdf): Promise<IpqrsdfByReques | null>;
+  createRequestReopen(justification:IrequestReopen): Promise<IrequestReopen | null>;
 }

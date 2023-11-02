@@ -128,4 +128,13 @@ export default class PqrsdfsController {
     }
   }
 
+  public async createRequestReopen({request, response}: HttpContextContract){
+    try {
+      const { justification }  = request.body();      
+      return response.send(await PqrsdfProvider.createRequestReopen(justification));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
 }

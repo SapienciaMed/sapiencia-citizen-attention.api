@@ -1,5 +1,5 @@
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
-import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from '@google-cloud/storage';
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
@@ -12,6 +12,7 @@ import Person from "App/Models/Person";
 import WorkEntity from "App/Models/WorkEntity";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
+import SrbSolicitudReabrir from 'App/Models/SrbSolicitudReabrir';
 
 const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -283,7 +284,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async getPqrsdfByRequest(filters:IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
     const {userId, typeReques} = filters;
-    console.log(typeReques);
     
     let res: any;
 
@@ -326,6 +326,27 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
 
     return  res;
+  }
+
+  async createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null> {
+    console.log(justification[1].pqrsdfId);
+    
+    let res: any;
+    await Database.transaction(async (trx) => {
+        // Crea una nueva solicitud de reapertura
+      const solicitudReabrir = await SrbSolicitudReabrir.create(justification[0], trx);
+      
+        // Actualiza el campo 'PQR_CODSRB_SRB_SOLICITU_REABRIR' en la tabla 'Pqrsdf'
+      await Pqrsdf.query(trx)
+          .where('PQR_CODIGO', justification[1].pqrsdfId)
+          .update('PQR_CODSRB_SRB_SOLICITU_REABRIR', solicitudReabrir.srb_codigo);
+          
+      res = solicitudReabrir
+    });
+    
+    console.log(res);
+    
+    return res?.sbr_estado ? res : null;
   }
 
 }

@@ -69,3 +69,9 @@ export interface IpqrsdfByReques{
     OBS_TERMINO_DIAS?: number;
     PRG_DESCRIPCION?: String;
 }
+
+export interface IrequestReopen {
+  srb_justificacion?: string;
+  sbr_estado?: boolean;
+  pqrsdfId?: number;
+}

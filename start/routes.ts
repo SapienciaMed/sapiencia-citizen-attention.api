@@ -49,6 +49,7 @@ Route.group(() => {
   Route.group(() => {
     Route.post('/get-paginated', 'PqrsdfsController.getPqrsdfPaginated')
     Route.post("/create", "PqrsdfsController.createPqrsdf");
+    Route.post("/create-request-reopen", "PqrsdfsController.createRequestReopen");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");

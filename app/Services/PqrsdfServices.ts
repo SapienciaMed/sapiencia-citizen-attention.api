@@ -2,7 +2,7 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
-import { IPqrsdf, IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 
@@ -93,5 +93,16 @@ export default class PqrsdfServices implements IPqrsdfServices {
 
     return new ApiResponse(res, EResponseCodes.OK);
   };
+
+  public async createRequestReopen(justification: IrequestReopen): Promise<ApiResponse<IrequestReopen | null>> {
+
+    const res = await this.PqrsdfRepository.createRequestReopen(justification);
+    console.log('respo-> ',res);
+    
+    if (!res) {
+      return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "No se puede crear la solicitud");
+    }
+    return new ApiResponse(res, EResponseCodes.OK, "Solicitud creada con éxito");
+  }
 
 }
