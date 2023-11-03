@@ -97,7 +97,6 @@ export default class PqrsdfServices implements IPqrsdfServices {
   public async createRequestReopen(justification: IrequestReopen): Promise<ApiResponse<IrequestReopen | null>> {
 
     const res = await this.PqrsdfRepository.createRequestReopen(justification);
-    console.log('respo-> ',res);
     
     if (!res) {
       return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "No se puede crear la solicitud");

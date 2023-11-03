@@ -48,6 +48,7 @@ export default class Person extends BaseModel {
   @column({ columnName: "PER_CONTRASENA", serializeAs: null })
   public password: string;
 
+  @column({ columnName: "PER_DIRECCION_RESIDENCIA", serializeAs: null })
   public address: string;
 
   @column({ columnName: "PQR_CODPAI_PAIS", serializeAs: "countryId" })
