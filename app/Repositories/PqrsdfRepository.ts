@@ -14,6 +14,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import SrbSolicitudReabrir from 'App/Models/SrbSolicitudReabrir';
 
+
 const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
@@ -344,10 +345,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           
       res = solicitudReabrir
     });
-    
-    console.log(res);
-    
+        
     return res?.sbr_estado ? res : null;
-  }
+  };  
 
 }

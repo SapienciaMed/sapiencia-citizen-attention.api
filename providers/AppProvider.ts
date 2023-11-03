@@ -16,6 +16,7 @@ export default class AppProvider {
     const WorkEntityService = await import("App/Services/WorkEntityServices");
     const AuthService = await import("App/Services/AuthService");
     const RequestSubjectTypeService = await import("App/Services/RequestSubjectTypeServices");
+    const EmailService = await import("App/Services/emailService");
 
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
@@ -66,6 +67,10 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.AuthProvider",
       () => new AuthService.default(new UserRepository.default())
+    );
+    this.app.container.singleton(
+      "core.EmailProvider",
+      () => new EmailService.default()
     );
   }
 

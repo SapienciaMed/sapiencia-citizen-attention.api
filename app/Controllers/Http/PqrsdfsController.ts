@@ -8,6 +8,7 @@ import { ApiResponse } from "App/Utils/ApiResponses";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 import { IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
+import EmailProvider from '@ioc:core.EmailProvider';
 
 export default class PqrsdfsController {
   public async getPqrsdfPaginated({ request, response }: HttpContextContract) {
@@ -130,7 +131,10 @@ export default class PqrsdfsController {
 
   public async createRequestReopen({request, response}: HttpContextContract){
     try {
-      const { justification }  = request.body();      
+      const { justification }  = request.body();
+      console.log();
+        
+      await EmailProvider.responseEmail(['ltangarife@i4digital.com'],justification[0].srb_justificacion)    
       return response.send(await PqrsdfProvider.createRequestReopen(justification));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
