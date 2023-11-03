@@ -65,10 +65,22 @@ export default class RequestSubjectTypeServices implements IRequestSubjectTypeSe
   }
 
   public async updateRequestSubjectType(requestSubjectType: IRequestSubjectType): Promise<ApiResponse<IRequestSubjectType | null>> {
-    const res = await this.RequestSubjectTypeRepository.updateRequestSubjectType(requestSubjectType);
-    if (!res) {
-      return new ApiResponse({} as IRequestSubjectType, EResponseCodes.FAIL, "No se puede actualizar el tipo de asunto");
+    let response: ApiResponse<IRequestSubjectType | null> = new ApiResponse(null, EResponseCodes.OK, "¡Asunto actualizado exitosamente!");
+    const existRequestSubjectType = await this.RequestSubjectTypeRepository.getRequestSubjectTypeByName(requestSubjectType?.aso_asunto, requestSubjectType?.aso_codigo);
+    if (existRequestSubjectType?.aso_codigo) {
+      response.operation.message = "Ya existe un tipo de asunto con este nombre.";
+      response.operation.title = "¡Asunto existente!";
+      response.operation.code = EResponseCodes.FAIL
+    }else{
+      const res = await this.RequestSubjectTypeRepository.updateRequestSubjectType(requestSubjectType);
+      if (!res) {
+        response.operation.message = "No se puede actualizar el tipo de asunto";
+        response.operation.code = EResponseCodes.FAIL
+      }else{
+        response.data = res
+      }
     }
-    return new ApiResponse(res, EResponseCodes.OK, "Tipo de asunto actualizado con éxito");
+
+    return response;
   }
 }

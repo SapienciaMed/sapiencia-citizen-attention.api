@@ -28,8 +28,12 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     return await this.formatRequestSubjectType(res);
   }
 
-  async getRequestSubjectTypeByName(name: string): Promise<IRequestSubjectType | null> {
-    const requestSubjectType = await AsoAsuntoSolicitud.query().where("aso_asunto", name).first();
+  async getRequestSubjectTypeByName(name: string, existsId?: number): Promise<IRequestSubjectType | null> {
+    const existsInId = existsId ? [existsId] : [];
+    const requestSubjectType = await AsoAsuntoSolicitud.query()
+      .where("aso_asunto", name)
+      .whereNotIn("aso_codigo", existsInId)
+      .first();
     return requestSubjectType as IRequestSubjectType;
   }
 
@@ -104,8 +108,9 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     await res.save();
     await res.load("programs");
     await RequestSubjectTypeProgram.query()
+      .where('requestSubjectId',res.aso_codigo)
       .whereIn(
-        "id",
+        "programId",
         res.programs.map((program) => {
           return program.prg_codigo;
         })
