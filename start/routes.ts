@@ -39,11 +39,19 @@ Route.group(() => {
   }).prefix("/day-parametrization");
   /* Tipos de asuntos de solicitud */
   Route.group(() => {
-    Route.get("/get-by-id/:id", "RequestSubjectTypeController.getRequestSubjectTypeById");
-    Route.get("/get-by-filters", "RequestSubjectTypeController.getRequestSubjectTypeByFilters ") ;
+    Route.get("/get-by-id/:id", "RequestSubjectTypeController.getRequestSubjectTypeById").middleware(
+      "auth:TIPO_DE_ASUNTO_CONSULTAR"
+    );
+    Route.post("/get-by-filters", "RequestSubjectTypeController.getRequestSubjectTypeByFilters").middleware(
+      "auth:TIPO_DE_ASUNTO_CONSULTAR"
+    );
     Route.get("/get-request-objects", "RequestSubjectTypeController.getRequestObjects");
-    Route.post("/create", "RequestSubjectTypeController.createRequestSubjectType");
-    Route.post("/update", "RequestSubjectTypeController.updateRequestSubjectType");
+    Route.post("/create", "RequestSubjectTypeController.createRequestSubjectType").middleware(
+      "auth:TIPO_DE_ASUNTO_CREAR"
+    );
+    Route.post("/update", "RequestSubjectTypeController.updateRequestSubjectType").middleware(
+      "auth:TIPO_DE_ASUNTO_EDITAR"
+    );
   }).prefix("/request-subject-type");
   /* PQRSDF */
   Route.group(() => {

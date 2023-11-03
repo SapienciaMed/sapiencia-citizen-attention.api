@@ -80,19 +80,13 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     if (filters?.requestObjectId) {
       query.where("requestObjectId", filters.requestObjectId);
     }
-    if (filters?.programs) {
-      query.whereHas("programs", (programsQuery) => {
-        filters.programs?.forEach((program, index) => {
-          if (index > 0) {
-            programsQuery.orWhere("prg_codigo", program);
-          } else {
-            programsQuery.where("prg_codigo", program);
-          }
-        });
+    if (filters?.programId) {
+      query.whereHas("programs", (programQuery) => {
+        programQuery.where("prg_codigo", String(filters.programId));
       });
     }
     const requestSubjectTypesPagination = await query
-      .orderBy("order", "desc")
+      .orderBy("aso_codigo", "desc")
       .paginate(filters?.page ?? 1, filters?.perPage ?? 10);
     const { meta } = requestSubjectTypesPagination.serialize();
     let serializeRequestSubjectType = await this.formatRequestSubjectTypes(requestSubjectTypesPagination.all());
