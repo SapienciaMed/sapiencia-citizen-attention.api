@@ -132,7 +132,7 @@ export default class PqrsdfsController {
   public async createRequestReopen({request, response}: HttpContextContract){
     try {
       const { justification }  = request.body();    
-      await EmailProvider.responseEmail(['jhonkmope15@gmail.com'],justification[0].srb_justificacion,justification[1]['radicado'])    
+      await EmailProvider.responseEmail(['ltangarife@i4digital.com'],justification[0].srb_justificacion,justification[1]['radicado'])    
       return response.send(await PqrsdfProvider.createRequestReopen(justification));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
