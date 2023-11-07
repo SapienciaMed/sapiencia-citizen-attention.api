@@ -36,6 +36,7 @@ export interface IPqrsdf {
 export interface IPqrsdfFilters {
   page: number;
   perPage: number;
+  id?: number;
   identification?: string;
   programId?: number;
   responseMediumId?: number;

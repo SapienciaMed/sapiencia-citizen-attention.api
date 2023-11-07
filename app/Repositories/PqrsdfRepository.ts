@@ -39,6 +39,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
     }
 
+    if (filters?.id) {
+      query.where("id", filters.id);
+    }
+
     if (filters?.programId) {
       query.where("programId", filters.programId);
     }
