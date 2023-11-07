@@ -35,12 +35,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       .preload("requestType")
       .preload("program")
 
-    if (filters.identification) {
+    if (filters?.identification) {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
     }
 
-    if (filters.programId) {
+    if (filters?.programId) {
       query.where("programId", filters.programId);
+    }
+
+    if (filters?.responseMediumId) {
+      query.where("responseMediumId", filters.responseMediumId);
     }
 
     const res = await query.paginate(filters.page, filters.perPage);
@@ -197,6 +201,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return serializePerson;
   }
 
+
+
   private async formatPqrsdf(pqrsdf: Pqrsdf | null): Promise<IPqrsdf | null> {
     let serializePqrsdf: any = null;
     if (pqrsdf) {
@@ -285,7 +291,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async getPqrsdfByRequest(filters:IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
     const {userId, typeReques} = filters;
-    
+
     let res: any;
 
     try {
@@ -308,7 +314,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           res  = await Database.from('PQR_PQRSDF')
                           .join('ENT_ENTIDAD_TRABAJO',' PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO','ENT_ENTIDAD_TRABAJO.ENT_CODIGO')
                           .join('PER_PERSONAS',' PQR_PQRSDF.PQR_CODPER_PERSONA','PER_PERSONAS.PER_CODIGO')
-                          .join('ASO_ASUNTO_SOLICITUD',' PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD','ASO_ASUNTO_SOLICITUD.ASO_CODIGO')
+                          .join('ASO_ASUNTO_SOLICITUD', ' PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD','ASO_ASUNTO_SOLICITUD.ASO_CODIGO')
                           .join('OBS_OBJECTO_SOLICITUD',' ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD','OBS_OBJECTO_SOLICITUD.OBS_CODIGO')
                           .join('LEP_LISTADO_ESTADO_PQRSDF',' PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF','LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO')
                           .join('PRG_PROGRAMAS',' PQR_PQRSDF.PQR_CODPRG_PROGRAMA','PRG_PROGRAMAS.PRG_CODIGO')
@@ -332,21 +338,21 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null> {
     console.log(justification[1].pqrsdfId);
-    
+
     let res: any;
     await Database.transaction(async (trx) => {
         // Crea una nueva solicitud de reapertura
       const solicitudReabrir = await SrbSolicitudReabrir.create(justification[0], trx);
-      
+
         // Actualiza el campo 'PQR_CODSRB_SRB_SOLICITU_REABRIR' en la tabla 'Pqrsdf'
       await Pqrsdf.query(trx)
           .where('PQR_CODIGO', justification[1].pqrsdfId)
           .update('PQR_CODSRB_SRB_SOLICITU_REABRIR', solicitudReabrir.srb_codigo);
-          
+
       res = solicitudReabrir
     });
-        
+
     return res?.sbr_estado ? res : null;
-  };  
+  };
 
 }
