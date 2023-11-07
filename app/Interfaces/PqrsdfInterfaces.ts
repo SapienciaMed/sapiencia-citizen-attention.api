@@ -34,10 +34,11 @@ export interface IPqrsdf {
 }
 
 export interface IPqrsdfFilters {
-  page: number,
-  perPage: number
-  identification?: string
-  programId?: number
+  page: number;
+  perPage: number;
+  identification?: string;
+  programId?: number;
+  responseMediumId?: number;
 }
 
 export interface IPqrsdfStatus {
@@ -47,28 +48,27 @@ export interface IPqrsdfStatus {
   lep_orden: number;
 }
 
-
 export interface IrequestPqrsdf {
   userId?: number;
   typeReques?: number;
   filter?: string;
 }
 
-export interface IpqrsdfByReques{
-    PQR_CODIGO?: number;
-    PQR_NRO_RADICADO?: number;
-    PQR_FECHA_CREACION?: string;
-    PER_NUMERO_DOCUMENTO?: string;
-    PER_PRIMER_NOMBRE?: string;
-    PER_SEGUNDO_NOMBRE?: string;
-    PER_PRIMER_APELLIDO?: string;
-    PER_SEGUNDO_APELLIDO?: string;
-    ASO_ASUNTO?: string;
-    LEP_ESTADO?: string;
-    OBS_TIPO_DIAS?: string;
-    OBS_TERMINO_DIAS?: number;
-    PRG_DESCRIPCION?: string;
-    SBR_ESTADO?:string;
+export interface IpqrsdfByReques {
+  PQR_CODIGO?: number;
+  PQR_NRO_RADICADO?: number;
+  PQR_FECHA_CREACION?: string;
+  PER_NUMERO_DOCUMENTO?: string;
+  PER_PRIMER_NOMBRE?: string;
+  PER_SEGUNDO_NOMBRE?: string;
+  PER_PRIMER_APELLIDO?: string;
+  PER_SEGUNDO_APELLIDO?: string;
+  ASO_ASUNTO?: string;
+  LEP_ESTADO?: string;
+  OBS_TIPO_DIAS?: string;
+  OBS_TERMINO_DIAS?: number;
+  PRG_DESCRIPCION?: string;
+  SBR_ESTADO?: string;
 }
 
 export interface IrequestReopen {
