@@ -35,20 +35,26 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       .preload("requestType")
       .preload("program")
 
+
+
     if (filters?.identification) {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
     }
 
     if (filters?.id) {
-      query.where("id", filters.id);
+      query.where("id", filters.id)
+    }
+
+    if (filters?.filingNumber) {
+      query.where("filingNumber", filters.filingNumber);
     }
 
     if (filters?.programId) {
       query.where("programId", filters.programId);
     }
 
-    if (filters?.responseMediumId) {
-      query.where("responseMediumId", filters.responseMediumId);
+    if (filters?.requestType) {
+      query.whereHas("requestType", (sub) => sub.where("tso_codigo", String(filters.requestType)));
     }
 
     const res = await query.paginate(filters.page, filters.perPage);

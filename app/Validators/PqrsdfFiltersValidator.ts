@@ -9,7 +9,9 @@ export default class PqrsdfFiltersValidator {
     page: schema.number(),
     perPage: schema.number(),
     identification: schema.string.optional(),
+    filingNumber: schema.string.optional(),
     programId: schema.number.optional(),
+    requestType: schema.number.optional(),
   });
 
 

@@ -37,9 +37,10 @@ export interface IPqrsdfFilters {
   page: number;
   perPage: number;
   id?: number;
+  filingNumber?: string;
   identification?: string;
   programId?: number;
-  responseMediumId?: number;
+  requestType?: number;
 }
 
 export interface IPqrsdfStatus {
