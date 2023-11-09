@@ -4,7 +4,7 @@ import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IPqrsdfServices {
-  createPqrsdf(prsdf: IPqrsdf): Promise<ApiResponse<IPqrsdf | null>>;
+  createPqrsdf(prsdf: IPqrsdf, file:MultipartFileContract): Promise<ApiResponse<IPqrsdf | null>>;
   getPrsdfById(id: number): Promise<ApiResponse<IPqrsdf | null>>;
   getPersonByDocument(identification: number): Promise<ApiResponse<IPerson | null>>;
   getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>>

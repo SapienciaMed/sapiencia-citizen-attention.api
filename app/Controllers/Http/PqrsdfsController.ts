@@ -69,8 +69,11 @@ export default class PqrsdfsController {
 
   public async createPqrsdf({ request, response }: HttpContextContract) {
     try {
+      const files = request.files('files');
       const { pqrsdf }  = request.body();
-      return response.send(await PqrsdfProvider.createPqrsdf(pqrsdf));
+      const dataPqrsdf = JSON.parse(pqrsdf)
+
+      return response.send(await PqrsdfProvider.createPqrsdf(dataPqrsdf,files[0]));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
@@ -78,10 +81,11 @@ export default class PqrsdfsController {
 
   public async uploadFile({ request, response }: HttpContextContract) {
     const files = request.files('files');
-  
+    
     if(files) {
       const results = await Promise.all(
         files.map(async (file) => {
+          
           if(file.tmpPath) {
             const fileUrl = await PqrsdfProvider.uploadFile(file);
             return fileUrl;

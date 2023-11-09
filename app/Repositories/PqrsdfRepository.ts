@@ -66,7 +66,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
-  async createPqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
+  async createPqrsdf(pqrsdf: IPqrsdf,file:MultipartFileContract): Promise<IPqrsdf | null> {
     let res: any;
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
@@ -79,8 +79,23 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           : (await Person.create(pqrsdf.person)).useTransaction(trx);
 
         //TODO UPLOAD
+        if(file){
+
+          const bucket = this.storage.bucket(bucketName);
+          if (!file.tmpPath) return false;
+          const [fileCloud] = await bucket.upload(file.tmpPath, {
+            destination: `${"proyectos-digitales/"}${file.clientName}`,
+          });
+          
+          
+          if(fileCloud.metadata.id){
+            pqrsdf.file.name = fileCloud.metadata.id
+          }
+          
+        }
         let upload = true;
-        //pqrsdf.file?.name = rutaResultadoDeUpload;
+          
+        //pqrsdf.file.name = fileCloud.metadata.id
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
           pqrsdf.fileId = newFile.id;

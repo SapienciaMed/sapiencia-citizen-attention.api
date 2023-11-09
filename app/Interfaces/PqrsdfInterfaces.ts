@@ -28,7 +28,7 @@ export interface IPqrsdf {
   responsible?: IWorkEntity;
   status?: IPqrsdfStatus;
   requestSubject?: IRequestSubject;
-  file?: IFile;
+  file: IFile;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
