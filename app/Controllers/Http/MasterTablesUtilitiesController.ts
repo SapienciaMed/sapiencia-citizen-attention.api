@@ -39,4 +39,12 @@ export default class MasterTablesUtilitiesController {
     }
   };
 
+  public async getTypeLegalEntity({ response }: HttpContextContract) {
+    try {
+      response.send( await MasterTablesUtilityProvider.getTypeLegalEntity())
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  };
+
 }

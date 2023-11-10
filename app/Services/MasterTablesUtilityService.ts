@@ -3,6 +3,7 @@ import { IMasterTablesUtilityService } from "./Contracts/IMasterTablesUtilitySer
 import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
+import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 
 export default class MasterTablesUtilityService implements IMasterTablesUtilityService {
 
@@ -42,6 +43,15 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
         
         if(!resp){
             return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+        }
+        return new ApiResponse(resp, EResponseCodes.OK);
+    }
+
+    public async getTypeLegalEntity(): Promise<ApiResponse<[] | IGenericData[]>> {
+        const resp = await this.MasterTablesUtilityRepository.getTypeLegalEntity();
+        
+        if(!resp){
+            return  new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }

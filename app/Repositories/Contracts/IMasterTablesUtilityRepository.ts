@@ -1,3 +1,4 @@
+import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces"
 
 export interface IMasterTablesUtilityRepository{
@@ -5,4 +6,5 @@ export interface IMasterTablesUtilityRepository{
     getTypeDocuemnt(): Promise< ItypeRequest[] | [] >;
     getAttentionChannels(): Promise< ItypeRequest[] | [] >;
     getAttentionChannelsDetails(id:number): Promise< ItypeRequest[] | [] >;
+    getTypeLegalEntity(): Promise< IGenericData[] | [] >;
 }

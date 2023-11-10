@@ -4,3 +4,10 @@ export interface ItypeRequest {
     TSO_ACTIVO : boolean;
     TSO_ORDEN :number;
 }
+
+export interface IGenericData {
+    id: number;
+    descrition?: string;
+    status?: boolean;
+    orden: number;
+  }

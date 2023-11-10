@@ -4,6 +4,8 @@ import CnaCanalesAtencion from "App/Models/CnaCanalesAtencion";
 import CadCanalesAtencionDetalle from "App/Models/CadCanalesAtencionDetalle";
 import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces";
 import Database from "@ioc:Adonis/Lucid/Database";
+import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
+import TejTipoEntidadJuridica from "App/Models/TejTipoEntidadJuridica";
 
 
 export default class MasterTablesUtilityRepository implements IMasterTablesUtilityRepository {
@@ -44,8 +46,15 @@ export default class MasterTablesUtilityRepository implements IMasterTablesUtili
                                         .where("cad_id_canal", "=" , id)
                                         .select("cad_codigo","cad_nombre")
         resp = tensionChannels
-
         return resp ? resp : null;  
     };
+
+    async getTypeLegalEntity(): Promise<[] | IGenericData[]> {
+        let resp: any;
+        const legalEntities = await TejTipoEntidadJuridica.query()
+                                    .select('tej_codigo','tej_nombre')
+        resp = legalEntities 
+        return resp ? resp : null;  
+    }
 
 }

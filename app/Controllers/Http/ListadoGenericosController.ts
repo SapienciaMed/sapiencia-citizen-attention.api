@@ -53,7 +53,7 @@ export default class ListadoGenericosController {
         try {
             const departamentos = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                        .where('LGE_AGRUPADOR', 'DEPARTAMENTOS')
-                                        //.select('LGE_CODIGO','LGE_ELEMENTO_CODIGO')
+                                       .select('LGE_CODIGO','LGE_ELEMENTO_CODIGO','LGE_ELEMENTO_DESCRIPCION')
             return response.send({ 
                 data: departamentos,
                 status: true
@@ -76,7 +76,7 @@ export default class ListadoGenericosController {
         try {
             const municipios = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                        .where('LGE_CAMPOS_ADICIONALES','LIKE', `{"departmentId": "${id}"}%`)
-                                        //.select('LGE_CODIGO','LGE_ELEMENTO_CODIGO')
+                                        .select('LGE_CODIGO','LGE_ELEMENTO_CODIGO','LGE_ELEMENTO_DESCRIPCION')
             return response.send({ 
                 data: municipios,
                 status: true
