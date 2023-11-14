@@ -27,6 +27,7 @@ export interface IPqrsdf {
   responseMedium?: IResponseMedium;
   responsible?: IWorkEntity;
   status?: IPqrsdfStatus;
+  program?:Iprogram;
   requestSubject?: IRequestSubject;
   file: IFile;
   createdAt?: DateTime;
@@ -54,6 +55,15 @@ export interface IrequestPqrsdf {
   userId?: number;
   typeReques?: number;
   filter?: string;
+}
+
+export interface Iprogram{
+  prg_codigo:number;
+  prg_descripcion: string;
+  clp_codigo:number;
+  clp_descripcion: string;
+  dep_codigo:number;
+  dep_descripcion: string;
 }
 
 export interface IpqrsdfByReques {

@@ -238,6 +238,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdf.load("file");
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
+      await pqrsdf.load('program',(progam)=>{
+        progam.preload('clpClasificacionPrograma');
+        progam.preload('depDependencia');
+      })
 
       const municipalities = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.MUNICIPALITIES);
       const documentTypes = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DOCUMENT_TYPES);
