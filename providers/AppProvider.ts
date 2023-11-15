@@ -17,6 +17,7 @@ export default class AppProvider {
     const AuthService = await import("App/Services/AuthService");
     const RequestSubjectTypeService = await import("App/Services/RequestSubjectTypeServices");
     const EmailService = await import("App/Services/emailService");
+    const StorageService = await import("../app/Services/StorageService");
 
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
@@ -71,6 +72,10 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.EmailProvider",
       () => new EmailService.default()
+    );
+    this.app.container.singleton(
+      "core.StorageProvider",
+      () => new StorageService.default()
     );
   }
 

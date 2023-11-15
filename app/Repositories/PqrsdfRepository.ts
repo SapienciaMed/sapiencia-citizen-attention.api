@@ -22,7 +22,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   storage: Storage;
 
   constructor(private GenericListsExternalService: IGenericListsExternalService) {
-    this.storage = new Storage({ keyFilename });
+    this.storage = new Storage({ keyFilename }); //-->Local
+    //this.storage = new Storage();
   }
 
   async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
@@ -86,7 +87,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           const [fileCloud] = await bucket.upload(file.tmpPath, {
             destination: `${"proyectos-digitales/"}${file.clientName}`,
           });
-          
           
           if(fileCloud.metadata.id){
             pqrsdf.file.name = fileCloud.metadata.id
@@ -195,6 +195,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async getPqrsdfById(id: number): Promise<IPqrsdf | null> {
     const pqrsdf = await Pqrsdf.find(id);
+          if(pqrsdf){
+            await pqrsdf.load('program',(progam)=>{
+              progam.preload('clpClasificacionPrograma');
+              progam.preload('depDependencia');
+            })
+          }
     let serializePqrsdf: IPqrsdf | null = await this.formatPqrsdf(pqrsdf);
 
     return serializePqrsdf?.id ? serializePqrsdf : null;
@@ -238,10 +244,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdf.load("file");
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
-      await pqrsdf.load('program',(progam)=>{
-        progam.preload('clpClasificacionPrograma');
-        progam.preload('depDependencia');
-      })
 
       const municipalities = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.MUNICIPALITIES);
       const documentTypes = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DOCUMENT_TYPES);
@@ -312,6 +314,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       const [fileCloud] = await bucket.upload(file.tmpPath, {
         destination: `${"proyectos-digitales/"}${file.clientName}`,
       });
+  
       return !!fileCloud;
     } catch (error) {
         return false;
@@ -366,8 +369,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   }
 
   async createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null> {
-    console.log(justification[1].pqrsdfId);
-
+    
     let res: any;
     await Database.transaction(async (trx) => {
         // Crea una nueva solicitud de reapertura

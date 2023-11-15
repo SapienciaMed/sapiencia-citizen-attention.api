@@ -84,6 +84,12 @@ Route.group(() => {
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
   }).prefix("/work-entity");
+
+  /*ARCHIVOS*/
+  Route.group(()=>{
+    Route.get("get-file","StorageController.getFile")
+  }).prefix("file");
+
 })
   .prefix("/api/v1/")
   .middleware("auth");
