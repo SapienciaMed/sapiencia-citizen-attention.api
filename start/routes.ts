@@ -67,6 +67,21 @@ Route.group(() => {
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
   }).prefix("/pqrsdf");
 
+  /* Citizen attentions */
+  Route.group(() => {
+    Route.post("/create", "WorkEntityController.createCitizenAttention").middleware("auth:ATENCION_CIUDADANA_CREAR");
+    Route.post("/get-attention-request-types", "WorkEntityController.getAttentionRequestTypes");
+    Route.post("/get-corregimientos", "WorkEntityController.getCorregimientos");
+    Route.post("/get-dependencies", "WorkEntityController.getDependencies");
+    Route.post("/get-programs", "WorkEntityController.getPrograms");
+    Route.post("/get-request-subject-types", "WorkEntityController.getRequestSubjectTypes");
+    Route.post("/get-sevice-channels", "WorkEntityController.getSeviceChannels");
+    Route.post("/get-value-groups", "WorkEntityController.getValueGroups");
+    Route.post("/get-citizen-attention-by-filters", "WorkEntityController.getCitizenAttentionByFilters");
+    Route.post("/get-citizen-attention-by-id", "WorkEntityController.getCitizenAttentionById");
+    Route.post("/update", "WorkEntityController.updateCitizenAttention");
+  }).prefix('/citizen-attention');
+
   /* Work entities */
   Route.group(() => {
     Route.post("/create", "WorkEntityController.createWorkEntity").middleware("auth:ENTIDADES_TRABAJO_CREAR");

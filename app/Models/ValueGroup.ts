@@ -1,4 +1,5 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import UserType from "./UserType";
 
 export default class ValueGroup extends BaseModel {
   public static table = "GVA_GRUPOS_VALOR";
@@ -14,4 +15,10 @@ export default class ValueGroup extends BaseModel {
 
   @column({ columnName: "GVA_ORDEN", serializeAs: "order" })
   public order: number;
+
+  @hasMany(() => UserType, {
+    localKey: "id",
+    foreignKey: "valueGroupId",
+  })
+  public userTypes: HasMany<typeof UserType>;
 }

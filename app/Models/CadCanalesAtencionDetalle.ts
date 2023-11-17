@@ -1,4 +1,4 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm';
 
 export default class CadCanalesAtencionDetalle extends BaseModel {
 
@@ -11,7 +11,7 @@ export default class CadCanalesAtencionDetalle extends BaseModel {
   public cad_nombre: string;
 
   @column({ columnName:'CAD_ID_CANAL', serializeAs:'cad_id_canal'})
-  public cad_id_canal: Number;
+  public cad_id_canal: number;
 
   @column({ columnName:'CAD_ACTIVO', serializeAs:'cad_activo' })
   public cad_activo: boolean;

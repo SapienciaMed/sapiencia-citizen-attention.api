@@ -23,5 +23,5 @@ export default class UserType extends BaseModel {
     localKey: "id",
     foreignKey: "valueGroupId",
   })
-  public status: BelongsTo<typeof ValueGroup>;
+  public valueGroup: BelongsTo<typeof ValueGroup>;
 }
