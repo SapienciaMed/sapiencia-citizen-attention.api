@@ -87,8 +87,8 @@ Route.group(() => {
   }).prefix("/work-entity");
 
   /*ARCHIVOS*/
-  Route.group(()=>{
-    Route.get("get-file","StorageController.getFile")
+  Route.group(() => {
+    Route.get("get-file", "StorageController.getFile")
   }).prefix("file");
 
 })
@@ -107,6 +107,7 @@ Route.group(() => {
   Route.get("/get-type-legal-entity", "MasterTablesUtilitiesController.getTypeLegalEntity");
   Route.get("/get-Response-type", "MasterTablesUtilitiesController.getTypeResponsePqrsdf");
   Route.get("/get-factors", "MasterTablesUtilitiesController.getFactors");
+  Route.get("/requestSubject", "MasterTablesUtilitiesController.getRequestSubject");
 }).prefix("/api/v1/utility");
 
 Route.group(() => {
@@ -128,5 +129,5 @@ Route.group(() => {
 // *************************************************************************
 
 Route.group(() => {
-    Route.post("/signin", "AuthBeneficiariosController.signIn");
+  Route.post("/signin", "AuthBeneficiariosController.signIn");
 }).prefix("/api/v1/auth");

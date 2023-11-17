@@ -7,13 +7,13 @@ import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 
 export default class MasterTablesUtilityService implements IMasterTablesUtilityService {
 
-    constructor( private MasterTablesUtilityRepository: IMasterTablesUtilityRepository ){}
+    constructor(private MasterTablesUtilityRepository: IMasterTablesUtilityRepository) { }
 
-    public async getTypeRequest(): Promise<ApiResponse<ItypeRequest []|[] >> {
+    public async getTypeRequest(): Promise<ApiResponse<ItypeRequest[] | []>> {
         const resp = await this.MasterTablesUtilityRepository.getTypeRequest();
-        
-        if(!resp){
-            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de solicitud");
+
+        if (!resp) {
+            return new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de solicitud");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }
@@ -21,9 +21,9 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
     public async getTypeDocument(): Promise<ApiResponse<ItypeRequest[] | []>> {
 
         const resp = await this.MasterTablesUtilityRepository.getTypeDocuemnt();
-        
-        if(!resp){
-            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+
+        if (!resp) {
+            return new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }
@@ -31,27 +31,27 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
     public async getTensionChannels(): Promise<ApiResponse<ItypeRequest[] | []>> {
 
         const resp = await this.MasterTablesUtilityRepository.getAttentionChannels();
-        
-        if(!resp){
-            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+
+        if (!resp) {
+            return new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }
 
     public async getAttentionChannelsDetails(id: number): Promise<ApiResponse<ItypeRequest[] | []>> {
         const resp = await this.MasterTablesUtilityRepository.getAttentionChannelsDetails(id);
-        
-        if(!resp){
-            return  new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+
+        if (!resp) {
+            return new ApiResponse({} as ItypeRequest[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }
 
     public async getTypeLegalEntity(): Promise<ApiResponse<[] | IGenericData[]>> {
         const resp = await this.MasterTablesUtilityRepository.getTypeLegalEntity();
-        
-        if(!resp){
-            return  new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+
+        if (!resp) {
+            return new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }
@@ -59,19 +59,29 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
     public async getTypeResponsePqrsdf(): Promise<ApiResponse<[] | IGenericData[]>> {
 
         const resp = await this.MasterTablesUtilityRepository.getTypeResponsePqrsdf();
-        
-        if(!resp){
-            return  new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+
+        if (!resp) {
+            return new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
     }
 
     public async getFactors(): Promise<ApiResponse<[] | IGenericData[]>> {
         const resp = await this.MasterTablesUtilityRepository.getFactors();
-        
-        if(!resp){
-            return  new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+
+        if (!resp) {
+            return new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }
         return new ApiResponse(resp, EResponseCodes.OK);
+    }
+
+    public async getRequestSubject(): Promise<ApiResponse<any>> {
+        const res = await this.MasterTablesUtilityRepository.getRequestSubject()
+
+        console.log(res)
+        if (!res) {
+            return new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+        }
+        return new ApiResponse(res, EResponseCodes.OK);
     }
 }
