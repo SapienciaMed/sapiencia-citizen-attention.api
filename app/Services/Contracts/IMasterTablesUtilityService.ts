@@ -8,4 +8,6 @@ export interface IMasterTablesUtilityService {
     getTensionChannels(): Promise<ApiResponse<ItypeRequest []|[] >>
     getAttentionChannelsDetails(id:number): Promise<ApiResponse<ItypeRequest []|[] >>
     getTypeLegalEntity(): Promise<ApiResponse<IGenericData[]|[] >>
+    getTypeResponsePqrsdf(): Promise<ApiResponse<IGenericData[]|[] >>
+    getFactors(): Promise<ApiResponse<IGenericData[]|[] >>
 }

@@ -7,4 +7,6 @@ export interface IMasterTablesUtilityRepository{
     getAttentionChannels(): Promise< ItypeRequest[] | [] >;
     getAttentionChannelsDetails(id:number): Promise< ItypeRequest[] | [] >;
     getTypeLegalEntity(): Promise< IGenericData[] | [] >;
+    getTypeResponsePqrsdf(): Promise< IGenericData[] | [] >;
+    getFactors(): Promise< IGenericData[] | [] >;
 }

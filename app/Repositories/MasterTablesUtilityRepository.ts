@@ -6,6 +6,8 @@ import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 import TejTipoEntidadJuridica from "App/Models/TejTipoEntidadJuridica";
+import ResponseType from "App/Models/ResponseType";
+import Factor from "App/Models/Factor";
 
 
 export default class MasterTablesUtilityRepository implements IMasterTablesUtilityRepository {
@@ -55,6 +57,22 @@ export default class MasterTablesUtilityRepository implements IMasterTablesUtili
                                     .select('tej_codigo','tej_nombre')
         resp = legalEntities 
         return resp ? resp : null;  
+    }
+
+    async getTypeResponsePqrsdf(): Promise<IGenericData[] | []> {
+        let resp: any;
+        const typeResponsePqrsdf = await ResponseType.query()
+                                            .where('isActive',1)
+                                            .select('id','description');
+        resp = typeResponsePqrsdf;
+        return resp ? resp : null; 
+    }
+
+    async getFactors(): Promise<[] | IGenericData[]> {
+        let resp: any;
+        const factors = await Factor.query();
+        resp = factors;
+        return resp ? resp : null; 
     }
 
 }

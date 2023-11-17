@@ -56,4 +56,22 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
         return new ApiResponse(resp, EResponseCodes.OK);
     }
 
+    public async getTypeResponsePqrsdf(): Promise<ApiResponse<[] | IGenericData[]>> {
+
+        const resp = await this.MasterTablesUtilityRepository.getTypeResponsePqrsdf();
+        
+        if(!resp){
+            return  new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+        }
+        return new ApiResponse(resp, EResponseCodes.OK);
+    }
+
+    public async getFactors(): Promise<ApiResponse<[] | IGenericData[]>> {
+        const resp = await this.MasterTablesUtilityRepository.getFactors();
+        
+        if(!resp){
+            return  new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
+        }
+        return new ApiResponse(resp, EResponseCodes.OK);
+    }
 }

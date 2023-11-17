@@ -83,6 +83,7 @@ Route.group(() => {
     Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
+    Route.get("/get-Entitymanagers-by-entityType-id/:id", "WorkEntityController.getEntityManagersByEntityTypeId");
   }).prefix("/work-entity");
 
   /*ARCHIVOS*/
@@ -104,6 +105,8 @@ Route.group(() => {
   Route.get("/channel-attention", "MasterTablesUtilitiesController.getTensionChannels");
   Route.get("/channel-attention-details/:id", "MasterTablesUtilitiesController.getAttentionChannelsDetails");
   Route.get("/get-type-legal-entity", "MasterTablesUtilitiesController.getTypeLegalEntity");
+  Route.get("/get-Response-type", "MasterTablesUtilitiesController.getTypeResponsePqrsdf");
+  Route.get("/get-factors", "MasterTablesUtilitiesController.getFactors");
 }).prefix("/api/v1/utility");
 
 Route.group(() => {

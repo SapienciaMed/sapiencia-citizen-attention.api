@@ -15,15 +15,15 @@ import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import SrbSolicitudReabrir from 'App/Models/SrbSolicitudReabrir';
 
 
-const keyFilename = process.env.GCLOUD_KEYFILE;
+//const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
   storage: Storage;
 
   constructor(private GenericListsExternalService: IGenericListsExternalService) {
-    this.storage = new Storage({ keyFilename }); //-->Local
-    //this.storage = new Storage();
+    //this.storage = new Storage({ keyFilename }); //-->Local
+    this.storage = new Storage();
   }
 
   async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {

@@ -20,4 +20,5 @@ export interface IWorkEntityRepository {
   getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>>;
   createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
   updateWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
+  getEntityManagersByEntityTypeId(id: number): Promise<IWorkEntity | null>;
 }

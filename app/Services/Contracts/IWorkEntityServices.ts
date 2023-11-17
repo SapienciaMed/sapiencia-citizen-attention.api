@@ -13,4 +13,5 @@ export interface IWorkEntityServices {
   getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IPagingData<IWorkEntity | null>>>;
   createWorkEntity(workEntity: IWorkEntity): Promise<ApiResponse<IWorkEntity | null>>;
   updateWorkEntity(workEntity: IWorkEntity): Promise<ApiResponse<IWorkEntity | null>>;
+  getEntityManagersByEntityTypeId(id: number): Promise<ApiResponse<IWorkEntity | null>>;
 }

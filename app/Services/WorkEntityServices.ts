@@ -110,4 +110,14 @@ export default class WorkEntityServices implements IWorkEntityServices {
     }
     return response;
   }
+
+  public async getEntityManagersByEntityTypeId(id: number): Promise<ApiResponse<IWorkEntity | null>> {
+    const res = await this.WorkEntityRepository.getEntityManagersByEntityTypeId(id);
+
+    if (!res) {
+      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
 }

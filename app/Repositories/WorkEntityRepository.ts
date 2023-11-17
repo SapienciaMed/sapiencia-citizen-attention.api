@@ -197,5 +197,28 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       );
     }
     return await this.formatWorkEntity(res);
+  };
+
+  async getEntityManagersByEntityTypeId(id: number): Promise<IWorkEntity | null> {
+    let resp: any;
+    let userIds:number[] = []
+    const manageEntity = await WorkEntity.query()
+                                  .where('workEntityTypeId',id)
+                                  .where('status',1);
+    
+    manageEntity.map((workEntity)=>{
+        userIds.push(workEntity.userId)
+    })  
+    const arrayUsers = (await (this.AuthExternalService.getUsersByIds(userIds))).data;
+    
+    const users = arrayUsers.map((user)=>{
+      return{
+        id: user.id,
+        fullName: `${user.names} ${user.lastNames}`
+      }
+    })
+
+    resp = users;
+    return resp ? resp : null; 
   }
 }

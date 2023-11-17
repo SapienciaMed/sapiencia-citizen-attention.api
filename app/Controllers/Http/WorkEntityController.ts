@@ -73,5 +73,15 @@ export default class WorkEntityController {
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
+  };
+
+  public async getEntityManagersByEntityTypeId({ request, response }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await WorkEntityProvider.getEntityManagersByEntityTypeId(id));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
   }
+
 }

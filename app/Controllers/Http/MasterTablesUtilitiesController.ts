@@ -47,4 +47,20 @@ export default class MasterTablesUtilitiesController {
     }
   };
 
+  public async getTypeResponsePqrsdf({ response }: HttpContextContract) {
+    try {
+      response.send( await MasterTablesUtilityProvider.getTypeResponsePqrsdf())
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  };
+
+  public async getFactors({ response }: HttpContextContract) {
+    try {
+      response.send( await MasterTablesUtilityProvider.getFactors())
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  };
+
 }
