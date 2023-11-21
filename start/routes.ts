@@ -69,17 +69,19 @@ Route.group(() => {
 
   /* Citizen attentions */
   Route.group(() => {
-    Route.post("/create", "WorkEntityController.createCitizenAttention").middleware("auth:ATENCION_CIUDADANA_CREAR");
-    Route.post("/get-attention-request-types", "WorkEntityController.getAttentionRequestTypes");
-    Route.post("/get-corregimientos", "WorkEntityController.getCorregimientos");
-    Route.post("/get-dependencies", "WorkEntityController.getDependencies");
-    Route.post("/get-programs", "WorkEntityController.getPrograms");
-    Route.post("/get-request-subject-types", "WorkEntityController.getRequestSubjectTypes");
-    Route.post("/get-sevice-channels", "WorkEntityController.getSeviceChannels");
-    Route.post("/get-value-groups", "WorkEntityController.getValueGroups");
-    Route.post("/get-citizen-attention-by-filters", "WorkEntityController.getCitizenAttentionByFilters");
-    Route.post("/get-citizen-attention-by-id", "WorkEntityController.getCitizenAttentionById");
-    Route.post("/update", "WorkEntityController.updateCitizenAttention");
+    Route.get("/get-stratums", "CitizenAttentionController.getStratums");
+    Route.get("/get-programs", "CitizenAttentionController.getPrograms");
+    Route.post("/update", "CitizenAttentionController.updateCitizenAttention");
+    Route.get("/get-value-groups", "CitizenAttentionController.getValueGroups");
+    Route.get("/get-dependencies", "CitizenAttentionController.getDependencies");
+    Route.get("/get-document-type", "ListadoGenericosController.getTypeDocuement")
+    Route.get("/get-corregimientos", "CitizenAttentionController.getCorregimientos");
+    Route.get("/get-sevice-channels", "CitizenAttentionController.getSeviceChannels");
+    Route.get("/get-request-subject-types", "CitizenAttentionController.getRequestSubjectTypes");
+    Route.get("/get-by-id", "CitizenAttentionController.getCitizenAttentionById");
+    Route.get("/get-attention-request-types", "CitizenAttentionController.getAttentionRequestTypes");
+    Route.post("/get-by-filters", "CitizenAttentionController.getCitizenAttentionByFilters");
+    Route.post("/create", "CitizenAttentionController.createCitizenAttention").middleware("auth:ATENCION_CIUDADANA_CREAR");
   }).prefix('/citizen-attention');
 
   /* Work entities */

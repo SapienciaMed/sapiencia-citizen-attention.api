@@ -19,8 +19,13 @@ import PrgPrograma from "App/Models/PrgPrograma";
 import ValueGroup from "App/Models/ValueGroup";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { ICitizenAttentionRepository } from "./Contracts/ICitizenAttentionRepository";
+import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
+import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 
 export default class CitizenAttentionRepository implements ICitizenAttentionRepository {
+  constructor(private GenericListsExternalService: IGenericListsExternalService) {}
+
   async createCitizenAttention(citizenAttention: ICitizenAttention): Promise<ICitizenAttention | null> {
     const res = await CitizenAttention.create(citizenAttention);
     return await this.formatCitizenAttention(res);
@@ -36,13 +41,22 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     return res.map((model) => model.serialize() as IAttentionRequestType);
   }
 
+  async getStratums(): Promise<IGenericData[]> {
+    const res = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.STRATUM);
+    return res.data;
+  }
+
   async getCorregimientos(): Promise<ICorregimiento[]> {
     const res = await Corregimiento.query().orderBy("order");
     return res.map((model) => model.serialize() as ICorregimiento);
   }
 
   async getDependencies(): Promise<IDependence[]> {
-    const res = await DepDependencia.query().orderBy("dep_orden");
+    const res = await DepDependencia.query()
+      .preload("programs", (program) => {
+        program.preload("affairs");
+      })
+      .orderBy("dep_orden");
     return res.map((model) => model.serialize() as IDependence);
   }
 
@@ -81,9 +95,13 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     let serializeCitizenAttention: any;
     if (citizenAttention) {
       await citizenAttention.load("program");
-      await citizenAttention.load("userType");
+      if (citizenAttention.userTypeId) {
+        await citizenAttention.load("userType");
+      }
       await citizenAttention.load("dependency");
-      await citizenAttention.load("corregimiento");
+      if (citizenAttention.corregimientoId) {
+        await citizenAttention.load("corregimiento");
+      }
       await citizenAttention.load("requestSubjectType");
       await citizenAttention.load("attentionRequestType");
       await citizenAttention.load("detailServiceChannel");
@@ -99,6 +117,12 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     const query = CitizenAttention.query();
     if (filters?.businessName) {
       query.whereILike("businessName", `%${filters.businessName}%`);
+    }
+    if (filters?.userId) {
+      query.where("userId", filters.userId);
+    }
+    if (filters?.email) {
+      query.whereILike("businessName", `%${filters.email}%`);
     }
     if (filters?.attentionRequestTypeId) {
       query.where("attentionRequestTypeId", filters.attentionRequestTypeId);

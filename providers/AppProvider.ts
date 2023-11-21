@@ -16,6 +16,7 @@ export default class AppProvider {
     const WorkEntityService = await import("App/Services/WorkEntityServices");
     const AuthService = await import("App/Services/AuthService");
     const RequestSubjectTypeService = await import("App/Services/RequestSubjectTypeServices");
+    const CitizenAttentionService = await import("App/Services/CitizenAttentionServices");
     const EmailService = await import("App/Services/emailService");
     const StorageService = await import("../app/Services/StorageService");
 
@@ -36,6 +37,7 @@ export default class AppProvider {
     const PqrsdfRepository = await import("App/Repositories/PqrsdfRepository");
     const WorkEntityRepository = await import("App/Repositories/WorkEntityRepository");
     const RequestSubjectTypeRepository = await import("App/Repositories/RequestSubjectTypeRepository");
+    const CitizenAttentionRepository = await import("App/Repositories/CitizenAttentionRepository");
 
     /**************************************************************************/
     /******************************** CORE  ***********************************/
@@ -66,17 +68,15 @@ export default class AppProvider {
       () => new RequestSubjectTypeService.default(new RequestSubjectTypeRepository.default())
     );
     this.app.container.singleton(
-      "core.AuthProvider",
-      () => new AuthService.default(new UserRepository.default())
+      "core.CitizenAttentionProvider",
+      () =>
+        new CitizenAttentionService.default(
+          new CitizenAttentionRepository.default(new GenericListsExternalService.default())
+        )
     );
-    this.app.container.singleton(
-      "core.EmailProvider",
-      () => new EmailService.default()
-    );
-    this.app.container.singleton(
-      "core.StorageProvider",
-      () => new StorageService.default()
-    );
+    this.app.container.singleton("core.AuthProvider", () => new AuthService.default(new UserRepository.default()));
+    this.app.container.singleton("core.EmailProvider", () => new EmailService.default());
+    this.app.container.singleton("core.StorageProvider", () => new StorageService.default());
   }
 
   public async boot() {

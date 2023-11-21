@@ -41,8 +41,17 @@ export default class CitizenAttention extends BaseModel {
   @column({ columnName: "ACI_NUMERO_CONTACTO_SECUNDARIO", serializeAs: "secondContactNumber" })
   public secondContactNumber: string;
 
+  @column({ columnName: "ACI_CORREO", serializeAs: "email" })
+  public email: string;
+
   @column({ columnName: "ACI_OBSERVACION", serializeAs: "observation" })
   public observation: string;
+
+  @column({ columnName: "ACI_CODEST_ESTRATO", serializeAs: "stratumId" })
+  public stratumId: number;
+
+  @column({ columnName: "USUARIO_CREA", serializeAs: "userId" })
+  public userId: number;
 
   @column({ columnName: "ACI_CODCAD_CANAL_DETALLE", serializeAs: "DetailServiceChannelId" })
   public detailServiceChannelId: number;

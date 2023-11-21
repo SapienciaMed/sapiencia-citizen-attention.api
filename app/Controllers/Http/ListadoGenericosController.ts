@@ -6,12 +6,12 @@ import { ApiResponse } from 'App/Utils/ApiResponses';
 export default class ListadoGenericosController {
 
     public async getTypeDocuement({ response }: HttpContextContract ) {
-        
+
         try {
             const typeDocuments = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                         .where('LGE_AGRUPADOR','TIPOS_DOCUMENTOS')
-                                        .select('LGE_CODIGO','LGE_ELEMENTO_DESCRIPCION')
-            return response.send({ 
+                                        .select('LGE_CODIGO', 'LGE_ELEMENTO_CODIGO','LGE_ELEMENTO_DESCRIPCION')
+            return response.send({
                 data: typeDocuments,
                 status: true
             });
@@ -27,12 +27,12 @@ export default class ListadoGenericosController {
     };
 
     public async getPaises({ response }: HttpContextContract ) {
-        
+
         try {
             const paises = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                         .where('LGE_AGRUPADOR','PAISES')
                                         .select('LGE_CODIGO','LGE_ELEMENTO_DESCRIPCION')
-            return response.send({ 
+            return response.send({
                 data: paises,
                 status: true
             });
@@ -48,13 +48,13 @@ export default class ListadoGenericosController {
     };
 
     public async getDepartamentos({ response }: HttpContextContract ) {
-        
+
 
         try {
             const departamentos = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                        .where('LGE_AGRUPADOR', 'DEPARTAMENTOS')
                                        .select('LGE_CODIGO','LGE_ELEMENTO_CODIGO','LGE_ELEMENTO_DESCRIPCION')
-            return response.send({ 
+            return response.send({
                 data: departamentos,
                 status: true
             });
@@ -70,14 +70,14 @@ export default class ListadoGenericosController {
     };
 
     public async getMunicipios({ response, request }: HttpContextContract ) {
-        
+
         const { id } = request.params();
 
         try {
             const municipios = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')
                                        .where('LGE_CAMPOS_ADICIONALES','LIKE', `{"departmentId": "${id}"}%`)
                                         .select('LGE_CODIGO','LGE_ELEMENTO_CODIGO','LGE_ELEMENTO_DESCRIPCION')
-            return response.send({ 
+            return response.send({
                 data: municipios,
                 status: true
             });
@@ -91,5 +91,5 @@ export default class ListadoGenericosController {
         }
 
     };
-    
+
 }

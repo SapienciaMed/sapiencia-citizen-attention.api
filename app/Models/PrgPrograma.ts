@@ -1,4 +1,4 @@
-import { BaseModel, HasMany, ManyToMany, column, hasMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, HasMany, ManyToMany, belongsTo, column, hasMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import ClpClasificacionPrograma from './ClpClasificacionPrograma';
 import DepDependencia from './DepDependencia';
 import AsoAsuntoSolicitud from './AsoAsuntoSolicitud';
@@ -26,12 +26,12 @@ export default class PrgPrograma extends BaseModel {
   })
   public clpClasificacionPrograma: HasMany<typeof ClpClasificacionPrograma>;
 
-  @hasMany(() => DepDependencia, {
-    localKey: 'prg_codigo',
+  @belongsTo(() => DepDependencia, {
+    localKey: 'prg_dependencia',
     foreignKey: 'dep_codigo',
     serializeAs: 'depDependencia'
   })
-  public depDependencia: HasMany<typeof DepDependencia>;
+  public depDependencia: BelongsTo<typeof DepDependencia>;
 
   @manyToMany(() => AsoAsuntoSolicitud, {
     pivotTable: 'PRA_PROGRAMA_ASUNTOS',

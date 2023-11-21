@@ -7,12 +7,14 @@ import {
   IValueGroup,
 } from "App/Interfaces/CitizenAttentionInterfaces";
 import { IDependence } from "App/Interfaces/DependenceInterfaces";
+import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 import { IProgram } from "App/Interfaces/ProgramInterfaces";
 import { IRequestSubjectType } from "App/Interfaces/RequestSubjectTypeInterfaces";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface ICitizenAttentionServices {
   getPrograms(): Promise<ApiResponse<IProgram[]>>; //Programs
+  getStratums(): Promise<ApiResponse<IGenericData[]>>; //Estratos
   getValueGroups(): Promise<ApiResponse<IValueGroup[]>>; //Grupos de valor
   getDependencies(): Promise<ApiResponse<IDependence[]>>; //Dependencias
   getCorregimientos(): Promise<ApiResponse<ICorregimiento[]>>; //Corregimientos y comunas

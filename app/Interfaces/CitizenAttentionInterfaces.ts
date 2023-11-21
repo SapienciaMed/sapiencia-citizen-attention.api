@@ -14,13 +14,16 @@ export interface ICitizenAttention {
   secondSurname?: string;
   firstContactNumber?: string;
   secondContactNumber?: string;
+  email?: string;
+  stratumId: number;
   detailServiceChannelId: number;
   attentionRequestTypeId: number;
   dependencyId: number;
   programId: number;
   requestSubjectTypeId: number;
-  corregimientoId: number;
-  userTypeId: number;
+  corregimientoId?: number;
+  userTypeId?: number;
+  userId: number;
   detailServiceChannel?: IDetailServiceChannel;
   attentionRequestType?: IAttentionRequestType;
   dependency?: IDependence;
@@ -44,6 +47,9 @@ export interface ICitizenAttentionFilters {
   secondSurname?: string;
   firstContactNumber?: string;
   secondContactNumber?: string;
+  email?: string;
+  stratumId?: number;
+  userId?: number;
   detailServiceChannelId?: number;
   attentionRequestTypeId?: number;
   dependencyId?: number;

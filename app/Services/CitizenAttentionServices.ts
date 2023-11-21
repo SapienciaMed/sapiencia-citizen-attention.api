@@ -13,6 +13,7 @@ import { ICitizenAttentionServices } from "./Contracts/ICitizenAttentionServices
 import { IDependence } from "App/Interfaces/DependenceInterfaces";
 import { IProgram } from "App/Interfaces/ProgramInterfaces";
 import { IRequestSubjectType } from "App/Interfaces/RequestSubjectTypeInterfaces";
+import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 
 export default class CitizenAttentionServices implements ICitizenAttentionServices {
   constructor(private CitizenAttentionRepository: ICitizenAttentionRepository) {}
@@ -53,6 +54,15 @@ export default class CitizenAttentionServices implements ICitizenAttentionServic
     const res = await this.CitizenAttentionRepository.getDependencies();
     if (!res.length) {
       return new ApiResponse([] as IDependence[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getStratums(): Promise<ApiResponse<IGenericData[]>> {
+    const res = await this.CitizenAttentionRepository.getStratums();
+    if (!res.length) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Registros no encontrados");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);

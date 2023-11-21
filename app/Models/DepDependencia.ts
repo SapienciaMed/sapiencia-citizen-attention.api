@@ -1,7 +1,8 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, HasMany, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import PrgPrograma from './PrgPrograma';
 
 export default class DepDependencia extends BaseModel {
-  
+
   public static table = 'DEP_DEPENDENCIA';
 
   @column({ isPrimary: true, columnName:'DEP_CODIGO' })
@@ -16,4 +17,9 @@ export default class DepDependencia extends BaseModel {
   @column({ columnName:'DEP_ORDEN', serializeAs:'dep_orden' })
   public dep_orden: number;
 
+  @hasMany(() => PrgPrograma, {
+    localKey: "dep_codigo",
+    foreignKey: "prg_dependencia",
+  })
+  public programs: HasMany<typeof PrgPrograma>;
 }

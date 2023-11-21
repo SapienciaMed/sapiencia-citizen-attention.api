@@ -1,0 +1,124 @@
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import CitizenAttentionProvider from "@ioc:core.CitizenAttentionProvider";
+import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
+import { ICitizenAttentionFilters } from "App/Interfaces/CitizenAttentionInterfaces";
+import { ApiResponse } from "App/Utils/ApiResponses";
+import jwt from "jsonwebtoken";
+import Env from "@ioc:Adonis/Core/Env";
+
+export default class CitizenAttentionController {
+  public async getCitizenAttentionById({ request, response }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await CitizenAttentionProvider.getCitizenAttentionById(id));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getCitizenAttentionByFilters({ request, response }: HttpContextContract) {
+    const id = this.getUser(request)
+    try {
+      const filters = request.body() as ICitizenAttentionFilters;
+      filters.userId = id
+      return response.send(await CitizenAttentionProvider.getCitizenAttentionByFilters(filters));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getAttentionRequestTypes({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getAttentionRequestTypes());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getStratums({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getStratums());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getCorregimientos({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getCorregimientos());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getDependencies({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getDependencies());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getPrograms({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getPrograms());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getRequestSubjectTypes({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getRequestSubjectTypes());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getSeviceChannels({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getSeviceChannels());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getValueGroups({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getValueGroups());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  private getUser(request){
+    const req = request.headers();
+    const key = Env.get("APP_KEY");
+
+    const token = req.authorization?.replace("Bearer ", "");
+
+    const { id } = jwt.verify(token!, key) as { id: number; document: string };
+
+    return id;
+  }
+
+  public async createCitizenAttention({ request, response }: HttpContextContract) {
+    const id = this.getUser(request)
+    try {
+      const { citizenAttention } = request.body();
+      citizenAttention.userId = id;
+      return response.send(await CitizenAttentionProvider.createCitizenAttention(citizenAttention));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async updateCitizenAttention({ request, response }: HttpContextContract) {
+    try {
+      const { citizenAttention } = request.body();
+      return response.send(await CitizenAttentionProvider.updateCitizenAttention(citizenAttention));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+}
