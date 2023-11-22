@@ -1,6 +1,6 @@
-import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
-import { Storage } from '@google-cloud/storage';
+import { Storage } from "@google-cloud/storage";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
@@ -12,8 +12,7 @@ import Person from "App/Models/Person";
 import WorkEntity from "App/Models/WorkEntity";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
-import SrbSolicitudReabrir from 'App/Models/SrbSolicitudReabrir';
-
+import SrbSolicitudReabrir from "App/Models/SrbSolicitudReabrir";
 
 //const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -34,16 +33,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       .preload("requestSubject")
       .preload("responseMedium")
       .preload("requestType")
-      .preload("program")
-
-
+      .preload("program");
 
     if (filters?.identification) {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
     }
 
     if (filters?.id) {
-      query.where("id", filters.id)
+      query.where("id", filters.id);
     }
 
     if (filters?.filingNumber) {
@@ -81,7 +78,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
         //TODO UPLOAD
         if (file) {
-
           const bucket = this.storage.bucket(bucketName);
           if (!file.tmpPath) return false;
           const [fileCloud] = await bucket.upload(file.tmpPath, {
@@ -89,9 +85,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           });
 
           if (fileCloud.metadata.id) {
-            pqrsdf.file.name = fileCloud.metadata.id
+            pqrsdf.file.name = fileCloud.metadata.id;
           }
-
         }
         let upload = true;
 
@@ -196,10 +191,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   async getPqrsdfById(id: number): Promise<IPqrsdf | null> {
     const pqrsdf = await Pqrsdf.find(id);
     if (pqrsdf) {
-      await pqrsdf.load('program', (progam) => {
-        progam.preload('clpClasificacionPrograma');
-        progam.preload('depDependencia');
-      })
+      await pqrsdf.load("program", (progam) => {
+        progam.preload("clpClasificacionPrograma");
+        progam.preload("depDependencia");
+      });
     }
     let serializePqrsdf: IPqrsdf | null = await this.formatPqrsdf(pqrsdf);
 
@@ -231,8 +226,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
     return serializePerson;
   }
-
-
 
   private async formatPqrsdf(pqrsdf: Pqrsdf | null): Promise<IPqrsdf | null> {
     let serializePqrsdf: any = null;
@@ -332,44 +325,82 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
           .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
           .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-          .join("OBS_OBJECTO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD", "OBS_OBJECTO_SOLICITUD.OBS_CODIGO")
-          .join("LEP_LISTADO_ESTADO_PQRSDF", "PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO")
+          .join(
+            "OBS_OBJECTO_SOLICITUD",
+            "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
+            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
+          )
+          .join(
+            "LEP_LISTADO_ESTADO_PQRSDF",
+            "PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
+            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
+          )
           .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
           .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
           .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "!=", 3)
-          .select("PQR_CODIGO", "PQR_NRO_RADICADO", "PQR_FECHA_CREACION", "PER_NUMERO_DOCUMENTO", "PER_PRIMER_NOMBRE",
-            "PER_SEGUNDO_NOMBRE", "PER_PRIMER_APELLIDO", "PER_SEGUNDO_APELLIDO", "ASO_ASUNTO", "LEP_ESTADO", "OBS_TIPO_DIAS",
-            "OBS_TERMINO_DIAS", "PRG_DESCRIPCION");
+          .select(
+            "PQR_CODIGO",
+            "PQR_NRO_RADICADO",
+            "PQR_FECHA_CREACION",
+            "PER_NUMERO_DOCUMENTO",
+            "PER_PRIMER_NOMBRE",
+            "PER_SEGUNDO_NOMBRE",
+            "PER_PRIMER_APELLIDO",
+            "PER_SEGUNDO_APELLIDO",
+            "ASO_ASUNTO",
+            "LEP_ESTADO",
+            "OBS_TIPO_DIAS",
+            "OBS_TERMINO_DIAS",
+            "PRG_DESCRIPCION"
+          );
       }
 
       if (userId && typeReques === 3) {
-        res = await Database.from('PQR_PQRSDF')
-          .join('ENT_ENTIDAD_TRABAJO', ' PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO', 'ENT_ENTIDAD_TRABAJO.ENT_CODIGO')
-          .join('PER_PERSONAS', ' PQR_PQRSDF.PQR_CODPER_PERSONA', 'PER_PERSONAS.PER_CODIGO')
-          .join('ASO_ASUNTO_SOLICITUD', ' PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD', 'ASO_ASUNTO_SOLICITUD.ASO_CODIGO')
-          .join('OBS_OBJECTO_SOLICITUD', ' ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD', 'OBS_OBJECTO_SOLICITUD.OBS_CODIGO')
-          .join('LEP_LISTADO_ESTADO_PQRSDF', ' PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF', 'LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO')
-          .join('PRG_PROGRAMAS', ' PQR_PQRSDF.PQR_CODPRG_PROGRAMA', 'PRG_PROGRAMAS.PRG_CODIGO')
-          .join("SRB_SOLICITUD_REABRIR", " PQR_PQRSDF.PQR_CODSRB_SRB_SOLICITU_REABRIR", "SRB_SOLICITUD_REABRIR.SRB_CODIGO")
-          .where('ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO', userId)
-          .where('PQR_CODLEP_LISTADO_ESTADO_PQRSDF', '=', 3)
-          .select('PQR_CODIGO', 'PQR_NRO_RADICADO', 'PQR_FECHA_CREACION',
-            'PER_NUMERO_DOCUMENTO', 'PER_PRIMER_NOMBRE', 'PER_SEGUNDO_NOMBRE',
-            'PER_PRIMER_APELLIDO', 'PER_SEGUNDO_APELLIDO', 'ASO_ASUNTO', 'LEP_ESTADO',
-            'OBS_TIPO_DIAS', 'OBS_TERMINO_DIAS', 'PRG_DESCRIPCION', 'SBR_ESTADO'
+        res = await Database.from("PQR_PQRSDF")
+          .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
+          .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
+          .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
+          .join(
+            "OBS_OBJECTO_SOLICITUD",
+            " ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
+            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
           )
-
+          .join(
+            "LEP_LISTADO_ESTADO_PQRSDF",
+            " PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
+            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
+          )
+          .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
+          .join(
+            "SRB_SOLICITUD_REABRIR",
+            " PQR_PQRSDF.PQR_CODSRB_SRB_SOLICITU_REABRIR",
+            "SRB_SOLICITUD_REABRIR.SRB_CODIGO"
+          )
+          .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
+          .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "=", 3)
+          .select(
+            "PQR_CODIGO",
+            "PQR_NRO_RADICADO",
+            "PQR_FECHA_CREACION",
+            "PER_NUMERO_DOCUMENTO",
+            "PER_PRIMER_NOMBRE",
+            "PER_SEGUNDO_NOMBRE",
+            "PER_PRIMER_APELLIDO",
+            "PER_SEGUNDO_APELLIDO",
+            "ASO_ASUNTO",
+            "LEP_ESTADO",
+            "OBS_TIPO_DIAS",
+            "OBS_TERMINO_DIAS",
+            "PRG_DESCRIPCION",
+            "SBR_ESTADO"
+          );
       }
-
-    } catch (error) {
-
-    }
+    } catch (error) {}
 
     return res;
   }
 
   async createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null> {
-
     let res: any;
     await Database.transaction(async (trx) => {
       // Crea una nueva solicitud de reapertura
@@ -377,13 +408,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
       // Actualiza el campo 'PQR_CODSRB_SRB_SOLICITU_REABRIR' en la tabla 'Pqrsdf'
       await Pqrsdf.query(trx)
-        .where('PQR_CODIGO', justification[1].pqrsdfId)
-        .update('PQR_CODSRB_SRB_SOLICITU_REABRIR', solicitudReabrir.srb_codigo);
+        .where("PQR_CODIGO", justification[1].pqrsdfId)
+        .update("PQR_CODSRB_SRB_SOLICITU_REABRIR", solicitudReabrir.srb_codigo);
 
-      res = solicitudReabrir
+      res = solicitudReabrir;
     });
 
     return res?.sbr_estado ? res : null;
-  };
-
+  }
 }

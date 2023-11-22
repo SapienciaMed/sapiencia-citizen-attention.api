@@ -27,8 +27,8 @@ export default class PrgPrograma extends BaseModel {
   public clpClasificacionPrograma: HasMany<typeof ClpClasificacionPrograma>;
 
   @belongsTo(() => DepDependencia, {
-    localKey: 'prg_dependencia',
-    foreignKey: 'dep_codigo',
+    localKey: 'dep_codigo',
+    foreignKey: 'prg_dependencia',
     serializeAs: 'depDependencia'
   })
   public depDependencia: BelongsTo<typeof DepDependencia>;
