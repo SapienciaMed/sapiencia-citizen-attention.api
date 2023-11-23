@@ -65,6 +65,7 @@ Route.group(() => {
     Route.post("/update-person", "PqrsdfsController.updatePerson");
     Route.post("/upload", "PqrsdfsController.uploadFile");
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
+    Route.get("/prueba", "PqrsdfsController.pruebaRadicado");
   }).prefix("/pqrsdf");
 
   /* Citizen attentions */

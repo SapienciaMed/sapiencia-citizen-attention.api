@@ -2,6 +2,7 @@ import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from "@google-cloud/storage";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
+import { IDocumentManagement } from "App/Services/External/Contracts/IDocumentManagementService";
 import Pqrsdf from "App/Models/Pqrsdf";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import Database from "@ioc:Adonis/Lucid/Database";
@@ -20,7 +21,10 @@ const bucketName = process.env.GCLOUD_BUCKET ?? "";
 export default class PqrsdfRepository implements IPqrsdfRepository {
   storage: Storage;
 
-  constructor(private GenericListsExternalService: IGenericListsExternalService) {
+  constructor(
+      private GenericListsExternalService: IGenericListsExternalService,
+      private DocumenManagementService:IDocumentManagement
+    ) {
     //this.storage = new Storage({ keyFilename }); //-->Local
     this.storage = new Storage();
   }
@@ -64,8 +68,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
-  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract): Promise<IPqrsdf | null> {
+  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract,filedNumber:number): Promise<IPqrsdf | null> {
     let res: any;
+
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
         const existPerson = await Person.query().where("identification", pqrsdf.person.identification).first();
@@ -90,17 +95,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         }
         let upload = true;
 
-        //pqrsdf.file.name = fileCloud.metadata.id
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
         const responsible = await this.getResponsible(pqrsdf.requestSubjectId);
         pqrsdf.responsibleId = responsible?.id ?? 1;
-        const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
-        pqrsdf.filingNumber = lastFilingNumber?.filingNumber
-          ? lastFilingNumber.filingNumber
-          : parseInt(new Date().getFullYear().toString() + "02430001");
+        pqrsdf.filingNumber = filedNumber;
         pqrsdf.statusId = responsible?.workEntityType?.associatedStatusId;
 
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
