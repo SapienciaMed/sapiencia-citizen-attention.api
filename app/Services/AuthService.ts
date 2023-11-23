@@ -41,7 +41,6 @@ export default class AuthService implements IAuthService {
     signInData: IRequestSignIn
   ): Promise<ApiResponse<IResponseSignIn | null>> {
     const { identification, password } = signInData;
-
     const user = await this.userRepository.getUserByNumberDocument(
       identification
     );
@@ -50,7 +49,10 @@ export default class AuthService implements IAuthService {
       return new ApiResponse(null, EResponseCodes.WARN, "Usuario no existe");
     }
 
-    const verifyPasswords = await Hash.verify(user?.password || "", password);
+    // Si user.password = null significa que no tiene una password en base de datos todavia
+    const verifyPasswords = user.password 
+    ? await Hash.verify(user.password, password) 
+    : password === identification.substring(identification.length - 4)
 
     if (!verifyPasswords) {
       return new ApiResponse(
@@ -106,8 +108,8 @@ export default class AuthService implements IAuthService {
   }
 
   async generateTokens(payload: object): Promise<string> {
-    const secretKey = Env.get("AUTH_KEY");
-    const expires = Env.get("TOKEN_LIFETIME");
+    const secretKey = Env.get("BENEFACTOR_AUTH_KEY");
+    const expires = "3600";
     const token = jwt.sign(payload, secretKey, { expiresIn: expires });
 
     return token;
@@ -136,3 +138,4 @@ export default class AuthService implements IAuthService {
   }
 
 }
+

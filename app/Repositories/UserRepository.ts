@@ -37,11 +37,11 @@ export default class UserRepository implements IPersonRepository {
     return toUpdate.serialize() as IPerson;
   }
 
-  async getUserByNumberDocument(numberDocument: string): Promise<IPerson | null> {
+  async getUserByNumberDocument(identification: string): Promise<IPerson | null> {
     const user = await Person.query()
-      .where("numberDocument", numberDocument);
-
-    if (Person.length == 0) {
+      .where("identification", identification);
+    
+    if (user.length == 0) {
       return null;
     }
 
