@@ -5,6 +5,7 @@ export interface IPersonRepository {
   getUserById(id: number): Promise<IPerson | null>;
   createUser(user: IPerson): Promise<IPerson>;
   updateUser(user: IPerson, id: number): Promise<IPerson | null>;
+  updateUserPassword(password: string, id: number): Promise<IPerson | null>
   getUserByNumberDocument(document: string): Promise<IPerson | null>;
 }
 
@@ -34,6 +35,19 @@ export default class UserRepository implements IPersonRepository {
 
     toUpdate.fill({ ...user });
     await toUpdate.save();
+    return toUpdate.serialize() as IPerson;
+  }
+
+  async updateUserPassword(password: string, id: number): Promise<IPerson | null> {
+    const toUpdate = await Person.find(id);
+
+    if (!toUpdate) {
+      return null;
+    }
+    
+    toUpdate.merge({ password });
+    await toUpdate.save();
+
     return toUpdate.serialize() as IPerson;
   }
 

@@ -32,6 +32,10 @@ export interface IAuthService {
   getAuthorizationByToken(
     token: string
   ): Promise<ApiResponse<IAuthorization | null>>;
+  changePassword(
+    password: string,
+    token: string
+  ): Promise<ApiResponse<IAuthorization | null>>;
 }
 
 export default class AuthService implements IAuthService {
@@ -41,6 +45,7 @@ export default class AuthService implements IAuthService {
     signInData: IRequestSignIn
   ): Promise<ApiResponse<IResponseSignIn | null>> {
     const { identification, password } = signInData;
+    
     const user = await this.userRepository.getUserByNumberDocument(
       identification
     );
@@ -53,7 +58,7 @@ export default class AuthService implements IAuthService {
     const verifyPasswords = user.password 
     ? await Hash.verify(user.password, password) 
     : password === identification.substring(identification.length - 4)
-
+    
     if (!verifyPasswords) {
       return new ApiResponse(
         null,
@@ -109,7 +114,7 @@ export default class AuthService implements IAuthService {
 
   async generateTokens(payload: object): Promise<string> {
     const secretKey = Env.get("BENEFACTOR_AUTH_KEY");
-    const expires = "3600";
+    const expires = "1d";
     const token = jwt.sign(payload, secretKey, { expiresIn: expires });
 
     return token;
@@ -118,7 +123,6 @@ export default class AuthService implements IAuthService {
   async getAuthorizationByToken(
     token: string
   ): Promise<ApiResponse<IAuthorization | null>> {
-    console.log(token);
 
     const { id } = jwt.verify(token, Env.get("AUTH_KEY")) as IDecodedToken;
 
@@ -128,6 +132,29 @@ export default class AuthService implements IAuthService {
       return new ApiResponse(null, EResponseCodes.WARN, "Usuario no existe");
     }
 
+    const toSend: IAuthorization = {
+      encryptedAccess: "",
+      user,
+    };
+
+    return new ApiResponse(toSend, EResponseCodes.OK);
+  }
+
+  async changePassword(
+    password: string,
+    token: string
+  ): Promise<ApiResponse<IAuthorization | null>> {
+
+    const { id } = jwt.verify(token, Env.get("BENEFACTOR_AUTH_KEY")) as IDecodedToken;
+
+    const user = await this.userRepository.getUserById(id);
+
+    if (!user?.id) {
+      return new ApiResponse(null, EResponseCodes.WARN, "Usuario no existe");
+    }
+    
+    user.password = password;
+    await this.userRepository.updateUserPassword(password, id)
 
     const toSend: IAuthorization = {
       encryptedAccess: "",
