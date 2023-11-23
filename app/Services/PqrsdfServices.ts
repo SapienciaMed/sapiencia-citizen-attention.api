@@ -15,8 +15,8 @@ export default class PqrsdfServices implements IPqrsdfServices {
   }
 
 
-  public async createPqrsdf(prsdf: IPqrsdf, file:MultipartFileContract): Promise<ApiResponse<IPqrsdf | null>> {
-    const res = await this.PqrsdfRepository.createPqrsdf(prsdf,file);
+  public async createPqrsdf(prsdf: IPqrsdf, file:MultipartFileContract,filedNumber:number): Promise<ApiResponse<IPqrsdf | null>> {
+    const res = await this.PqrsdfRepository.createPqrsdf(prsdf,file,filedNumber);
     if (!res) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "No se puede crear la PQRSDF");
     }

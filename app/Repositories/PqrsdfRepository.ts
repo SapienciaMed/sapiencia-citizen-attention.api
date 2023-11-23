@@ -64,8 +64,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
-  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract): Promise<IPqrsdf | null> {
+  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract,filedNumber:number): Promise<IPqrsdf | null> {
     let res: any;
+
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
         const existPerson = await Person.query().where("identification", pqrsdf.person.identification).first();
@@ -90,17 +91,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         }
         let upload = true;
 
-        //pqrsdf.file.name = fileCloud.metadata.id
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
           pqrsdf.fileId = newFile.id;
         }
         const responsible = await this.getResponsible(pqrsdf.requestSubjectId);
         pqrsdf.responsibleId = responsible?.id ?? 1;
-        const lastFilingNumber = await Pqrsdf.query().orderBy("filingNumber", "desc").first();
-        pqrsdf.filingNumber = lastFilingNumber?.filingNumber
-          ? lastFilingNumber.filingNumber
-          : parseInt(new Date().getFullYear().toString() + "02430001");
+        pqrsdf.filingNumber = filedNumber;
         pqrsdf.statusId = responsible?.workEntityType?.associatedStatusId;
 
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);

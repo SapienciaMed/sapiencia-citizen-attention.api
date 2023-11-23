@@ -2,6 +2,7 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import jwt from "jsonwebtoken";
 import Env from "@ioc:Adonis/Core/Env";
 import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
+import DocumentManagementProvider from "@ioc:core.DocumentManagementProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
@@ -67,11 +68,21 @@ export default class PqrsdfsController {
 
   public async createPqrsdf({ request, response }: HttpContextContract) {
     try {
+
+      const respon = await DocumentManagementProvider.getNumberRadicado();
+      const radicado = respon.data;
+      const radicadoToString = radicado.toString();
+      const dataString = radicadoToString.slice(0,4);
+      const addnumbeTodata = dataString.padEnd(5,'02')
+      const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
+      
+      await DocumentManagementProvider.putNumberRadicado(numberRadicado)
+
       const files = request.files("files");
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf);
-
-      return response.send(await PqrsdfProvider.createPqrsdf(dataPqrsdf, files[0]));
+      
+      return response.send(await PqrsdfProvider.createPqrsdf(dataPqrsdf, files[0],numberRadicado));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
@@ -138,6 +149,23 @@ export default class PqrsdfsController {
         justification[1]["radicado"]
       );
       return response.send(await PqrsdfProvider.createRequestReopen(justification));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async pruebaRadicado({ response }: HttpContextContract) {  
+    try {
+
+      const respon = await DocumentManagementProvider.getNumberRadicado()
+      const radicado = respon.data;
+      const radicadoToString = radicado.toString();
+      const dataString = radicadoToString.slice(0,4);
+      const addnumbeTodata = dataString.padEnd(5,'2')
+      const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
+
+
+      return response.send(numberRadicado);
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }

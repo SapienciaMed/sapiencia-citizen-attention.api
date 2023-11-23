@@ -26,6 +26,7 @@ export default class AppProvider {
 
     const GenericListsExternalService = await import("App/Services/External/GenericListsExternalService");
     const AuthExternalService = await import("App/Services/External/AuthExternalService");
+    const DocumentManagementService = await import("../app/Services/External/DocumentmanagementService");
 
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
@@ -77,6 +78,7 @@ export default class AppProvider {
     this.app.container.singleton("core.AuthProvider", () => new AuthService.default(new UserRepository.default()));
     this.app.container.singleton("core.EmailProvider", () => new EmailService.default());
     this.app.container.singleton("core.StorageProvider", () => new StorageService.default());
+    this.app.container.singleton("core.DocumentManagementProvider", ()=> new DocumentManagementService.default())
   }
 
   public async boot() {
