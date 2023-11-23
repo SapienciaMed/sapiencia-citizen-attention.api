@@ -73,7 +73,7 @@ export default class PqrsdfsController {
       const radicado = respon.data;
       const radicadoToString = radicado.toString();
       const dataString = radicadoToString.slice(0,4);
-      const addnumbeTodata = dataString.padEnd(5,'2')
+      const addnumbeTodata = dataString.padEnd(5,'02')
       const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
       
       await DocumentManagementProvider.putNumberRadicado(numberRadicado)
