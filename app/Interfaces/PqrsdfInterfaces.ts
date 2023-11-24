@@ -27,9 +27,10 @@ export interface IPqrsdf {
   responseMedium?: IResponseMedium;
   responsible?: IWorkEntity;
   status?: IPqrsdfStatus;
-  program?:Iprogram;
+  program?: Iprogram;
   requestSubject?: IRequestSubject;
   file: IFile;
+  closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
@@ -42,6 +43,7 @@ export interface IPqrsdfFilters {
   identification?: string;
   programId?: number;
   requestType?: number;
+  closedAt?: DateTime;
 }
 
 export interface IPqrsdfStatus {
@@ -57,12 +59,12 @@ export interface IrequestPqrsdf {
   filter?: string;
 }
 
-export interface Iprogram{
-  prg_codigo:number;
+export interface Iprogram {
+  prg_codigo: number;
   prg_descripcion: string;
-  clp_codigo:number;
+  clp_codigo: number;
   clp_descripcion: string;
-  dep_codigo:number;
+  dep_codigo: number;
   dep_descripcion: string;
 }
 
@@ -86,4 +88,21 @@ export interface IpqrsdfByReques {
 export interface IrequestReopen {
   srb_justificacion?: string;
   sbr_estado?: boolean;
+}
+
+
+export interface IPqrsdfResponse {
+  id?: number;
+  filingNumber?: number;
+  isPetitioner?: boolean;
+  pqrsdfId?: number;
+  responseTypeId?: number;
+  workEntityTypeId?: number;
+  factorId?: number;
+  fileId?: number;
+  assignedUserId?: number;
+  respondingUserId?: number;
+  observation?: string;
+  createdAt?: DateTime;
+  updatedAt?: DateTime;
 }

@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments("ACI_CODIGO");
       //PERSONA
-      table.string("ACI_NUMERO_DOCUMENTO", 20).unique();
+      table.string("ACI_NUMERO_DOCUMENTO", 20);
       table
         .integer("ACI_CODTDO_TIPO_DOCUMENTO")
         .unsigned()

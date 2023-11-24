@@ -66,7 +66,7 @@ export default class Pqrsdf extends BaseModel {
     foreignKey: "programId",
   })
   public program: BelongsTo<typeof PrgPrograma>;
-  
+
 
   @belongsTo(() => CadCanalesAtencionDetalle, {
     localKey: "cad_codigo",
@@ -118,6 +118,12 @@ export default class Pqrsdf extends BaseModel {
   public file: BelongsTo<typeof File>;
 
   @column.dateTime({
+    columnName: "PQR_FECHA_CIERRE",
+    serializeAs: "closedAt",
+  })
+  public closedAt: DateTime;
+
+  @column.dateTime({
     autoCreate: true,
     columnName: "PQR_FECHA_CREACION",
     serializeAs: "createdAt",
@@ -131,5 +137,5 @@ export default class Pqrsdf extends BaseModel {
     serializeAs: "updatedAt",
   })
   public updatedAt: DateTime;
-  
+
 }
