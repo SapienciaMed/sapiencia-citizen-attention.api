@@ -170,4 +170,31 @@ export default class PqrsdfsController {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
+
+  public async responsePqrsdf({ request, response }: HttpContextContract) {
+    try {
+
+      const respon = await DocumentManagementProvider.getNumberRadicado();
+      const radicado = respon.data;
+      const radicadoToString = radicado.toString();
+      const dataString = radicadoToString.slice(0,4);
+      const addnumbeTodata = dataString.padEnd(5,'02')
+      const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
+      
+      await DocumentManagementProvider.putNumberRadicado(numberRadicado)
+
+      const files = request.files("files");
+      const soportFile = request.files("soportFile");
+      const { pqrsdf } = request.body();
+      const dataPqrsdf = JSON.parse(pqrsdf);
+
+      console.log(files);
+      console.log(soportFile);
+      console.log(dataPqrsdf);
+      
+      
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
 }
