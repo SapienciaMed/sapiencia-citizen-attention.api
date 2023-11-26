@@ -7,6 +7,7 @@ import { ApiResponse } from "App/Utils/ApiResponses";
 
 import AuthValidator from "App/Validators/AuthValidator";
 import ChangePasswordValidator from "App/Validators/changePasswordValidator";
+import RecoveryPaswordValidator from "App/Validators/RecoveryPaswordValidator";
 
 export default class AuthController {
   public async signIn({ request, response }: HttpContextContract) {
@@ -29,4 +30,18 @@ export default class AuthController {
       );
     }
   }
+  public async emailRecoveryPassword({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const data = await request.validate(RecoveryPaswordValidator);
+      return response.send(await AuthProvider.emailRecoveryPassword(data));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
 }

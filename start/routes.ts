@@ -150,4 +150,5 @@ Route.group(() => {
 Route.group(() => {
   Route.post("/signin", "AuthBeneficiariosController.signIn");
   Route.put("/change-password", "AuthBeneficiariosController.changePassword");
+  Route.post("/recovery-password", "AuthBeneficiariosController.emailRecoveryPassword");
 }).prefix("/api/v1/auth");
