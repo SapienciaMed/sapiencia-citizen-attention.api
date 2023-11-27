@@ -41,6 +41,10 @@ export interface IAuthService {
   emailRecoveryPassword(
     recoveryPasswordData: IRequestRecoveryPassword
   ): Promise<ApiResponse<boolean | null>>;
+  validateTokenRecoveryPassword(
+    dataTokenRecovery: IRequestToken
+  ): Promise<ApiResponse<IDecodedToken>>;
+
 }
 
 export default class AuthService implements IAuthService {
@@ -173,7 +177,7 @@ export default class AuthService implements IAuthService {
     recoveryPasswordData: IRequestRecoveryPassword
   ): Promise<ApiResponse<boolean | null>> {
     const { identification, email } = recoveryPasswordData;
-
+    
     const user = await this.userRepository.getUserByNumberDocument(
       identification
     );
@@ -344,5 +348,17 @@ export default class AuthService implements IAuthService {
         )
     });
     return new ApiResponse(true, EResponseCodes.OK);
+  }
+  async validateTokenRecoveryPassword(
+    dataTokenRecovery: IRequestToken
+  ): Promise<ApiResponse<IDecodedToken>> {
+    const { token: tokenRecoveryPassword } = dataTokenRecovery;
+
+    const { id } = jwt.verify(
+      tokenRecoveryPassword,
+      Env.get("BENEFACTOR_AUTH_KEY")
+    ) as IDecodedToken;
+
+    return new ApiResponse({ id } as IDecodedToken, EResponseCodes.OK);
   }
 }
