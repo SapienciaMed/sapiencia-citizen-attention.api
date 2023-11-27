@@ -132,8 +132,8 @@ export default class AuthService implements IAuthService {
   async getAuthorizationByToken(
     token: string
   ): Promise<ApiResponse<IAuthorization | null>> {
-
-    const { id } = jwt.verify(token, Env.get("AUTH_KEY")) as IDecodedToken;
+    
+    const { id } = jwt.verify(token, Env.get("BENEFACTOR_AUTH_KEY")) as IDecodedToken;
 
     const user = await this.userRepository.getUserById(id);
 

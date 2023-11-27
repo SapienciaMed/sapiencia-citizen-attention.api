@@ -62,4 +62,20 @@ export default class AuthController {
     }
   }
 
+  public async getAuthorizationByToken({
+    request,
+    response
+  }: HttpContextContract) {
+    try {
+      const { token } = request.params();
+
+      return response.send(
+        await AuthProvider.getAuthorizationByToken(token)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }
