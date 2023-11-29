@@ -1,8 +1,12 @@
+import Database from '@ioc:Adonis/Lucid/Database';
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import AffairsProgram from 'App/Models/AffairsProgram';
 
 export default class extends BaseSeeder {
   public async run () {
+    await Database.rawQuery("SET FOREIGN_KEY_CHECKS=0;");
+
+    await AffairsProgram.truncate(false);
     await AffairsProgram.createMany([
       //Becas Mejores Bachilleres
       {
@@ -302,7 +306,7 @@ export default class extends BaseSeeder {
       },
       {
         programId: 7,
-        affairId: 36, //Suspensión especial
+        affairId: 3, //Suspensión especial
       },
       {
         programId: 7,
@@ -426,11 +430,11 @@ export default class extends BaseSeeder {
       },
       {
         programId: 9,
-        affairId: 20, //Suspensión temporal
+        affairId: 2, //Suspensión temporal
       },
       {
         programId: 9,
-        affairId: 36, //Suspensión especial
+        affairId: 3, //Suspensión especial
       },
       {
         programId: 9,
@@ -476,5 +480,6 @@ export default class extends BaseSeeder {
       },
 
     ]);
+    await Database.rawQuery("SET FOREIGN_KEY_CHECKS=1;");
   }
 }
