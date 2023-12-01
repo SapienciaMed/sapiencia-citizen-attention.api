@@ -11,18 +11,26 @@ export default class Auth {
     next: () => Promise<void>,
     guards: string[]
   ) {
-    const { authorization, permissions, token } = ctx.request.headers();
+    const { authorization, permissions } = ctx.request.headers();
     const key = Env.get("APP_KEY");
     const benefactorKey = Env.get("BENEFACTOR_AUTH_KEY")
-    console.log(token);
+    let isBenefactor = false;
     
-    const { id } = jwt.verify(
-      token,
-      benefactorKey
-    );
-    console.log(id);
-      
-    if (id) {
+    if (authorization) {
+      try { // Si el verify falla va directo al catch sin pasar por las lineas despues de el
+        jwt.verify(
+          authorization.replace("Bearer ", ""),
+          benefactorKey)
+          isBenefactor = true
+          Env.set("CURRENT_AUTHORIZATION", authorization || "none");
+          Env.set("CURRENT_PERMISSIONS", "none");
+      } catch (error) {
+        isBenefactor = false
+      }
+    }
+    console.log(isBenefactor);
+    
+    if (isBenefactor) {
       await next();
     }  else{
       try {
