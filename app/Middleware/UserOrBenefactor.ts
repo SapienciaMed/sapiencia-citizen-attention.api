@@ -27,9 +27,7 @@ export default class Auth {
       } catch (error) {
         isBenefactor = false
       }
-    }
-    console.log(isBenefactor);
-    
+    }    
     if (isBenefactor) {
       await next();
     }  else{
