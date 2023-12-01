@@ -1,3 +1,4 @@
+import Database from "@ioc:Adonis/Lucid/Database";
 import BaseSeeder from "@ioc:Adonis/Lucid/Seeder";
 import AsoAsuntoSolicitud from "App/Models/AsoAsuntoSolicitud";
 
@@ -5,6 +6,9 @@ export default class extends BaseSeeder {
   public async run() {
     // Write your database queries inside the run method
 
+    await Database.rawQuery("SET FOREIGN_KEY_CHECKS=0;");
+
+    await AsoAsuntoSolicitud.truncate(false);
     await AsoAsuntoSolicitud.updateOrCreateMany(
       ["aso_asunto", "aso_orden"],
       [
@@ -238,5 +242,7 @@ export default class extends BaseSeeder {
         },
       ]
     );
+
+    await Database.rawQuery("SET FOREIGN_KEY_CHECKS=1;");
   }
 }

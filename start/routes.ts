@@ -63,7 +63,7 @@ Route.group(() => {
     Route.post("/update-person", "PqrsdfsController.updatePerson");
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
     Route.get("/prueba", "PqrsdfsController.pruebaRadicado");
-    Route.post("/pqrsdf-response", "PqrsdfsController.responsePqrsdf");
+    Route.post("/response", "PqrsdfsController.responsePqrsdf");
   }).prefix("/pqrsdf");
 
   /* Citizen attentions */

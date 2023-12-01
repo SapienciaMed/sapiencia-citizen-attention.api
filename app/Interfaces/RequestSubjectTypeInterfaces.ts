@@ -1,5 +1,7 @@
 import { DateTime } from "luxon";
 import { IProgram } from "./ProgramInterfaces";
+import { IBeneficiaryStatus } from "./BeneficiaryStatusInterface";
+import { IMotive } from "./MotiveInterfaces";
 
 export interface IRequestSubjectType {
   aso_codigo?: number;
@@ -9,6 +11,9 @@ export interface IRequestSubjectType {
   requestObjectId: number;
   requestObject?: IRequestObject;
   programs?: IProgram[];
+  motives?: IMotive[];
+  beneficiaryStatus?: IBeneficiaryStatus;
+  beneficiaryStatusId?: number;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
