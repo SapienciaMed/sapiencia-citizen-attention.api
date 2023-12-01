@@ -156,6 +156,6 @@ Route.group(() => {
   Route.post("/recovery-password", "AuthBeneficiariosController.emailRecoveryPassword");
   Route.post("/validate-token-recovery", "AuthBeneficiariosController.validateTokenRecoveryPassword");
   Route.post("/change-password-recovery","AuthBeneficiariosController.changePassword").middleware("recoveryPassword");
-  Route.get("/autorizacion/:token", "AuthBeneficiariosController.getAuthorizationByToken");
+  Route.get("/benefactor-authorization/get-by-token/:token", "AuthBeneficiariosController.getAuthorizationByToken");
 }).prefix("/api/v1/auth");
 
