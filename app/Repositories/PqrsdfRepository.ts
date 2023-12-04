@@ -351,7 +351,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             "PRG_DESCRIPCION"
           );
 
-        const sql = query.toSQL();
         res = await query;
       }
 
