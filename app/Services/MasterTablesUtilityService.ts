@@ -78,7 +78,6 @@ export default class MasterTablesUtilityService implements IMasterTablesUtilityS
     public async getRequestSubject(): Promise<ApiResponse<any>> {
         const res = await this.MasterTablesUtilityRepository.getRequestSubject()
 
-        console.log(res)
         if (!res) {
             return new ApiResponse({} as IGenericData[], EResponseCodes.FAIL, "Error al consultar Tipos de Documentos");
         }

@@ -9,6 +9,7 @@ import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
 import WorkEntity from "./WorkEntity";
 import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
 import PrgPrograma from "./PrgPrograma";
+import Motive from "./Motive";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -60,6 +61,15 @@ export default class Pqrsdf extends BaseModel {
 
   @column({ columnName: "PQR_CODPRG_PROGRAMA", serializeAs: "programId" })
   public programId: number;
+
+  @column({ columnName: "PQR_CODMOV_MOTIVO", serializeAs: "motiveId" })
+  public motiveId: number;
+
+  @belongsTo(() => Motive, {
+    localKey: "id",
+    foreignKey: "motiveId",
+  })
+  public motive: BelongsTo<typeof Motive>;
 
   @belongsTo(() => PrgPrograma, {
     localKey: "prg_codigo",

@@ -66,7 +66,7 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
   }
 
   async getRequestSubjectTypes(): Promise<IRequestSubjectType[]> {
-    const res = await AsoAsuntoSolicitud.query().orderBy("aso_orden");
+    const res = await AsoAsuntoSolicitud.query().preload('motives').orderBy("aso_orden");
     return res.map((model) => model.serialize() as IRequestSubjectType);
   }
 

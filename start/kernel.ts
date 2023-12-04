@@ -42,4 +42,6 @@ Server.middleware.register([
 */
 Server.middleware.registerNamed({
   auth: () => import("App/Middleware/Auth"),
+  recoveryPassword: () => import("App/Middleware/RecoveryPassword"),
+  userOrBenefactor: () => import("App/Middleware/UserOrBenefactor"),
 });

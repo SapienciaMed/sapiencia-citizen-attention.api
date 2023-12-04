@@ -1,7 +1,7 @@
 import { schema, CustomMessages, rules } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
-export default class ChangePasswordValidator {
+export default class RecoveryPaswordValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -24,8 +24,8 @@ export default class ChangePasswordValidator {
    *    ```
    */
   public schema = schema.create({
-    password: schema.string([rules.maxLength(20)]),
-    tokenRecovery: schema.string([rules.maxLength(200)]),
+    identification: schema.string([rules.maxLength(15)]),
+    email: schema.string([rules.email()]),
   });
 
   /**

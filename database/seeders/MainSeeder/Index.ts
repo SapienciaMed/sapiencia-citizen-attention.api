@@ -37,5 +37,8 @@ export default class extends BaseSeeder {
     await this.runSeeder(await import('../User'))
     await this.runSeeder(await import('../UserTypeSeeder'))
     await this.runSeeder(await import('../AffairsProgramsSeeder'))
+    await this.runSeeder(await import('../BeneficiaryStatusSeeder'))
+    await this.runSeeder(await import('../MotiveSeeder'))
+    await this.runSeeder(await import('../MotiveRequestSubjectSeeder'))
   }
 }

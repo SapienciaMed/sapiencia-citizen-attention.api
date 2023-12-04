@@ -5,6 +5,7 @@ import { IRequestSubject } from "./RequestSubjectInterfaces";
 import { IFile } from "./FileInterfaces";
 import { IRequestType } from "./RequestTypeInterfaces";
 import { IWorkEntity } from "./WorkEntityInterfaces";
+import { IMotive } from "./MotiveInterfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -14,6 +15,7 @@ export interface IPqrsdf {
   responsibleId?: number;
   requestSubjectId: number;
   fileId?: number;
+  motiveId?: number;
   statusId?: number;
   filingNumber?: number;
   idCanalesAttencion?: number;
@@ -28,6 +30,7 @@ export interface IPqrsdf {
   responsible?: IWorkEntity;
   status?: IPqrsdfStatus;
   program?: Iprogram;
+  motive?: IMotive;
   requestSubject?: IRequestSubject;
   file: IFile;
   closedAt?: DateTime;
