@@ -103,11 +103,11 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getUserByFilters(filters: IWorkEntityFilters, all: boolean=false): Promise<{
     filterUser: boolean;
-    user: IUser|(IUser | null)[]|null;
-  }> {
+    user: IUser|(IUser | null)[]|null;    
+  }> {    
     let userFilters: IUserFilters = {
       page: 1,
-      perPage: 1,
+      perPage: filters?.perPage,
       numberDocument: filters?.identification,
       email: filters?.email,
       lastNames: filters?.lastNames,
@@ -130,8 +130,8 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     };
   }
 
-  async getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>> {
-    let { filterUser, user } = await this.getUserByFilters(filters);
+  async getWorkEntityByFilters(filters: IWorkEntityFilters, all: boolean): Promise<IPagingData<IWorkEntity | null>> {
+    let { filterUser, user } = await this.getUserByFilters(filters, all);
     user = user as (IUser|null)
     if (filterUser && !user) {
       return {
