@@ -10,7 +10,7 @@ export default class CadCanalesAtencionDetalle extends BaseModel {
   @column({ columnName:'CAD_NOMBRE', serializeAs:'cad_nombre' })
   public cad_nombre: string;
 
-  @column({ columnName:'CAD_ID_CANAL', serializeAs:'cad_id_canal'})
+  @column({ columnName:'CNA_CODCAD_CANALES_ATENCION', serializeAs:'cad_id_canal'})
   public cad_id_canal: number;
 
   @column({ columnName:'CAD_ACTIVO', serializeAs:'cad_activo' })

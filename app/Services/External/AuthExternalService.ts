@@ -56,7 +56,7 @@ export default class AuthExternalService implements IAuthExternalService {
         Authorization: Env.get("CURRENT_AUTHORIZATION"),
       },
     });
-
+      
     return items.data;
   }
 }

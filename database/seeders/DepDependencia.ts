@@ -1,9 +1,13 @@
+import Database from '@ioc:Adonis/Lucid/Database';
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import DepDependencia from 'App/Models/DepDependencia'
 
 export default class extends BaseSeeder {
   public async run () {
     // Write your database queries inside the run method
+    await Database.rawQuery("SET FOREIGN_KEY_CHECKS=0;");
+
+    await DepDependencia.truncate(false);
 
     await DepDependencia.createMany([
 
@@ -33,7 +37,7 @@ export default class extends BaseSeeder {
       },
 
       {
-        dep_descripcion:'OFICINA',
+        dep_descripcion:'OFICINA DE CONTROL INTERNO',
         dep_orden:6
       },
 
@@ -43,16 +47,11 @@ export default class extends BaseSeeder {
       },
 
       {
-        dep_descripcion:'DE CONTROL INTERNO',
+        dep_descripcion:'DIRECCIÓN TÉCNICA DE FONDOS',
         dep_orden:8
       },
-
-      {
-        dep_descripcion:'DIRECCIÓN TÉCNICA DE FONDOS',
-        dep_orden:9
-      },
-
-
     ]);
+
+    await Database.rawQuery("SET FOREIGN_KEY_CHECKS=0;");
   }
 }

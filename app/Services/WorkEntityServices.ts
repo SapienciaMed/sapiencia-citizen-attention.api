@@ -54,9 +54,10 @@ export default class WorkEntityServices implements IWorkEntityServices {
   }
 
   public async getWorkEntityByFilters(
-    filters: IWorkEntityFilters
+    filters: IWorkEntityFilters,
+    all: boolean
   ): Promise<ApiResponse<IPagingData<IWorkEntity | null>>> {
-    const res = await this.WorkEntityRepository.getWorkEntityByFilters(filters);
+    const res = await this.WorkEntityRepository.getWorkEntityByFilters(filters, all);
 
     if (!res.array.length) {
       return new ApiResponse(res, EResponseCodes.FAIL, "Registros no encontrados");

@@ -93,7 +93,7 @@ Route.group(() => {
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
-    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware(
+    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware( 
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
     Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware(

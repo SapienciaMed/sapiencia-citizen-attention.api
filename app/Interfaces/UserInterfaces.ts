@@ -34,5 +34,5 @@ export interface IUserFilters {
   names?: string;
   lastNames?: string;
   page: number;
-  perPage: number;
+  perPage?: number;
 }
