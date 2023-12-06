@@ -121,7 +121,7 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
         requestSubjectType.programs.map((program) => {
           return {
             programId: program.prg_codigo,
-            requestSubjectId: requestSubjectType?.aso_codigo,
+            requestSubjectId: res.aso_codigo,
           };
         })
       );
