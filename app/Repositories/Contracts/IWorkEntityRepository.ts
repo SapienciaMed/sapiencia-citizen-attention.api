@@ -17,7 +17,7 @@ export interface IWorkEntityRepository {
   getWorkEntityTypes(): Promise<IWorkEntityType[]>;
   getWorkEntityByUserId(id: number): Promise<IWorkEntity | null>;
   getProgramsAffairs(): Promise<IProgram[]>;
-  getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>>;
+  getWorkEntityByFilters(filters: IWorkEntityFilters, all?: boolean): Promise<IPagingData<IWorkEntity | null>>;
   createWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
   updateWorkEntity(workEntity: IWorkEntity): Promise<IWorkEntity | null>;
   getEntityManagersByEntityTypeId(id: number): Promise<IWorkEntity | null>;

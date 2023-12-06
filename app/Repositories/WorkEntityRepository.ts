@@ -103,11 +103,11 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getUserByFilters(filters: IWorkEntityFilters, all: boolean=false): Promise<{
     filterUser: boolean;
-    user: IUser|(IUser | null)[]|null;
-  }> {
+    user: IUser|(IUser | null)[]|null;    
+  }> {    
     let userFilters: IUserFilters = {
       page: 1,
-      perPage: 1,
+      perPage: filters?.perPage,
       numberDocument: filters?.identification,
       email: filters?.email,
       lastNames: filters?.lastNames,
@@ -131,9 +131,9 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
   }
 
   async getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>> {
-    let { filterUser, user } = await this.getUserByFilters(filters);
-    user = user as (IUser|null)
-    if (filterUser && !user) {
+    let { filterUser, user } = await this.getUserByFilters(filters, true);
+    let users = user as any
+    if (filterUser && !users?.length) {
       return {
         array: [],
         meta: {
@@ -143,8 +143,11 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     }
 
     const query = WorkEntity.query();
-    if (filterUser && user?.id) {
-      query.where("userId", user.id);
+    if (filterUser && users?.length) {
+        query.whereIn('userId',
+          users.map((user) => {
+            return user?.id;
+          }))
     }
     if (filters?.name) {
       query.whereILike("name", `%${filters.name}%`);
@@ -159,7 +162,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       .orderBy("order", "desc")
       .paginate(filters?.page ?? 1, filters?.perPage ?? 10);
     const { meta } = workEntitiesPagination.serialize();
-    let serializeWorkEntity = await this.formatWorkEntities(workEntitiesPagination.all(), user);
+    let serializeWorkEntity = await this.formatWorkEntities(workEntitiesPagination.all(), users);
 
     return {
       array: serializeWorkEntity,
