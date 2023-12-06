@@ -5,7 +5,7 @@ import {
 } from "App/Interfaces/RequestSubjectTypeInterfaces";
 import ObsObjectoSolicitud from "App/Models/ObsObjectoSolicitud";
 import AsoAsuntoSolicitud from "App/Models/AsoAsuntoSolicitud";
-import RequestSubjectTypeProgram from "App/Models/RequestSubjectTypeProgram";
+import AffairsProgram from "App/Models/AffairsProgram";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IRequestSubjectTypeRepository } from "./Contracts/IRequestSubjectTypeRepository";
 
@@ -16,11 +16,11 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
       requestObjectId: requestSubjectType?.requestObjectId,
     });
     if (requestSubjectType?.programs) {
-      await RequestSubjectTypeProgram.createMany(
+      await AffairsProgram.createMany(
         requestSubjectType.programs.map((program) => {
           return {
             programId: program.prg_codigo,
-            requestSubjectId: res.aso_codigo,
+            affairId: res.aso_codigo,
           };
         })
       );
@@ -107,8 +107,8 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
     res.requestObjectId = requestSubjectType.requestObjectId;
     await res.save();
     await res.load("programs");
-    await RequestSubjectTypeProgram.query()
-      .where('requestSubjectId',res.aso_codigo)
+    await AffairsProgram.query()
+      .where('affairId',res.aso_codigo)
       .whereIn(
         "programId",
         res.programs.map((program) => {
@@ -117,11 +117,11 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
       )
       .delete();
     if (requestSubjectType?.programs?.length) {
-      await RequestSubjectTypeProgram.createMany(
+      await AffairsProgram.createMany(
         requestSubjectType.programs.map((program) => {
           return {
             programId: program.prg_codigo,
-            requestSubjectId: res.aso_codigo,
+            affairId: res.aso_codigo,
           };
         })
       );

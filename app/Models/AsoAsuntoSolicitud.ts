@@ -39,13 +39,15 @@ export default class AsoAsuntoSolicitud extends BaseModel {
   public requestObject: BelongsTo<typeof ObsObjectoSolicitud>;
 
   @manyToMany(() => PrgPrograma, {
-    pivotTable: "ASP_ASUNTO_SOLICITUD_PROGRAMA",
-    localKey: "aso_codigo",
-    relatedKey: "prg_codigo",
-    pivotForeignKey: "ASP_ASUNTO_SOLICITUD",
-    serializeAs: "programs",
-    pivotRelatedForeignKey: "ASP_PROGRAMA",
-    pivotColumns: ["PRA_CODIGO"],
+    pivotTable: 'PRA_PROGRAMA_ASUNTOS',
+    localKey: 'aso_codigo',
+    relatedKey: 'prg_codigo',
+    pivotForeignKey: 'PRA_CODASO_ASUNTO_SOLICITUD',
+    serializeAs:'programs',
+    pivotRelatedForeignKey: 'PRA_CODPRG_PROGRAMA',
+    pivotColumns:[
+      'PRA_CODIGO'
+    ]
   })
   public programs: ManyToMany<typeof PrgPrograma>;
 
