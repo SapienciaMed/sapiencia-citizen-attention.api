@@ -116,12 +116,12 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
         })
       )
       .delete();
-    if (requestSubjectType?.programs) {
+    if (requestSubjectType?.programs?.length) {
       await RequestSubjectTypeProgram.createMany(
         requestSubjectType.programs.map((program) => {
           return {
             programId: program.prg_codigo,
-            requestSubjectId: res.aso_codigo,
+            requestSubjectId: requestSubjectType?.aso_codigo,
           };
         })
       );
