@@ -269,6 +269,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     const person = await Person.query().where("identification", personData.identification).firstOrFail();
     if (person) {
       delete personData.documentType;
+      personData.birthdate = new Date(personData.birthdate);
       await person.merge(personData).save();
     }
 
