@@ -268,6 +268,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   async updatePerson(personData: IPerson): Promise<IPerson | null> {
     const person = await Person.query().where("identification", personData.identification).firstOrFail();
     if (person) {
+      delete personData.documentType;
       await person.merge(personData).save();
     }
 
