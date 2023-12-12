@@ -13,6 +13,7 @@ import WorkEntity from "App/Models/WorkEntity";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import SrbSolicitudReabrir from "App/Models/SrbSolicitudReabrir";
+import { DateTime } from "luxon";
 
 //const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -64,7 +65,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
-  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract,filedNumber:number): Promise<IPqrsdf | null> {
+  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null> {
     let res: any;
 
     await Database.transaction(async (trx) => {
@@ -82,8 +83,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (file) {
           const bucket = this.storage.bucket(bucketName);
           if (!file.tmpPath) return false;
+          const tempDate = DateTime.now().toFormat("YYYY_MM_DD_HH_mm_ss");
           const [fileCloud] = await bucket.upload(file.tmpPath, {
-            destination: `${"proyectos-digitales/"}${file.clientName}`,
+            destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
           });
 
           if (fileCloud.metadata.id) {
@@ -91,7 +93,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             upload = true;
           }
         }
-
 
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
@@ -307,8 +308,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     try {
       const bucket = this.storage.bucket(bucketName);
       if (!file.tmpPath) return false;
+      const tempDate = DateTime.now().toFormat("YYYY_MM_DD_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
-        destination: `${"proyectos-digitales/"}${file.clientName}`,
+        destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
       });
 
       return !!fileCloud;
@@ -362,43 +364,43 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
       if (userId && typeReques === 3) {
         const query = Database.from("PQR_PQRSDF")
-        .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
-        .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
-        .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-        .join(
-          "OBS_OBJECTO_SOLICITUD",
-          "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
-          "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
-        )
-        .join(
-          "LEP_LISTADO_ESTADO_PQRSDF",
-          " PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
-          "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
-        )
-        .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
-        .join(
-          "SRB_SOLICITUD_REABRIR",
-          " PQR_PQRSDF.PQR_CODSRB_SRB_SOLICITU_REABRIR",
-          "SRB_SOLICITUD_REABRIR.SRB_CODIGO"
-        )
-        .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
-        .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "=", 3)
-        .select(
-          "PQR_CODIGO",
-          "PQR_NRO_RADICADO",
-          "PQR_FECHA_CREACION",
-          "PER_NUMERO_DOCUMENTO",
-          "PER_PRIMER_NOMBRE",
-          "PER_SEGUNDO_NOMBRE",
-          "PER_PRIMER_APELLIDO",
-          "PER_SEGUNDO_APELLIDO",
-          "ASO_ASUNTO",
-          "LEP_ESTADO",
-          "OBS_TIPO_DIAS",
-          "OBS_TERMINO_DIAS",
-          "PRG_DESCRIPCION",
-          "SBR_ESTADO"
-        );
+          .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
+          .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
+          .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
+          .join(
+            "OBS_OBJECTO_SOLICITUD",
+            "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
+            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
+          )
+          .join(
+            "LEP_LISTADO_ESTADO_PQRSDF",
+            " PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
+            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
+          )
+          .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
+          .join(
+            "SRB_SOLICITUD_REABRIR",
+            " PQR_PQRSDF.PQR_CODSRB_SRB_SOLICITU_REABRIR",
+            "SRB_SOLICITUD_REABRIR.SRB_CODIGO"
+          )
+          .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
+          .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "=", 3)
+          .select(
+            "PQR_CODIGO",
+            "PQR_NRO_RADICADO",
+            "PQR_FECHA_CREACION",
+            "PER_NUMERO_DOCUMENTO",
+            "PER_PRIMER_NOMBRE",
+            "PER_SEGUNDO_NOMBRE",
+            "PER_PRIMER_APELLIDO",
+            "PER_SEGUNDO_APELLIDO",
+            "ASO_ASUNTO",
+            "LEP_ESTADO",
+            "OBS_TIPO_DIAS",
+            "OBS_TERMINO_DIAS",
+            "PRG_DESCRIPCION",
+            "SBR_ESTADO"
+          );
 
         res = await query;
       }
