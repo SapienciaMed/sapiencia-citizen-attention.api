@@ -136,7 +136,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       isFiltered = true;
     }
     if (filters?.contactNumber) {
-      query.where("firstContactNumber", filters.contactNumber).orWhere("secondContactNumber", filters.contactNumber);
+      query
+        .whereILike("firstContactNumber", `%${filters.contactNumber}%`)
+        .orWhereILike("secondContactNumber", `%${filters.contactNumber}%`);
       isFiltered = true;
     }
 
