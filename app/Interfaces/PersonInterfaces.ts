@@ -11,12 +11,13 @@ export interface IPerson {
   identification: string;
   password: string;
   firstName: string;
-  secondName: string;
+  secondName?: string;
   firstSurname: string;
-  secondSurname: string;
-  birthdate: Date;
+  secondSurname?: string;
+  businessName?: string;
+  birthdate?: Date;
   firstContactNumber: string;
-  SecondContactNumber: string;
+  SecondContactNumber?: string;
   email: string;
   address: string;
   countryId: number;

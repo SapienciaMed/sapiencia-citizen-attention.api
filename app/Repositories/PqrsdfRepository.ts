@@ -1,5 +1,5 @@
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdfFilters, IpqrsdfByRequest, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from "@google-cloud/storage";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import Pqrsdf from "App/Models/Pqrsdf";
@@ -78,6 +78,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           : (await Person.create(pqrsdf.person)).useTransaction(trx);
 
         //TODO UPLOAD
+        let upload = false;
         if (file) {
           const bucket = this.storage.bucket(bucketName);
           if (!file.tmpPath) return false;
@@ -87,9 +88,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
           if (fileCloud.metadata.id) {
             pqrsdf.file.name = fileCloud.metadata.id;
+            upload = true;
           }
         }
-        let upload = true;
+
 
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
@@ -269,7 +271,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     const person = await Person.query().where("identification", personData.identification).firstOrFail();
     if (person) {
       delete personData.documentType;
-      personData.birthdate = new Date(personData.birthdate);
+      if (personData?.birthdate) {
+        personData.birthdate = new Date(personData.birthdate);
+      }
       await person.merge(personData).save();
     }
 
@@ -313,7 +317,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
   }
 
-  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
+  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<null | IpqrsdfByRequest> {
     const { userId, typeReques } = filters;
 
     let res: any;

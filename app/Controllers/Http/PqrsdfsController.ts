@@ -73,15 +73,15 @@ export default class PqrsdfsController {
       const radicado = respon.data;
       const radicadoToString = radicado.toString();
       const dataString = radicadoToString.slice(0,4);
-      const addnumbeTodata = dataString.padEnd(5,'02')
-      const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
-      
+      const addnumberToData = dataString.padEnd(5,'02')
+      const numberRadicado = parseInt( `${addnumberToData}${radicadoToString.slice(5)}`) + 1 ;
+
       await DocumentManagementProvider.putNumberRadicado(numberRadicado)
 
       const files = request.files("files");
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf);
-      
+
       return response.send(await PqrsdfProvider.createPqrsdf(dataPqrsdf, files[0],numberRadicado));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
@@ -154,15 +154,15 @@ export default class PqrsdfsController {
     }
   }
 
-  public async pruebaRadicado({ response }: HttpContextContract) {  
+  public async pruebaRadicado({ response }: HttpContextContract) {
     try {
 
       const respon = await DocumentManagementProvider.getNumberRadicado()
       const radicado = respon.data;
       const radicadoToString = radicado.toString();
       const dataString = radicadoToString.slice(0,4);
-      const addnumbeTodata = dataString.padEnd(5,'2')
-      const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
+      const addnumberToData = dataString.padEnd(5,'2')
+      const numberRadicado = parseInt( `${addnumberToData}${radicadoToString.slice(5)}`) + 1 ;
 
 
       return response.send(numberRadicado);
@@ -178,9 +178,9 @@ export default class PqrsdfsController {
       const radicado = respon.data;
       const radicadoToString = radicado.toString();
       const dataString = radicadoToString.slice(0,4);
-      const addnumbeTodata = dataString.padEnd(5,'02')
-      const numberRadicado = parseInt( `${addnumbeTodata}${radicadoToString.slice(5)}`) + 1 ;
-      
+      const addnumberToData = dataString.padEnd(5,'02')
+      const numberRadicado = parseInt( `${addnumberToData}${radicadoToString.slice(5)}`) + 1 ;
+
       await DocumentManagementProvider.putNumberRadicado(numberRadicado)
 
       const files = request.files("files");
@@ -191,8 +191,8 @@ export default class PqrsdfsController {
       console.log(files);
       console.log(soportFile);
       console.log(dataPqrsdf);
-      
-      
+
+
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }

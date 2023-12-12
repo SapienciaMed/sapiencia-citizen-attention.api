@@ -2,7 +2,7 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
-import { IPqrsdf, IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IPqrsdfFilters, IpqrsdfByRequest, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser';
 
@@ -84,11 +84,11 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByReques | null >> {
+  public async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByRequest | null >> {
     const res = await this.PqrsdfRepository.getPqrsdfByRequest(filters);
 
     if (!res) {
-      return new ApiResponse({} as IpqrsdfByReques, EResponseCodes.FAIL, "Registro no encontrado");
+      return new ApiResponse({} as IpqrsdfByRequest, EResponseCodes.FAIL, "Registro no encontrado");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
@@ -97,7 +97,7 @@ export default class PqrsdfServices implements IPqrsdfServices {
   public async createRequestReopen(justification: IrequestReopen): Promise<ApiResponse<IrequestReopen | null>> {
 
     const res = await this.PqrsdfRepository.createRequestReopen(justification);
-    
+
     if (!res) {
       return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "No se puede crear la solicitud");
     }

@@ -55,7 +55,7 @@ Route.group(() => {
   }).prefix("/request-subject-type");
   /* PQRSDF */
   Route.group(() => {
-    Route.post('/get-paginated', 'PqrsdfsController.getPqrsdfPaginated')
+    Route.post("/get-paginated", "PqrsdfsController.getPqrsdfPaginated");
     Route.post("/create-request-reopen", "PqrsdfsController.createRequestReopen");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
@@ -70,18 +70,27 @@ Route.group(() => {
   Route.group(() => {
     Route.get("/get-stratums", "CitizenAttentionController.getStratums");
     Route.get("/get-programs", "CitizenAttentionController.getPrograms");
+    Route.get("/get-countries", "CitizenAttentionController.getCountries");
     Route.post("/update", "CitizenAttentionController.updateCitizenAttention");
+    Route.get("/get-departments", "CitizenAttentionController.getDepartments");
     Route.get("/get-value-groups", "CitizenAttentionController.getValueGroups");
     Route.get("/get-dependencies", "CitizenAttentionController.getDependencies");
-    Route.get("/get-document-type", "ListadoGenericosController.getTypeDocuement")
+    Route.get("/get-by-id", "CitizenAttentionController.getCitizenAttentionById");
+    Route.get("/get-request-types", "CitizenAttentionController.getRequestTypes");
+    Route.get("/get-document-type", "ListadoGenericosController.getDocumentType");
+    Route.get("/get-response-types", "CitizenAttentionController.getResponseTypes");
+    Route.get("/get-municipalities", "CitizenAttentionController.getMunicipalities");
     Route.get("/get-corregimientos", "CitizenAttentionController.getCorregimientos");
     Route.get("/get-sevice-channels", "CitizenAttentionController.getSeviceChannels");
-    Route.get("/get-request-subject-types", "CitizenAttentionController.getRequestSubjectTypes");
-    Route.get("/get-by-id", "CitizenAttentionController.getCitizenAttentionById");
-    Route.get("/get-attention-request-types", "CitizenAttentionController.getAttentionRequestTypes");
+    Route.get("/get-response-mediums", "CitizenAttentionController.getResponseMediums");
+    Route.get("/get-legal-entity-types", "CitizenAttentionController.getLegalEntityTypes");
     Route.post("/get-by-filters", "CitizenAttentionController.getCitizenAttentionByFilters");
-    Route.post("/create", "CitizenAttentionController.createCitizenAttention").middleware("auth:ATENCION_CIUDADANA_CREAR");
-  }).prefix('/citizen-attention');
+    Route.get("/get-request-subject-types", "CitizenAttentionController.getRequestSubjectTypes");
+    Route.get("/get-attention-request-types", "CitizenAttentionController.getAttentionRequestTypes");
+    Route.post("/create", "CitizenAttentionController.createCitizenAttention").middleware(
+      "auth:ATENCION_CIUDADANA_CREAR"
+    );
+  }).prefix("/citizen-attention");
 
   /* Work entities */
   Route.group(() => {
@@ -93,20 +102,19 @@ Route.group(() => {
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
-    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware( 
+    Route.post("/get-user-by-filters", "WorkEntityController.getUserByFilters").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
     Route.get("/get-user-by-document/:identification", "WorkEntityController.getUserByDocument").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
-    Route.get("/get-Entitymanagers-by-entityType-id/:id", "WorkEntityController.getEntityManagersByEntityTypeId");
+    Route.get("/get-entitymanagers-by-entityType-id/:id", "WorkEntityController.getEntityManagersByEntityTypeId");
   }).prefix("/work-entity");
 
   /*ARCHIVOS*/
   Route.group(() => {
-    Route.get("get-file", "StorageController.getFile")
+    Route.get("get-file", "StorageController.getFile");
   }).prefix("file");
-
 })
   .prefix("/api/v1/")
   .middleware("auth");
@@ -115,7 +123,9 @@ Route.group(() => {
   Route.get("get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
   Route.post("create", "PqrsdfsController.createPqrsdf");
   Route.post("upload", "PqrsdfsController.uploadFile");
-}).prefix('/api/v1/pqrsdf/').middleware('userOrBenefactor')
+})
+  .prefix("/api/v1/pqrsdf/")
+  .middleware("userOrBenefactor");
 
 /**************************
  ******TABLAS MAESTRAS******
@@ -133,17 +143,17 @@ Route.group(() => {
 }).prefix("/api/v1/utility");
 
 Route.group(() => {
-  Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
-  Route.get("/get-type-docuement", "ListadoGenericosController.getTypeDocuement");
-  Route.get("/get-legal-entity", "TipoEntidadJuridicasController.getTypeEntidadJuridica");
-  Route.get("/get-response-medium", "MedioDeRespuestasController.getMedioDeRespuesta");
   Route.get("/get-Programs", "ProgramasController.getPrograms");
-  Route.get("/get-solicitudes", "AsuntoSolicitudsController.asuntoSolicitud");
   Route.get("/get-paises", "ListadoGenericosController.getPaises");
-  Route.get("/get-departamentos", "ListadoGenericosController.getDepartamentos");
+  Route.get("/get-solicitudes", "AsuntoSolicitudsController.asuntoSolicitud");
   Route.get("/get-municipios/:id", "ListadoGenericosController.getMunicipios");
-  Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
+  Route.get("/get-departamentos", "ListadoGenericosController.getDepartamentos");
+  Route.get("/get-type-docuement", "ListadoGenericosController.getDocumentType");
   Route.get("/get-listaParametros", "ListaParametrosController.getListaParametros");
+  Route.get("/get-type-solicituds", "TsoTipoSolicitudsController.getTipoSolicitudes");
+  Route.get("/get-response-medium", "MedioDeRespuestasController.getMedioDeRespuesta");
+  Route.get("/get-objecto-solicitud", "ObjectoSolicitudsController.getObjectoSolicitud");
+  Route.get("/get-legal-entity", "TipoEntidadJuridicasController.getTypeEntidadJuridica");
 });
 
 // *************************************************************************
@@ -155,7 +165,6 @@ Route.group(() => {
   Route.put("/change-password", "AuthBeneficiariosController.changePassword");
   Route.post("/recovery-password", "AuthBeneficiariosController.emailRecoveryPassword");
   Route.post("/validate-token-recovery", "AuthBeneficiariosController.validateTokenRecoveryPassword");
-  Route.post("/change-password-recovery","AuthBeneficiariosController.changePassword").middleware("recoveryPassword");
+  Route.post("/change-password-recovery", "AuthBeneficiariosController.changePassword").middleware("recoveryPassword");
   Route.get("/benefactor-authorization/get-by-token/:token", "AuthBeneficiariosController.getAuthorizationByToken");
 }).prefix("/api/v1/auth");
-
