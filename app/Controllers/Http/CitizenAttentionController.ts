@@ -17,10 +17,10 @@ export default class CitizenAttentionController {
   }
 
   public async getCitizenAttentionByFilters({ request, response }: HttpContextContract) {
-    const id = this.getUser(request)
+    const id = this.getUser(request);
     try {
       const filters = request.body() as ICitizenAttentionFilters;
-      filters.userId = id
+      filters.userId = id;
       return response.send(await CitizenAttentionProvider.getCitizenAttentionByFilters(filters));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
@@ -38,6 +38,32 @@ export default class CitizenAttentionController {
   public async getStratums({ response }: HttpContextContract) {
     try {
       return response.send(await CitizenAttentionProvider.getStratums());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getCountries({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getCountries());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getDepartments({ request, response }: HttpContextContract) {
+    try {
+      const { countryId } = request.qs();
+      return response.send(await CitizenAttentionProvider.getDepartments(countryId));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getMunicipalities({ response, request }: HttpContextContract) {
+    try {
+      const { departmentId } = request.qs();
+      return response.send(await CitizenAttentionProvider.getMunicipalities(departmentId));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
@@ -67,6 +93,38 @@ export default class CitizenAttentionController {
     }
   }
 
+  public async getResponseMediums({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getResponseMediums());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getResponseTypes({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getResponseTypes());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getRequestTypes({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getRequestTypes());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getLegalEntityTypes({ response }: HttpContextContract) {
+    try {
+      return response.send(await CitizenAttentionProvider.getLegalEntityTypes());
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async getRequestSubjectTypes({ response }: HttpContextContract) {
     try {
       return response.send(await CitizenAttentionProvider.getRequestSubjectTypes());
@@ -91,7 +149,7 @@ export default class CitizenAttentionController {
     }
   }
 
-  private getUser(request){
+  private getUser(request) {
     const req = request.headers();
     const key = Env.get("APP_KEY");
 
@@ -103,7 +161,7 @@ export default class CitizenAttentionController {
   }
 
   public async createCitizenAttention({ request, response }: HttpContextContract) {
-    const id = this.getUser(request)
+    const id = this.getUser(request);
     try {
       const { citizenAttention } = request.body();
       citizenAttention.userId = id;

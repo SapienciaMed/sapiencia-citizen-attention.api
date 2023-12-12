@@ -14,6 +14,10 @@ import { IDependence } from "App/Interfaces/DependenceInterfaces";
 import { IProgram } from "App/Interfaces/ProgramInterfaces";
 import { IRequestSubjectType } from "App/Interfaces/RequestSubjectTypeInterfaces";
 import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
+import { IRequestType } from "App/Interfaces/RequestTypeInterfaces";
+import { ILegalEntityType } from "App/Interfaces/LegalEntityTypeInterfaces";
+import { IResponseMedium } from "App/Interfaces/ResponseMediumInterfaces";
+import { IResponseType } from "App/Interfaces/ResponseTypeInterfaces";
 
 export default class CitizenAttentionServices implements ICitizenAttentionServices {
   constructor(private CitizenAttentionRepository: ICitizenAttentionRepository) {}
@@ -68,10 +72,73 @@ export default class CitizenAttentionServices implements ICitizenAttentionServic
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  public async getCountries(): Promise<ApiResponse<IGenericData[]>> {
+    const res = await this.CitizenAttentionRepository.getCountries();
+    if (!res.length) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getDepartments(countryId?: number): Promise<ApiResponse<IGenericData[]>> {
+    const res = await this.CitizenAttentionRepository.getDepartments(countryId);
+    if (!res.length) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getMunicipalities(departmentId?: number): Promise<ApiResponse<IGenericData[]>> {
+    const res = await this.CitizenAttentionRepository.getMunicipalities(departmentId);
+    if (!res.length) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
   public async getPrograms(): Promise<ApiResponse<IProgram[]>> {
     const res = await this.CitizenAttentionRepository.getPrograms();
     if (!res.length) {
       return new ApiResponse([] as IProgram[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getResponseMediums(): Promise<ApiResponse<IResponseMedium[]>> {
+    const res = await this.CitizenAttentionRepository.getResponseMediums();
+    if (!res.length) {
+      return new ApiResponse([] as IResponseMedium[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getResponseTypes(): Promise<ApiResponse<IResponseType[]>> {
+    const res = await this.CitizenAttentionRepository.getResponseTypes();
+    if (!res.length) {
+      return new ApiResponse([] as IResponseType[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getRequestTypes(): Promise<ApiResponse<IRequestType[]>> {
+    const res = await this.CitizenAttentionRepository.getRequestTypes();
+    if (!res.length) {
+      return new ApiResponse([] as IRequestType[], EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async getLegalEntityTypes(): Promise<ApiResponse<ILegalEntityType[]>> {
+    const res = await this.CitizenAttentionRepository.getLegalEntityTypes();
+    if (!res.length) {
+      return new ApiResponse([] as ILegalEntityType[], EResponseCodes.FAIL, "Registros no encontrados");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);

@@ -5,7 +5,7 @@ import { ApiResponse } from 'App/Utils/ApiResponses';
 
 export default class ListadoGenericosController {
 
-    public async getTypeDocuement({ response }: HttpContextContract ) {
+    public async getDocumentType({ response }: HttpContextContract ) {
 
         try {
             const typeDocuments = await Database.from('aurora-core-dev . LGE_LISTADOS_GENERICOS')

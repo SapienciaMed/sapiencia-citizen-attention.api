@@ -10,11 +10,15 @@ export default class extends BaseSchema {
         .integer("EPA_CODENT_ENTIDAD_TRABAJO")
         .unsigned()
         .references("ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE')
         .comment("Llave foranea a la tabla entidad de trabajo(FK_ENT_CODIGO)");
       table
         .integer("EPA_CODPRA_PROGRAMA_ASUNTO")
         .unsigned()
         .references("PRA_PROGRAMA_ASUNTOS.PRA_CODIGO")
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE')
         .comment("Llave foranea a la tabla programa asuntos(FK_PRA_CODIGO)");
 
       /**

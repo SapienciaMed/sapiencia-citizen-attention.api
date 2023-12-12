@@ -12,6 +12,7 @@ export interface IPqrsdf {
   requestTypeId: number;
   personId?: number;
   responseMediumId: number;
+  programId?: number;
   responsibleId?: number;
   requestSubjectId: number;
   fileId?: number;
@@ -23,15 +24,16 @@ export interface IPqrsdf {
   dependency: string;
   description: string;
   requestType?: IRequestType;
+  motive?: IMotive;
   person?: IPerson;
   answer?: string;
-  answerDate?: DateTime;
-  responseMedium?: IResponseMedium;
-  responsible?: IWorkEntity;
-  status?: IPqrsdfStatus;
   program?: Iprogram;
-  motive?: IMotive;
+  answerDate?: DateTime;
+  responsible?: IWorkEntity;
+  responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;
+  status?: IPqrsdfStatus;
+  response?: IPqrsdfResponse;
   file: IFile;
   closedAt?: DateTime;
   createdAt?: DateTime;
@@ -50,10 +52,10 @@ export interface IPqrsdfFilters {
 }
 
 export interface IPqrsdfStatus {
-  lep_codigo: number;
-  lep_estado: string;
-  lep_activo: boolean;
-  lep_orden: number;
+  lep_codigo?: number;
+  lep_estado?: string;
+  lep_activo?: boolean;
+  lep_orden?: number;
 }
 
 export interface IrequestPqrsdf {
@@ -71,7 +73,7 @@ export interface Iprogram {
   dep_descripcion: string;
 }
 
-export interface IpqrsdfByReques {
+export interface IpqrsdfByRequest {
   PQR_CODIGO?: number;
   PQR_NRO_RADICADO?: number;
   PQR_FECHA_CREACION?: string;
@@ -104,7 +106,9 @@ export interface IPqrsdfResponse {
   factorId?: number;
   fileId?: number;
   assignedUserId?: number;
+  assignedDependenceId?: number;
   respondingUserId?: number;
+  respondingDependenceId?: number;
   observation?: string;
   createdAt?: DateTime;
   updatedAt?: DateTime;

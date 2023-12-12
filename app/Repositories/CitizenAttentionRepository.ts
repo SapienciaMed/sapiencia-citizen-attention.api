@@ -22,6 +22,14 @@ import { ICitizenAttentionRepository } from "./Contracts/ICitizenAttentionReposi
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
+import { IRequestType } from "App/Interfaces/RequestTypeInterfaces";
+import TsoTipoSolicitud from "App/Models/TsoTipoSolicitud";
+import { ILegalEntityType } from "App/Interfaces/LegalEntityTypeInterfaces";
+import TejTipoEntidadJuridica from "App/Models/TejTipoEntidadJuridica";
+import { IResponseMedium } from "App/Interfaces/ResponseMediumInterfaces";
+import MreMedioRespuesta from "App/Models/MreMedioRespuesta";
+import { IResponseType } from "App/Interfaces/ResponseTypeInterfaces";
+import ResponseType from "App/Models/ResponseType";
 
 export default class CitizenAttentionRepository implements ICitizenAttentionRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -46,9 +54,34 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     return res.data;
   }
 
+  async getCountries(): Promise<IGenericData[]> {
+    const res = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.COUNTRIES);
+    return res.data;
+  }
+
+  async getDepartments(countryId?: number): Promise<IGenericData[]> {
+    const res = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DEPARTMENTS, countryId);
+    return res.data;
+  }
+
+  async getMunicipalities(departmentId?: number): Promise<IGenericData[]> {
+    const res = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.MUNICIPALITIES, departmentId);
+    return res.data;
+  }
+
+  async getResponseMediums(): Promise<IResponseMedium[]> {
+    const res = await MreMedioRespuesta.query().orderBy("mre_orden");
+    return res.map((model) => model.serialize() as IResponseMedium);
+  }
+
   async getCorregimientos(): Promise<ICorregimiento[]> {
     const res = await Corregimiento.query().orderBy("order");
     return res.map((model) => model.serialize() as ICorregimiento);
+  }
+
+  async getResponseTypes(): Promise<IResponseType[]> {
+    const res = await ResponseType.query().where("isActive", true).orderBy("order");
+    return res.map((model) => model.serialize() as IResponseType);
   }
 
   async getDependencies(): Promise<IDependence[]> {
@@ -61,12 +94,28 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
   }
 
   async getPrograms(): Promise<IProgram[]> {
-    const res = await PrgPrograma.query().orderBy("prg_orden");
+    const res = await PrgPrograma.query()
+      .preload("clpClasificacionPrograma")
+      .preload("depDependencia")
+      .preload("affairs", (affair) => {
+        affair.preload("motives");
+      })
+      .orderBy("prg_orden");
     return res.map((model) => model.serialize() as IProgram);
   }
 
+  async getRequestTypes(): Promise<IRequestType[]> {
+    const res = await TsoTipoSolicitud.query().orderBy("tso_orden");
+    return res.map((model) => model.serialize() as IRequestType);
+  }
+
+  async getLegalEntityTypes(): Promise<ILegalEntityType[]> {
+    const res = await TejTipoEntidadJuridica.query().orderBy("tej_orden");
+    return res.map((model) => model.serialize() as ILegalEntityType);
+  }
+
   async getRequestSubjectTypes(): Promise<IRequestSubjectType[]> {
-    const res = await AsoAsuntoSolicitud.query().preload('motives').orderBy("aso_orden");
+    const res = await AsoAsuntoSolicitud.query().preload("motives").orderBy("aso_orden");
     return res.map((model) => model.serialize() as IRequestSubjectType);
   }
 
