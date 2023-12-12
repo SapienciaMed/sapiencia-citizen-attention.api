@@ -3,9 +3,9 @@ import {
   IRequestSubjectType,
   IRequestSubjectTypeFilters,
 } from "App/Interfaces/RequestSubjectTypeInterfaces";
-import ObsObjectoSolicitud from "App/Models/ObsObjectoSolicitud";
-import AsoAsuntoSolicitud from "App/Models/AsoAsuntoSolicitud";
 import AffairsProgram from "App/Models/AffairsProgram";
+import AsoAsuntoSolicitud from "App/Models/AsoAsuntoSolicitud";
+import ObsObjectoSolicitud from "App/Models/ObsObjectoSolicitud";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { IRequestSubjectTypeRepository } from "./Contracts/IRequestSubjectTypeRepository";
 
@@ -104,11 +104,13 @@ export default class RequestSubjectTypeRepository implements IRequestSubjectType
   async updateRequestSubjectType(requestSubjectType: IRequestSubjectType): Promise<IRequestSubjectType | null> {
     const res = await AsoAsuntoSolicitud.findOrFail(requestSubjectType?.aso_codigo);
     res.aso_asunto = requestSubjectType.aso_asunto;
-    res.requestObjectId = requestSubjectType.requestObjectId;
+    if (requestSubjectType?.requestObjectId) {
+      res.requestObjectId = requestSubjectType.requestObjectId;
+    }
     await res.save();
     await res.load("programs");
     await AffairsProgram.query()
-      .where('affairId',res.aso_codigo)
+      .where("affairId", res.aso_codigo)
       .whereIn(
         "programId",
         res.programs.map((program) => {
