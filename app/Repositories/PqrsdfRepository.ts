@@ -33,7 +33,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       .preload("requestSubject")
       .preload("responseMedium")
       .preload("requestType")
-      .preload("program");
+      .preload("program")
+      .preload("file")
 
     if (filters?.identification) {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
