@@ -52,7 +52,7 @@ export default class extends BaseSchema {
         .unsigned()
         .references("ARC_CODIGO")
         .inTable("ARC_ARCHIVO")
-        .notNullable()
+        .nullable()
         .comment("llave foranea a la tabla tipos de solicitud (FK ARC_ARCHIVO)");
 
       table

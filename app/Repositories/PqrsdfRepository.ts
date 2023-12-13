@@ -256,6 +256,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
           pqrsdf.fileId = newFile.id;
+        } else {
+          delete pqrsdf.fileId;
         }
         const responsible = await this.getResponsible(pqrsdf.requestSubjectId);
         pqrsdf.responsibleId = responsible?.id ?? 1;
