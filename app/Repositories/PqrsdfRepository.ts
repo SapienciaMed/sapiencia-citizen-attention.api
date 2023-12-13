@@ -112,6 +112,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           pqrsdf.response.fileId = newFile.id;
         }
 
+        if (pqrsdf.motiveId) {
+          updatePqrsdfFields.push("motiveId");
+        }
+
         const respondingUserEntity = await this.getResponsibleByUserId(pqrsdf.response.respondingUserId);
         pqrsdf.response.respondingDependenceId = respondingUserEntity?.workEntityType.dependenceId;
         pqrsdf.response.WorkEntityId = respondingUserEntity?.id;
@@ -404,8 +408,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdf.load("person", (person) => {
         person.preload("entityType");
       });
-      await pqrsdf.load("responsible")
-      await pqrsdf.load("status")
+      await pqrsdf.load("responsible");
+      await pqrsdf.load("status");
       await pqrsdf.load("pqrsdfResponses");
       await pqrsdf.load("requestSubject", (requestSubject) => {
         requestSubject.preload("requestObject");
