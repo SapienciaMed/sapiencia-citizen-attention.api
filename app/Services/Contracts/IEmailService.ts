@@ -6,6 +6,6 @@ export interface IEmail {
 }
 
 export interface IEmailService {
-  responseEmail(email: string[], justification: string, radicado: number): Promise<ApiResponse<boolean | null>>;
+  responseEmail(email: string[], justification: string, filingNumber: number): Promise<ApiResponse<boolean | null>>;
   sendEmail(emails: string[], subject: string, body: string, attach?: string): Promise<ApiResponse<boolean | null>>;
 }

@@ -7,7 +7,7 @@ export default class EmailService implements IEmailService {
   public async responseEmail(
     emails: string[],
     justification: string,
-    radicado: number
+    filingNumber: number
   ): Promise<ApiResponse<boolean | null>> {
     try {
       for (const email of emails) {
@@ -33,7 +33,7 @@ export default class EmailService implements IEmailService {
                                 </div>
                                 <div class="content" style="width: 599px; height: 317px; padding: 54px;">
                                     <h4 class="card-title" style="width: 471px; height: 26px; text-align: start; font-size: 29px; font-weight: bold; font-family: 'Rubik', sans-serif;">Reciba un cordial saludo.</h4>
-                                    <p class="card-text" style="width: 471px; height: 57px; font-size: 17px; font-weight: 300; font-family: 'Rubik', sans-serif; line-height: 20.4px;">El responsable de la PQRSDF ${radicado} en estado Cerrada está solicitando su reapertura por el siguiente motivo: ${justification} .</p>
+                                    <p class="card-text" style="width: 471px; height: 57px; font-size: 17px; font-weight: 300; font-family: 'Rubik', sans-serif; line-height: 20.4px;">El responsable de la PQRSDF ${filingNumber} en estado Cerrada está solicitando su reapertura por el siguiente motivo: ${justification} .</p>
                                     <div class="button-container">
                                     </div>
                                 </div>

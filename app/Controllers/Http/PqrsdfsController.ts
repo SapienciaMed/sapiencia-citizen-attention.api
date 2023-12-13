@@ -67,8 +67,8 @@ export default class PqrsdfsController {
   }
 
   private async getFilingNumber(code: string = "02"): Promise<number> {
-    const fillingNumberResponse = await DocumentManagementProvider.getFilingNumber();
-    const filing = fillingNumberResponse.data;
+    const filingNumberResponse = await DocumentManagementProvider.getFilingNumber();
+    const filing = filingNumberResponse.data;
     const filingToString = filing.toString();
     const dataString = filingToString.slice(0, 4);
     const addnumberToData = dataString.padEnd(5, code);
@@ -162,7 +162,6 @@ export default class PqrsdfsController {
   public async createResponse({ request, response }: HttpContextContract) {
     try {
       const filingNumber = await this.getFilingNumber();
-      await DocumentManagementProvider.putFilingNumber(filingNumber);
 
       const file = request.files("file");
       // const supportFiles = request.files("supportFiles");
