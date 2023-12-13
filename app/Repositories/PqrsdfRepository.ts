@@ -416,7 +416,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdf.load("requestSubject", (requestSubject) => {
         requestSubject.preload("requestObject");
       });
-      await pqrsdf.load("file");
+      if (pqrsdf?.fileId) {
+        await pqrsdf.load("file");
+      }
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
 
