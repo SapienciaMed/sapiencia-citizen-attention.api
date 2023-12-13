@@ -1,19 +1,28 @@
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { IPqrsdfFilters, IpqrsdfByRequest, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from "@google-cloud/storage";
-import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
-import Pqrsdf from "App/Models/Pqrsdf";
-import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
+import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import {
+  IPqrsdf,
+  IPqrsdfFilters,
+  IpqrsdfByRequest,
+  IrequestPqrsdf,
+  IrequestReopen,
+} from "App/Interfaces/PqrsdfInterfaces";
 import File from "App/Models/File";
 import Person from "App/Models/Person";
-import WorkEntity from "App/Models/WorkEntity";
-import { IPagingData } from "App/Utils/ApiResponses";
-import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
+import Pqrsdf from "App/Models/Pqrsdf";
+import PqrsdfResponse from "App/Models/PqrsdfResponse";
 import SrbSolicitudReabrir from "App/Models/SrbSolicitudReabrir";
+import WorkEntity from "App/Models/WorkEntity";
+import { IEmailService } from "App/Services/Contracts/IEmailService";
+import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
+import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
+import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
+import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
+import LpaListaParametro from "App/Models/LpaListaParametro";
 
 //const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -21,7 +30,11 @@ const bucketName = process.env.GCLOUD_BUCKET ?? "";
 export default class PqrsdfRepository implements IPqrsdfRepository {
   storage: Storage;
 
-  constructor(private GenericListsExternalService: IGenericListsExternalService) {
+  constructor(
+    private GenericListsExternalService: IGenericListsExternalService,
+    private AuthExternalService: IAuthExternalService,
+    private EmailService: IEmailService
+  ) {
     //this.storage = new Storage({ keyFilename }); //-->Local
     this.storage = new Storage();
   }
@@ -35,7 +48,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       .preload("responseMedium")
       .preload("requestType")
       .preload("program")
-      .preload("file")
+      .preload("file");
 
     if (filters?.identification) {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
@@ -63,6 +76,147 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return {
       array: data as IPqrsdf[],
       meta,
+    };
+  }
+
+  async createResponse(
+    pqrsdf: IPqrsdf,
+    file: MultipartFileContract
+    // supportFiles: MultipartFileContract[] = []
+  ): Promise<IPqrsdf | null> {
+    let res: any = null;
+    await Database.transaction(async (trx) => {
+      if (pqrsdf.response && pqrsdf?.id) {
+        const updatePqrsdfFields = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"];
+        const lastResponse = await PqrsdfResponse.query()
+          .where("pqrsdfId", pqrsdf.id)
+          .orderBy("createdAt", "desc")
+          .first();
+        if (pqrsdf?.person) {
+          await this.updatePerson(pqrsdf.person);
+        }
+        let uploadResponseFile = false;
+        if (file) {
+          const responseFile = await this.uploadBucket(file);
+          uploadResponseFile = responseFile.upload;
+          pqrsdf.response.file = {
+            isActive: true,
+            name: responseFile.filePath,
+          };
+        }
+        const newFile =
+          pqrsdf?.response?.file && uploadResponseFile
+            ? (await File.create(pqrsdf?.response?.file)).useTransaction(trx)
+            : null;
+        if (newFile) {
+          pqrsdf.response.fileId = newFile.id;
+        }
+
+        const respondingUserEntity = await this.getResponsibleByUserId(pqrsdf.response.respondingUserId);
+        pqrsdf.response.respondingDependenceId = respondingUserEntity?.workEntityType.dependenceId;
+        pqrsdf.response.WorkEntityId = respondingUserEntity?.id;
+        //set assignedUser response data
+        pqrsdf.response.assignedUserId = lastResponse ? lastResponse.assignedUserId : pqrsdf.response?.assignedUserId;
+        let assignedUserEntity: WorkEntity | null = null;
+        if (pqrsdf.response?.assignedUserId) {
+          assignedUserEntity = lastResponse ? null : await this.getResponsibleByUserId(pqrsdf.response.assignedUserId);
+          pqrsdf.response.assignedDependenceId = lastResponse
+            ? lastResponse.assignedDependenceId
+            : assignedUserEntity?.workEntityType.dependenceId;
+        }
+        //set pqrsdf responsible
+        let newResponsible = false;
+        if (
+          (pqrsdf?.response?.responseTypeId == 1 || pqrsdf?.response?.responseTypeId == 2) &&
+          pqrsdf.response?.assignedUserId
+        ) {
+          pqrsdf.responsibleId = respondingUserEntity?.id;
+          pqrsdf.statusId = respondingUserEntity?.workEntityType.associatedStatusId;
+          if (!lastResponse) {
+            newResponsible = true;
+          }
+        }
+
+        const isClose = pqrsdf?.response?.responseTypeId == 5 || pqrsdf?.response?.responseTypeId == 4;
+
+        if (isClose) {
+          pqrsdf.statusId = 3;
+        }
+
+        if (pqrsdf.response?.isPetitioner) {
+          updatePqrsdfFields.push("exitFilingNumber");
+          if (pqrsdf.person?.email) {
+            const satisfactionUrl = await LpaListaParametro.find(3);
+            await this.EmailService.sendEmail(
+              [pqrsdf.person.email],
+              "Solicitud cerrada PQRSDF " + pqrsdf.filingNumber,
+              `En atención a la solicitud con radicado ${pqrsdf.filingNumber}, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${pqrsdf.exitFilingNumber}.<br>` +
+                `Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.` +
+                satisfactionUrl
+                ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>`
+                : "",
+              file?.tmpPath
+            );
+          }
+        }
+
+        if (newResponsible && assignedUserEntity && !isClose) {
+          let assignedUser = (await this.AuthExternalService.getUserById(assignedUserEntity.userId)).data;
+          if (assignedUser?.email) {
+            await this.EmailService.sendEmail(
+              [assignedUser.email],
+              "Asignación de PQRSDF " + pqrsdf.filingNumber,
+              `Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
+            );
+          }
+        }
+
+        if (pqrsdf?.response?.responseTypeId == 3) {
+          updatePqrsdfFields.push("extensionDate");
+          if (pqrsdf.person?.email) {
+            await this.EmailService.sendEmail(
+              [pqrsdf.person.email],
+              "Respuesta a radicado " + pqrsdf.filingNumber,
+              `Se le informa que la PQRSDF ${
+                pqrsdf.filingNumber
+              } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
+                pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
+              } días más.`,
+              file?.tmpPath
+            );
+          }
+        }
+
+        await PqrsdfResponse.create(pqrsdf?.response);
+
+        res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
+      }
+    });
+    return res?.id ? res : null;
+  }
+
+  private async uploadBucket(file: MultipartFileContract) {
+    let upload = false;
+    let filePath = "";
+    let tmpPath = "";
+    const bucket = this.storage.bucket(bucketName);
+    if (file?.tmpPath) {
+      const tempDate = DateTime.now().toFormat("YYYY_MM_DD_HH_mm_ss");
+      const [fileCloud] = await bucket.upload(file.tmpPath, {
+        destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
+      });
+
+      if (fileCloud.metadata.id) {
+        filePath = fileCloud.metadata.id;
+        upload = true;
+        tmpPath = file?.tmpPath;
+      }
+    }
+
+    return {
+      filePath: filePath,
+      upload: upload,
+      tmpPath: tmpPath,
     };
   }
 
@@ -167,6 +321,17 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
+  async getResponsibleByUserId(userId: number): Promise<WorkEntity | null> {
+    return WorkEntity.query()
+      .where("status", 1)
+      .where("userId", userId)
+      .preload("workEntityType", (workEntityType) => {
+        workEntityType.preload("dependence");
+        workEntityType.preload("status");
+      })
+      .first();
+  }
+
   async getResponsible(affair: number): Promise<WorkEntity | null> {
     const responsibles = await WorkEntity.query()
       .where("status", 1)
@@ -176,7 +341,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         });
       })
       .preload("pqrsdfs")
-      .preload("workEntityType");
+      .preload("workEntityType", (workEntityType) => {
+        workEntityType.preload("dependence");
+        workEntityType.preload("status");
+      });
     let max = 0;
     let finalResponsible: any;
     responsibles.forEach((responsible) => {
@@ -236,7 +404,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdf.load("person", (person) => {
         person.preload("entityType");
       });
-      await pqrsdf.load("requestSubject");
+      await pqrsdf.load("pqrsdfResponses");
+      await pqrsdf.load("requestSubject", (requestSubject) => {
+        requestSubject.preload("requestObject");
+      });
       await pqrsdf.load("file");
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
@@ -303,8 +474,22 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return [];
   }
 
-  async updatePqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
-    return pqrsdf;
+  async updatePqrsdf(
+    pqrsdf: IPqrsdf,
+    fields: string[] = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"]
+  ): Promise<IPqrsdf | null> {
+    const pqrsdfToUpdate = await Pqrsdf.find(pqrsdf.id);
+    let formattedPqrsdf = pqrsdf;
+    if (pqrsdfToUpdate) {
+      fields.forEach((field) => {
+        pqrsdfToUpdate[field] = pqrsdf[field];
+      });
+      await pqrsdfToUpdate.save();
+      const newPqrsdfData = await this.formatPqrsdf(pqrsdfToUpdate);
+      formattedPqrsdf = newPqrsdfData ? newPqrsdfData : pqrsdf;
+      formattedPqrsdf.response = pqrsdf.response;
+    }
+    return formattedPqrsdf;
   }
 
   async uploadFile(file: MultipartFileContract): Promise<boolean> {

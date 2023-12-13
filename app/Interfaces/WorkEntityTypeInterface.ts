@@ -9,5 +9,5 @@ export interface IWorkEntityType {
   associatedStatusId?: number;
   dependenceId?: number;
   status?: IPqrsdfStatus;
-  dependece?: IDependence;
+  dependence?: IDependence;
 }

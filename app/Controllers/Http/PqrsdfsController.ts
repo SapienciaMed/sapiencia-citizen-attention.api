@@ -1,15 +1,15 @@
-import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import jwt from "jsonwebtoken";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Env from "@ioc:Adonis/Core/Env";
-import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import DocumentManagementProvider from "@ioc:core.DocumentManagementProvider";
+import EmailProvider from "@ioc:core.EmailProvider";
+import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
+import { IPqrsdf, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
-import EmailProvider from "@ioc:core.EmailProvider";
+import jwt from "jsonwebtoken";
 
 export default class PqrsdfsController {
   public async getPqrsdfPaginated({ request, response }: HttpContextContract) {
@@ -66,23 +66,28 @@ export default class PqrsdfsController {
     }
   }
 
+  private async getFilingNumber(code: string = "02"): Promise<number> {
+    const fillingNumberResponse = await DocumentManagementProvider.getFilingNumber();
+    const filing = fillingNumberResponse.data;
+    const filingToString = filing.toString();
+    const dataString = filingToString.slice(0, 4);
+    const addnumberToData = dataString.padEnd(5, code);
+    const filingNumber = parseInt(`${addnumberToData}${filingToString.slice(5)}`) + 1;
+
+    await DocumentManagementProvider.putFilingNumber(filingNumber);
+
+    return filingNumber;
+  }
+
   public async createPqrsdf({ request, response }: HttpContextContract) {
     try {
-
-      const respon = await DocumentManagementProvider.getNumberRadicado();
-      const radicado = respon.data;
-      const radicadoToString = radicado.toString();
-      const dataString = radicadoToString.slice(0,4);
-      const addnumberToData = dataString.padEnd(5,'02')
-      const numberRadicado = parseInt( `${addnumberToData}${radicadoToString.slice(5)}`) + 1 ;
-
-      await DocumentManagementProvider.putNumberRadicado(numberRadicado)
+      const filingNumber = await this.getFilingNumber();
 
       const files = request.files("files");
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf);
 
-      return response.send(await PqrsdfProvider.createPqrsdf(dataPqrsdf, files[0],numberRadicado));
+      return response.send(await PqrsdfProvider.createPqrsdf(dataPqrsdf, files[0], filingNumber));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
@@ -146,7 +151,7 @@ export default class PqrsdfsController {
       await EmailProvider.responseEmail(
         ["ltangarife@i4digital.com"],
         justification[0].srb_justificacion,
-        justification[1]["radicado"]
+        justification[1]["filing"]
       );
       return response.send(await PqrsdfProvider.createRequestReopen(justification));
     } catch (err) {
@@ -154,45 +159,23 @@ export default class PqrsdfsController {
     }
   }
 
-  public async pruebaRadicado({ response }: HttpContextContract) {
+  public async createResponse({ request, response }: HttpContextContract) {
     try {
+      const filingNumber = await this.getFilingNumber();
+      await DocumentManagementProvider.putFilingNumber(filingNumber);
 
-      const respon = await DocumentManagementProvider.getNumberRadicado()
-      const radicado = respon.data;
-      const radicadoToString = radicado.toString();
-      const dataString = radicadoToString.slice(0,4);
-      const addnumberToData = dataString.padEnd(5,'2')
-      const numberRadicado = parseInt( `${addnumberToData}${radicadoToString.slice(5)}`) + 1 ;
-
-
-      return response.send(numberRadicado);
-    } catch (err) {
-      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
-    }
-  }
-
-  public async responsePqrsdf({ request, response }: HttpContextContract) {
-    try {
-
-      const respon = await DocumentManagementProvider.getNumberRadicado();
-      const radicado = respon.data;
-      const radicadoToString = radicado.toString();
-      const dataString = radicadoToString.slice(0,4);
-      const addnumberToData = dataString.padEnd(5,'02')
-      const numberRadicado = parseInt( `${addnumberToData}${radicadoToString.slice(5)}`) + 1 ;
-
-      await DocumentManagementProvider.putNumberRadicado(numberRadicado)
-
-      const files = request.files("files");
-      const soportFile = request.files("soportFile");
+      const file = request.files("file");
+      // const supportFiles = request.files("supportFiles");
       const { pqrsdf } = request.body();
-      const dataPqrsdf = JSON.parse(pqrsdf);
+      const dataPqrsdf = JSON.parse(pqrsdf) as IPqrsdf;
+      if (dataPqrsdf.response) {
+        dataPqrsdf.response.filingNumber = filingNumber;
+      }
+      if (dataPqrsdf.closedAt) {
+        dataPqrsdf.exitFilingNumber = await this.getFilingNumber("03");
+      }
 
-      console.log(files);
-      console.log(soportFile);
-      console.log(dataPqrsdf);
-
-
+      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0]));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }

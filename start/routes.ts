@@ -62,8 +62,7 @@ Route.group(() => {
     Route.get("/get-by-filters", "PqrsdfsController.getPqrsdfByIdentificationAndFilingNumber");
     Route.post("/update-person", "PqrsdfsController.updatePerson");
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
-    Route.get("/prueba", "PqrsdfsController.pruebaRadicado");
-    Route.post("/response", "PqrsdfsController.responsePqrsdf");
+    Route.post("/response", "PqrsdfsController.createResponse");
   }).prefix("/pqrsdf");
 
   /* Citizen attentions */
@@ -98,7 +97,7 @@ Route.group(() => {
     Route.post("/update", "WorkEntityController.updateWorkEntity").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
     Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
-    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
+    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
@@ -109,6 +108,8 @@ Route.group(() => {
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
     Route.get("/get-entitymanagers-by-entityType-id/:id", "WorkEntityController.getEntityManagersByEntityTypeId");
+    Route.get("/get-by-user-id/:id", "WorkEntityController.getWorkEntityByUserId").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
+
   }).prefix("/work-entity");
 
   /*ARCHIVOS*/

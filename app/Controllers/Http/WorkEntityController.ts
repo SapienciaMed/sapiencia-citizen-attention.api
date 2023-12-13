@@ -14,6 +14,15 @@ export default class WorkEntityController {
     }
   }
 
+  public async getWorkEntityByUserId({ request, response }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await WorkEntityProvider.getWorkEntityByUserId(id));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async getUserByDocument({ request, response }: HttpContextContract) {
     try {
       const { identification } = request.params();

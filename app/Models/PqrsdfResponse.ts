@@ -34,6 +34,9 @@ export default class PqrsdfResponse extends BaseModel {
   @column({ columnName: "RPF_CODUSR_USUARIOASI", serializeAs: "assignedUserId" })
   public assignedUserId: number;
 
+  @column({ columnName: "RPF_CODENT_ENTIDAD_TRABAJO", serializeAs: "WorkEntityId" })
+  public WorkEntityId: number;
+
   @column({ columnName: "RPF_CODDEP_DEPENDECIAASI", serializeAs: "assignedDependenceId" })
   public assignedDependenceId: number;
 

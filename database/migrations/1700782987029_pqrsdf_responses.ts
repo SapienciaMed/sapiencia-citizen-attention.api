@@ -74,6 +74,14 @@ export default class extends BaseSchema {
 
       table.text("RPF_OBSERVACION", "longtext");
 
+      table
+        .integer("RPF_CODENT_ENTIDAD_TRABAJO")
+        .unsigned()
+        .nullable()
+        .references("ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
+        .onUpdate('CASCADE')
+        .comment("Llave foranea a la tabla entidad de trabajo(FK_ENT_CODIGO)");
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

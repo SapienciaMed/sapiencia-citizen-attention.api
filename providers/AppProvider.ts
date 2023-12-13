@@ -17,7 +17,7 @@ export default class AppProvider {
     const AuthService = await import("App/Services/AuthService");
     const RequestSubjectTypeService = await import("App/Services/RequestSubjectTypeServices");
     const CitizenAttentionService = await import("App/Services/CitizenAttentionServices");
-    const EmailService = await import("App/Services/emailService");
+    const EmailService = await import("App/Services/EmailService");
     const StorageService = await import("../app/Services/StorageService");
 
     /**************************************************************************/
@@ -58,7 +58,14 @@ export default class AppProvider {
     );
     this.app.container.singleton(
       "core.PqrsdfProvider",
-      () => new PqrsdfService.default(new PqrsdfRepository.default(new GenericListsExternalService.default()))
+      () =>
+        new PqrsdfService.default(
+          new PqrsdfRepository.default(
+            new GenericListsExternalService.default(),
+            new AuthExternalService.default(),
+            new EmailService.default()
+          )
+        )
     );
     this.app.container.singleton(
       "core.WorkEntityProvider",
@@ -78,7 +85,7 @@ export default class AppProvider {
     this.app.container.singleton("core.AuthProvider", () => new AuthService.default(new UserRepository.default()));
     this.app.container.singleton("core.EmailProvider", () => new EmailService.default());
     this.app.container.singleton("core.StorageProvider", () => new StorageService.default());
-    this.app.container.singleton("core.DocumentManagementProvider", ()=> new DocumentManagementService.default())
+    this.app.container.singleton("core.DocumentManagementProvider", () => new DocumentManagementService.default());
   }
 
   public async boot() {

@@ -1,11 +1,11 @@
 import { DateTime } from "luxon";
-import { IPerson } from "./PersonInterfaces";
-import { IResponseMedium } from "./ResponseMediumInterfaces";
-import { IRequestSubject } from "./RequestSubjectInterfaces";
 import { IFile } from "./FileInterfaces";
-import { IRequestType } from "./RequestTypeInterfaces";
-import { IWorkEntity } from "./WorkEntityInterfaces";
 import { IMotive } from "./MotiveInterfaces";
+import { IPerson } from "./PersonInterfaces";
+import { IRequestSubjectType } from "./RequestSubjectTypeInterfaces";
+import { IRequestType } from "./RequestTypeInterfaces";
+import { IResponseMedium } from "./ResponseMediumInterfaces";
+import { IWorkEntity } from "./WorkEntityInterfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -19,6 +19,7 @@ export interface IPqrsdf {
   motiveId?: number;
   statusId?: number;
   filingNumber?: number;
+  exitFilingNumber?: number;
   idCanalesAttencion?: number;
   clasification: string;
   dependency: string;
@@ -29,9 +30,10 @@ export interface IPqrsdf {
   answer?: string;
   program?: Iprogram;
   answerDate?: DateTime;
+  extensionDate?: DateTime;
   responsible?: IWorkEntity;
   responseMedium?: IResponseMedium;
-  requestSubject?: IRequestSubject;
+  requestSubject?: IRequestSubjectType;
   status?: IPqrsdfStatus;
   response?: IPqrsdfResponse;
   file: IFile;
@@ -95,7 +97,6 @@ export interface IrequestReopen {
   sbr_estado?: boolean;
 }
 
-
 export interface IPqrsdfResponse {
   id?: number;
   filingNumber?: number;
@@ -103,11 +104,13 @@ export interface IPqrsdfResponse {
   pqrsdfId?: number;
   responseTypeId?: number;
   workEntityTypeId?: number;
+  WorkEntityId?: number;
   factorId?: number;
   fileId?: number;
+  file?: IFile;
   assignedUserId?: number;
   assignedDependenceId?: number;
-  respondingUserId?: number;
+  respondingUserId: number;
   respondingDependenceId?: number;
   observation?: string;
   createdAt?: DateTime;

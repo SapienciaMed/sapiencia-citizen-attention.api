@@ -1,10 +1,11 @@
 //import { ItypeRequest } from "App/Interfaces/MasterTablesUtilityInterfaces"
-import { ApiResponse } from "App/Utils/ApiResponses"
+import { ApiResponse } from "App/Utils/ApiResponses";
 
 export interface IEmail {
-    Emails: string[]
-  }
+  Emails: string[];
+}
 
 export interface IEmailService {
-    responseEmail(email:string[],justification:string,radicado:number): Promise<ApiResponse<boolean | null>>
+  responseEmail(email: string[], justification: string, radicado: number): Promise<ApiResponse<boolean | null>>;
+  sendEmail(emails: string[], subject: string, body: string, attach?: string): Promise<ApiResponse<boolean | null>>;
 }

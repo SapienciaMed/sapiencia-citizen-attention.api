@@ -25,13 +25,13 @@ export default class TetTipoEntidadTrabajo extends BaseModel {
 
   @belongsTo(() => LepListadoEstadoPqrsdf, {
     localKey: "lep_codigo",
-    foreignKey: "statusId",
+    foreignKey: "associatedStatusId",
   })
   public status: BelongsTo<typeof LepListadoEstadoPqrsdf>;
 
   @belongsTo(() => DepDependencia, {
-    localKey: "lep_codigo",
+    localKey: "dep_codigo",
     foreignKey: "dependenceId",
   })
-  public dependece: BelongsTo<typeof DepDependencia>;
+  public dependence: BelongsTo<typeof DepDependencia>;
 }

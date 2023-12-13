@@ -89,7 +89,9 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
   ): Promise<IWorkEntity | null> {
     let serializeWorkEntity: any;
     if (workEntity) {
-      await workEntity.load("workEntityType");
+      await workEntity.load("workEntityType", (workEntityType) => {
+        workEntityType.preload("dependence");
+      });
       await workEntity.load("affairsPrograms");
       if (!user) {
         user = (await this.AuthExternalService.getUserById(workEntity.userId)).data;
