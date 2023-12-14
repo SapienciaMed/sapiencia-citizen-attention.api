@@ -12,10 +12,10 @@ import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
 import jwt from "jsonwebtoken";
 
 export default class PqrsdfsController {
-  public async getPqrsdfPaginated({ request, response }: HttpContextContract) {
+  public async getPqrsdfByFilters({ request, response }: HttpContextContract) {
     try {
       const data = await request.validate(PqrsdfFiltersValidator);
-      return response.send(await PqrsdfProvider.getPqrsdfPaginated(data));
+      return response.send(await PqrsdfProvider.getPqrsdfByFilters(data));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }

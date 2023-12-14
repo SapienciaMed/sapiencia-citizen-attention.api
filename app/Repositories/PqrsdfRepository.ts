@@ -23,6 +23,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import LpaListaParametro from "App/Models/LpaListaParametro";
+import { IUser } from "App/Interfaces/UserInterfaces";
 
 //const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -39,9 +40,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     this.storage = new Storage();
   }
 
-  async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
+  async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
     const query = Pqrsdf.query()
-      .preload("person")
+      .preload("person", (person) => {
+        person.preload("entityType");
+      })
+      .preload("responsible", (responsible) => {
+        responsible.preload("workEntityType", (workEntityType) => {
+          workEntityType.preload("dependence");
+        });
+      })
       .preload("status")
       .preload("canalesAttencion")
       .preload("requestSubject")
@@ -71,12 +79,30 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
 
     const res = await query.paginate(filters.page, filters.perPage);
-    const { data, meta } = res.serialize();
+    const { meta } = res.serialize();
+
+    let serializeWorkEntity = await this.formatPqrsdfs(res.all());
 
     return {
-      array: data as IPqrsdf[],
+      array: serializeWorkEntity,
       meta,
     };
+  }
+
+  private async formatPqrsdfs(pqrsdfs: Pqrsdf[]): Promise<IPqrsdf[]> {
+    let pqrsdfsFormatted: IPqrsdf[] = [];
+    let ids = pqrsdfs.map((pqrsdf) => pqrsdf.responsible.userId);
+    let users: IUser[] = [];
+    if (!users.length) {
+      users = (await this.AuthExternalService.getUsersByIds(ids)).data;
+    }
+    for await (const pqrsdf of pqrsdfs) {
+      let pqrsdfFormatted = await this.formatPqrsdf(pqrsdf, users.filter((user) => user.id == pqrsdf.responsible.userId)[0]);
+      if (pqrsdfFormatted) {
+        pqrsdfsFormatted.push(pqrsdfFormatted);
+      }
+    }
+    return pqrsdfsFormatted;
   }
 
   async createResponse(
@@ -404,13 +430,17 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return serializePerson;
   }
 
-  private async formatPqrsdf(pqrsdf: Pqrsdf | null): Promise<IPqrsdf | null> {
+  private async formatPqrsdf(pqrsdf: Pqrsdf | null, user: IUser | null = null): Promise<IPqrsdf | null> {
     let serializePqrsdf: any = null;
     if (pqrsdf) {
       await pqrsdf.load("person", (person) => {
         person.preload("entityType");
       });
-      await pqrsdf.load("responsible");
+      await pqrsdf.load("responsible", (responsible) => {
+        responsible.preload("workEntityType", (workEntityType) => {
+          workEntityType.preload("dependence");
+        });
+      });
       await pqrsdf.load("status");
       await pqrsdf.load("pqrsdfResponses");
       await pqrsdf.load("requestSubject", (requestSubject) => {
@@ -427,7 +457,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       const departments = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DEPARTMENTS);
       const countries = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.COUNTRIES);
 
+      if (!user) {
+        user = (await this.AuthExternalService.getUserById(pqrsdf.responsible.userId)).data;
+      }
+
       serializePqrsdf = pqrsdf.serialize() as IPqrsdf;
+      serializePqrsdf.responsible.user = user;
       if (serializePqrsdf.person) {
         serializePqrsdf.person.documentType = documentTypes.data.find(
           (documentType) => documentType.id == serializePqrsdf.person?.documentTypeId

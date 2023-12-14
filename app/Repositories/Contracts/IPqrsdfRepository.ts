@@ -16,7 +16,7 @@ export interface IPqrsdfRepository {
   getPqrsdfs(): Promise<IPqrsdf[] | []>;
   createResponse(pqrsdf: IPqrsdf, file: MultipartFileContract): Promise<IPqrsdf | null>;
   getPersonByDocument(identification: number): Promise<IPerson | null>;
-  getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>>;
+  getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>>;
   updatePerson(person: IPerson): Promise<IPerson | null>;
   createPqrsdf(prsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null>;
   updatePqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;

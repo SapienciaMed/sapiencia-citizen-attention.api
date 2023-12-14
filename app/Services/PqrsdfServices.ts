@@ -15,8 +15,8 @@ import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 export default class PqrsdfServices implements IPqrsdfServices {
   constructor(private PqrsdfRepository: IPqrsdfRepository) {}
 
-  async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>> {
-    const res = await this.PqrsdfRepository.getPqrsdfPaginated(filters);
+  async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>> {
+    const res = await this.PqrsdfRepository.getPqrsdfByFilters(filters);
     return new ApiResponse(res, EResponseCodes.OK);
   }
 

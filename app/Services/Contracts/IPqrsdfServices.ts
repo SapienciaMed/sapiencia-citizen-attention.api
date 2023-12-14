@@ -14,7 +14,7 @@ export interface IPqrsdfServices {
   getPrsdfById(id: number): Promise<ApiResponse<IPqrsdf | null>>;
   createResponse(pqrsdf: IPqrsdf, file: MultipartFileContract): Promise<ApiResponse<IPqrsdf | null>>;
   getPersonByDocument(identification: number): Promise<ApiResponse<IPerson | null>>;
-  getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>>;
+  getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>>;
   getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPagingData<IPerson | null>>>;
   updatePerson(person: IPerson): Promise<ApiResponse<IPerson | null>>;
   getPqrsdfByIdentificationAndFilingNumber(
