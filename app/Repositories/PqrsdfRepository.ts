@@ -67,7 +67,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
 
     if (filters?.filingNumber) {
-      query.where("filingNumber", filters.filingNumber);
+      query.whereILike("filingNumber", `%${filters.filingNumber}%`);
     }
 
     if (filters?.programId) {
