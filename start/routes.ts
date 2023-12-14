@@ -55,7 +55,7 @@ Route.group(() => {
   }).prefix("/request-subject-type");
   /* PQRSDF */
   Route.group(() => {
-    Route.post("/get-by-filters", "PqrsdfsController.getPqrsdfByFilters");
+    Route.post("/get-paginated", "PqrsdfsController.getPqrsdfByFilters");
     Route.post("/create-request-reopen", "PqrsdfsController.createRequestReopen");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
