@@ -5,6 +5,6 @@ export interface IRadicado {
 }
 
 export interface IDocumentManagement {
-  getNumberRadicado(): Promise<ApiResponse<IRadicado>>;
-  putNumberRadicado(radicado: number):Promise<ApiResponse<IRadicado>>;
+  getFilingNumber(): Promise<ApiResponse<IRadicado>>;
+  putFilingNumber(filing: number):Promise<ApiResponse<IRadicado>>;
 }

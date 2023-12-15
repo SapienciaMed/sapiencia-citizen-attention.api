@@ -1,5 +1,5 @@
-import { IAffair } from "./AffairInterfaces";
 import { IDependence } from "./DependenceInterfaces";
+import { IRequestSubjectType } from "./RequestSubjectTypeInterfaces";
 
 export interface IProgram {
   prg_codigo?: number;
@@ -8,7 +8,7 @@ export interface IProgram {
   prg_dependencia?: number;
   clpClasificacionPrograma?: IProgramClasification[];
   depDependencia?: IDependence;
-  affairs?: IAffair[];
+  affairs?: IRequestSubjectType[];
   prg_activo?: boolean;
   prg_orden?: number;
 }

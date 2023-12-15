@@ -3,5 +3,5 @@ import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 
 export interface IGenericListsExternalService {
-  getItemsByGrouper(grouper: EGrouperCodes): Promise<ApiResponse<IGenericData[]>>;
+  getItemsByGrouper(grouper: EGrouperCodes, parentId?: number): Promise<ApiResponse<IGenericData[]>>;
 }

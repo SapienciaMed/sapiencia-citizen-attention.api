@@ -75,6 +75,16 @@ export default class WorkEntityServices implements IWorkEntityServices {
     return new ApiResponse(res.user, EResponseCodes.OK);
   }
 
+  public async getWorkEntityByUserId(id: number): Promise<ApiResponse<IWorkEntity | null>> {
+    const res = await this.WorkEntityRepository.getWorkEntityByUserId(id);
+
+    if (!res) {
+      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Registro no encontrado");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
   public async getWorkEntityById(id: number): Promise<ApiResponse<IWorkEntity | null>> {
     const res = await this.WorkEntityRepository.getWorkEntityById(id);
 

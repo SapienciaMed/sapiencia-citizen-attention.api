@@ -1,37 +1,43 @@
 import { DateTime } from "luxon";
-import { IPerson } from "./PersonInterfaces";
-import { IResponseMedium } from "./ResponseMediumInterfaces";
-import { IRequestSubject } from "./RequestSubjectInterfaces";
 import { IFile } from "./FileInterfaces";
-import { IRequestType } from "./RequestTypeInterfaces";
-import { IWorkEntity } from "./WorkEntityInterfaces";
 import { IMotive } from "./MotiveInterfaces";
+import { IPerson } from "./PersonInterfaces";
+import { IRequestSubjectType } from "./RequestSubjectTypeInterfaces";
+import { IRequestType } from "./RequestTypeInterfaces";
+import { IResponseMedium } from "./ResponseMediumInterfaces";
+import { IWorkEntity } from "./WorkEntityInterfaces";
 
 export interface IPqrsdf {
   id?: number;
   requestTypeId: number;
   personId?: number;
   responseMediumId: number;
+  programId?: number;
   responsibleId?: number;
   requestSubjectId: number;
   fileId?: number;
   motiveId?: number;
+  reopenRequestId?: number;
   statusId?: number;
   filingNumber?: number;
+  exitFilingNumber?: number;
   idCanalesAttencion?: number;
   clasification: string;
   dependency: string;
   description: string;
   requestType?: IRequestType;
+  motive?: IMotive;
+  reopenRequest?: IReopenRequest;
   person?: IPerson;
   answer?: string;
-  answerDate?: DateTime;
-  responseMedium?: IResponseMedium;
-  responsible?: IWorkEntity;
-  status?: IPqrsdfStatus;
   program?: Iprogram;
-  motive?: IMotive;
-  requestSubject?: IRequestSubject;
+  answerDate?: DateTime;
+  extensionDate?: DateTime;
+  responsible?: IWorkEntity;
+  responseMedium?: IResponseMedium;
+  requestSubject?: IRequestSubjectType;
+  status?: IPqrsdfStatus;
+  response?: IPqrsdfResponse;
   file: IFile;
   closedAt?: DateTime;
   createdAt?: DateTime;
@@ -50,10 +56,10 @@ export interface IPqrsdfFilters {
 }
 
 export interface IPqrsdfStatus {
-  lep_codigo: number;
-  lep_estado: string;
-  lep_activo: boolean;
-  lep_orden: number;
+  lep_codigo?: number;
+  lep_estado?: string;
+  lep_activo?: boolean;
+  lep_orden?: number;
 }
 
 export interface IrequestPqrsdf {
@@ -71,7 +77,7 @@ export interface Iprogram {
   dep_descripcion: string;
 }
 
-export interface IpqrsdfByReques {
+export interface IpqrsdfByRequest {
   PQR_CODIGO?: number;
   PQR_NRO_RADICADO?: number;
   PQR_FECHA_CREACION?: string;
@@ -88,11 +94,11 @@ export interface IpqrsdfByReques {
   SBR_ESTADO?: string;
 }
 
-export interface IrequestReopen {
+export interface IReopenRequest {
+  srb_codigo?: number;
   srb_justificacion?: string;
   sbr_estado?: boolean;
 }
-
 
 export interface IPqrsdfResponse {
   id?: number;
@@ -101,10 +107,14 @@ export interface IPqrsdfResponse {
   pqrsdfId?: number;
   responseTypeId?: number;
   workEntityTypeId?: number;
+  WorkEntityId?: number;
   factorId?: number;
   fileId?: number;
+  file?: IFile;
   assignedUserId?: number;
-  respondingUserId?: number;
+  assignedDependenceId?: number;
+  respondingUserId: number;
+  respondingDependenceId?: number;
   observation?: string;
   createdAt?: DateTime;
   updatedAt?: DateTime;

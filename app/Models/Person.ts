@@ -33,6 +33,9 @@ export default class Person extends BaseModel {
   @column({ columnName: "PER_SEGUNDO_APELLIDO", serializeAs: "secondSurname" })
   public secondSurname: string;
 
+  @column({ columnName: "PER_RAZON_SOCIAL", serializeAs: "businessName" })
+  public businessName: string;
+
   @column({ columnName: "PER_FECHA_NACIMIENTO", serializeAs: "birthdate" })
   public birthdate: Date;
 

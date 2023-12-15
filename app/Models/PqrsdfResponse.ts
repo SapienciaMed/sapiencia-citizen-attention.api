@@ -1,5 +1,8 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from "luxon";
+import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
+import DepDependencia from "./DepDependencia";
+import Factor from "./Factor";
+import ResponseType from "./ResponseType";
 
 export default class PqrsdfResponse extends BaseModel {
   public static table = "RPF_RESPUESTA_PQRSDF";
@@ -31,8 +34,41 @@ export default class PqrsdfResponse extends BaseModel {
   @column({ columnName: "RPF_CODUSR_USUARIOASI", serializeAs: "assignedUserId" })
   public assignedUserId: number;
 
+  @column({ columnName: "RPF_CODENT_ENTIDAD_TRABAJO", serializeAs: "WorkEntityId" })
+  public WorkEntityId: number;
+
+  @column({ columnName: "RPF_CODDEP_DEPENDECIAASI", serializeAs: "assignedDependenceId" })
+  public assignedDependenceId: number;
+
   @column({ columnName: "RPF_CODUSR_USUARIORES", serializeAs: "respondingUserId" })
   public respondingUserId: number;
+
+  @column({ columnName: "RPF_CODDEP_DEPENDECIARES", serializeAs: "respondingDependenceId" })
+  public respondingDependenceId: number;
+
+  @belongsTo(() => DepDependencia, {
+    localKey: "dep_codigo",
+    foreignKey: "assignedDependenceId",
+  })
+  public assignedDependence: BelongsTo<typeof DepDependencia>;
+
+  @belongsTo(() => DepDependencia, {
+    localKey: "dep_codigo",
+    foreignKey: "respondingDependenceId",
+  })
+  public respondingDependence: BelongsTo<typeof DepDependencia>;
+
+  @belongsTo(() => Factor, {
+    localKey: "id",
+    foreignKey: "factorId",
+  })
+  public factor: BelongsTo<typeof Factor>;
+
+  @belongsTo(() => ResponseType, {
+    localKey: "id",
+    foreignKey: "responseTypeId",
+  })
+  public responseType: BelongsTo<typeof ResponseType>;
 
   @column({ columnName: "RPF_OBSERVACION", serializeAs: "observation" })
   public observation: string;

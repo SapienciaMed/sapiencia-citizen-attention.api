@@ -1,4 +1,4 @@
-import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import BaseSchema from "@ioc:Adonis/Lucid/Schema";
 
 export default class extends BaseSchema {
   protected tableName = "RPF_RESPUESTA_PQRSDF";
@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments("RPF_CODIGO");
       table.bigInteger("RPF_NRO_RADICADO").nullable();
-      table.boolean('RPF_PETICIONARIO').defaultTo(false);
+      table.boolean("RPF_PETICIONARIO").defaultTo(false);
       table
         .integer("RPF_CODPQR_PQRSDF")
         .unsigned()
@@ -44,28 +44,53 @@ export default class extends BaseSchema {
         .nullable()
         .comment("llave foranea a la tabla tipos de solicitud (FK ARC_ARCHIVO)");
 
+      //Usuario asignado
       table
         .integer("RPF_CODUSR_USUARIOASI")
         .nullable()
         .unsigned()
-        .comment("Este campo pertenece a la tabla usuarios ubicada en autenticacion-dev");
+        .comment("Este campo pertenece a la tabla usuarios, usuario asignado");
+      table
+        .integer("RPF_CODDEP_DEPENDECIAASI")
+        .unsigned()
+        .references("DEP_CODIGO")
+        .inTable("DEP_DEPENDENCIA")
+        .nullable()
+        .comment("llave foranea a la tabla dependencias (FK DEP_DEPENDECIAASI)");
 
+      //Usuario responde
       table
         .integer("RPF_CODUSR_USUARIORES")
         .unsigned()
-        .comment("Este campo pertenece a la tabla usuarios ubicada en autenticacion-dev");
+        .comment("Este campo pertenece a la tabla usuarios, usuario que responde");
 
-      table.text('RPF_OBSERVACION', 'longtext')
+      table
+        .integer("RPF_CODDEP_DEPENDECIARES")
+        .unsigned()
+        .references("DEP_CODIGO")
+        .inTable("DEP_DEPENDENCIA")
+        .nullable()
+        .comment("llave foranea a la tabla dependencias (FK DEP_DEPENDECIARES)");
+
+      table.text("RPF_OBSERVACION", "longtext");
+
+      table
+        .integer("RPF_CODENT_ENTIDAD_TRABAJO")
+        .unsigned()
+        .nullable()
+        .references("ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
+        .onUpdate('CASCADE')
+        .comment("Llave foranea a la tabla entidad de trabajo(FK_ENT_CODIGO)");
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
       table.timestamp("RPF_FECHA_CREACION", { useTz: true }).defaultTo(this.now());
       table.timestamp("RPF_FECHA_ACTUALIZACION", { useTz: true }).nullable();
-    })
+    });
   }
 
   public async down() {
-    this.schema.dropTable(this.tableName)
+    this.schema.dropTable(this.tableName);
   }
 }

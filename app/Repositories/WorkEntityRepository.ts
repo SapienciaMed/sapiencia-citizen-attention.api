@@ -89,7 +89,9 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
   ): Promise<IWorkEntity | null> {
     let serializeWorkEntity: any;
     if (workEntity) {
-      await workEntity.load("workEntityType");
+      await workEntity.load("workEntityType", (workEntityType) => {
+        workEntityType.preload("dependence");
+      });
       await workEntity.load("affairsPrograms");
       if (!user) {
         user = (await this.AuthExternalService.getUserById(workEntity.userId)).data;
@@ -101,10 +103,13 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
     return serializeWorkEntity;
   }
 
-  async getUserByFilters(filters: IWorkEntityFilters, all: boolean=false): Promise<{
+  async getUserByFilters(
+    filters: IWorkEntityFilters,
+    all: boolean = false
+  ): Promise<{
     filterUser: boolean;
-    user: IUser|(IUser | null)[]|null;    
-  }> {    
+    user: IUser | (IUser | null)[] | null;
+  }> {
     let userFilters: IUserFilters = {
       page: 1,
       perPage: filters?.perPage,
@@ -114,13 +119,13 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       names: filters?.names,
     };
     let filterUser = false;
-    let user: IUser|(IUser | null)[]|null = null;
+    let user: IUser | (IUser | null)[] | null = null;
     if (userFilters?.email || userFilters?.lastNames || userFilters?.names || userFilters?.numberDocument) {
       filterUser = true;
       const existUser = await this.AuthExternalService.searchUser(userFilters);
       if (all) {
         user = existUser.data.array;
-      }else{
+      } else {
         user = existUser.data.array[0];
       }
     }
@@ -132,7 +137,7 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
   async getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<IPagingData<IWorkEntity | null>> {
     let { filterUser, user } = await this.getUserByFilters(filters, true);
-    let users = user as any
+    let users = user as any;
     if (filterUser && !users?.length) {
       return {
         array: [],
@@ -144,10 +149,12 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
 
     const query = WorkEntity.query();
     if (filterUser && users?.length) {
-        query.whereIn('userId',
-          users.map((user) => {
-            return user?.id;
-          }))
+      query.whereIn(
+        "userId",
+        users.map((user) => {
+          return user?.id;
+        })
+      );
     }
     if (filters?.name) {
       query.whereILike("name", `%${filters.name}%`);
@@ -200,28 +207,28 @@ export default class WorkEntityRepository implements IWorkEntityRepository {
       );
     }
     return await this.formatWorkEntity(res);
-  };
+  }
 
   async getEntityManagersByEntityTypeId(id: number): Promise<IWorkEntity | null> {
     let resp: any;
-    let userIds:number[] = []
-    const manageEntity = await WorkEntity.query()
-                                  .where('workEntityTypeId',id)
-                                  .where('status',1);
-    
-    manageEntity.map((workEntity)=>{
-        userIds.push(workEntity.userId)
-    })  
-    const arrayUsers = (await (this.AuthExternalService.getUsersByIds(userIds))).data;
-    
-    const users = arrayUsers.map((user)=>{
-      return{
+    const manageEntity = await WorkEntity.query().where("workEntityTypeId", id).where("status", 1);
+
+    const arrayUsers = (
+      await this.AuthExternalService.getUsersByIds(
+        manageEntity.map((workEntity) => {
+          return workEntity.userId;
+        })
+      )
+    ).data;
+
+    const users = arrayUsers.map((user) => {
+      return {
         id: user.id,
-        fullName: `${user.names} ${user.lastNames}`
-      }
-    })
+        fullName: `${user.names} ${user.lastNames}`,
+      };
+    });
 
     resp = users;
-    return resp ? resp : null; 
+    return resp ? resp : null;
   }
 }

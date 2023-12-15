@@ -1,18 +1,28 @@
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { IPqrsdfFilters, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "App/Interfaces/PqrsdfInterfaces";
 import { Storage } from "@google-cloud/storage";
-import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
-import Pqrsdf from "App/Models/Pqrsdf";
-import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
+import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import {
+  IPqrsdf,
+  IPqrsdfFilters,
+  IReopenRequest,
+  IrequestPqrsdf
+} from "App/Interfaces/PqrsdfInterfaces";
+import { IUser } from "App/Interfaces/UserInterfaces";
 import File from "App/Models/File";
+import LpaListaParametro from "App/Models/LpaListaParametro";
 import Person from "App/Models/Person";
-import WorkEntity from "App/Models/WorkEntity";
-import { IPagingData } from "App/Utils/ApiResponses";
-import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
+import Pqrsdf from "App/Models/Pqrsdf";
+import PqrsdfResponse from "App/Models/PqrsdfResponse";
 import SrbSolicitudReabrir from "App/Models/SrbSolicitudReabrir";
+import WorkEntity from "App/Models/WorkEntity";
+import { IEmailService } from "App/Services/Contracts/IEmailService";
+import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
+import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
+import { IPagingData } from "App/Utils/ApiResponses";
+import { DateTime } from "luxon";
+import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
 //const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -20,20 +30,32 @@ const bucketName = process.env.GCLOUD_BUCKET ?? "";
 export default class PqrsdfRepository implements IPqrsdfRepository {
   storage: Storage;
 
-  constructor(private GenericListsExternalService: IGenericListsExternalService) {
+  constructor(
+    private GenericListsExternalService: IGenericListsExternalService,
+    private AuthExternalService: IAuthExternalService,
+    private EmailService: IEmailService
+  ) {
     //this.storage = new Storage({ keyFilename }); //-->Local
     this.storage = new Storage();
   }
 
-  async getPqrsdfPaginated(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
+  async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
     const query = Pqrsdf.query()
-      .preload("person")
+      .preload("person", (person) => {
+        person.preload("entityType");
+      })
+      .preload("responsible", (responsible) => {
+        responsible.preload("workEntityType", (workEntityType) => {
+          workEntityType.preload("dependence");
+        });
+      })
       .preload("status")
       .preload("canalesAttencion")
       .preload("requestSubject")
       .preload("responseMedium")
       .preload("requestType")
-      .preload("program");
+      .preload("program")
+      .preload("file");
 
     if (filters?.identification) {
       query.whereHas("person", (sub) => sub.where("identification", String(filters.identification)));
@@ -44,7 +66,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
 
     if (filters?.filingNumber) {
-      query.where("filingNumber", filters.filingNumber);
+      query.whereILike("filingNumber", `%${filters.filingNumber}%`);
     }
 
     if (filters?.programId) {
@@ -56,15 +78,183 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
 
     const res = await query.paginate(filters.page, filters.perPage);
-    const { data, meta } = res.serialize();
+    const { meta } = res.serialize();
+
+    let serializeWorkEntity = await this.formatPqrsdfs(res.all());
 
     return {
-      array: data as IPqrsdf[],
+      array: serializeWorkEntity,
       meta,
     };
   }
 
-  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract,filedNumber:number): Promise<IPqrsdf | null> {
+  private async formatPqrsdfs(pqrsdfs: Pqrsdf[]): Promise<IPqrsdf[]> {
+    let pqrsdfsFormatted: IPqrsdf[] = [];
+    let ids = pqrsdfs.map((pqrsdf) => pqrsdf.responsible.userId);
+    let users: IUser[] = [];
+    if (!users.length) {
+      users = (await this.AuthExternalService.getUsersByIds(ids)).data;
+    }
+    for await (const pqrsdf of pqrsdfs) {
+      let pqrsdfFormatted = await this.formatPqrsdf(pqrsdf, users.filter((user) => user.id == pqrsdf.responsible.userId)[0]);
+      if (pqrsdfFormatted) {
+        pqrsdfsFormatted.push(pqrsdfFormatted);
+      }
+    }
+    return pqrsdfsFormatted;
+  }
+
+  async createResponse(
+    pqrsdf: IPqrsdf,
+    file: MultipartFileContract
+    // supportFiles: MultipartFileContract[] = []
+  ): Promise<IPqrsdf | null> {
+    let res: any = null;
+    await Database.transaction(async (trx) => {
+      if (pqrsdf.response && pqrsdf?.id) {
+        const updatePqrsdfFields = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"];
+        const lastResponse = await PqrsdfResponse.query()
+          .where("pqrsdfId", pqrsdf.id)
+          .orderBy("createdAt", "desc")
+          .first();
+        if (pqrsdf?.person) {
+          await this.updatePerson(pqrsdf.person);
+        }
+        let uploadResponseFile = false;
+        if (file) {
+          const responseFile = await this.uploadBucket(file);
+          uploadResponseFile = responseFile.upload;
+          pqrsdf.response.file = {
+            isActive: true,
+            name: responseFile.filePath,
+          };
+        }
+        const newFile =
+          pqrsdf?.response?.file && uploadResponseFile
+            ? (await File.create(pqrsdf?.response?.file)).useTransaction(trx)
+            : null;
+        if (newFile) {
+          pqrsdf.response.fileId = newFile.id;
+        }
+
+        if (pqrsdf.motiveId) {
+          updatePqrsdfFields.push("motiveId");
+        }
+
+        const respondingUserEntity = await this.getResponsibleByUserId(pqrsdf.response.respondingUserId);
+        pqrsdf.response.respondingDependenceId = respondingUserEntity?.workEntityType.dependenceId;
+        pqrsdf.response.WorkEntityId = respondingUserEntity?.id;
+        //set assignedUser response data
+        pqrsdf.response.assignedUserId = lastResponse ? lastResponse.assignedUserId : pqrsdf.response?.assignedUserId;
+        let assignedUserEntity: WorkEntity | null = null;
+        if (pqrsdf.response?.assignedUserId) {
+          assignedUserEntity = lastResponse ? null : await this.getResponsibleByUserId(pqrsdf.response.assignedUserId);
+          pqrsdf.response.assignedDependenceId = lastResponse
+            ? lastResponse.assignedDependenceId
+            : assignedUserEntity?.workEntityType.dependenceId;
+        }
+        //set pqrsdf responsible
+        let newResponsible = false;
+        if (
+          (pqrsdf?.response?.responseTypeId == 1 || pqrsdf?.response?.responseTypeId == 2) &&
+          pqrsdf.response?.assignedUserId
+        ) {
+          pqrsdf.responsibleId = respondingUserEntity?.id;
+          pqrsdf.statusId = respondingUserEntity?.workEntityType.associatedStatusId;
+          if (!lastResponse) {
+            newResponsible = true;
+          }
+        }
+
+        const isClose = pqrsdf?.response?.responseTypeId == 5 || pqrsdf?.response?.responseTypeId == 4;
+
+        if (isClose) {
+          pqrsdf.statusId = 3;
+        }
+
+        if (pqrsdf.response?.isPetitioner) {
+          updatePqrsdfFields.push("exitFilingNumber");
+          if (pqrsdf.person?.email) {
+            const satisfactionUrl = await LpaListaParametro.find(3);
+            await this.EmailService.sendEmail(
+              [pqrsdf.person.email],
+              "Solicitud cerrada PQRSDF " + pqrsdf.filingNumber,
+              `En atención a la solicitud con radicado ${pqrsdf.filingNumber}, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${pqrsdf.exitFilingNumber}.<br>` +
+                `Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.` +
+                satisfactionUrl
+                ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>`
+                : "",
+              file?.tmpPath
+            );
+          }
+        }
+
+        if (newResponsible && assignedUserEntity && !isClose) {
+          let assignedUser = (await this.AuthExternalService.getUserById(assignedUserEntity.userId)).data;
+          if (assignedUser?.email) {
+            await this.EmailService.sendEmail(
+              [assignedUser.email],
+              "Asignación de PQRSDF " + pqrsdf.filingNumber,
+              `Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
+            );
+          }
+        }
+
+        if (pqrsdf?.response?.responseTypeId == 3) {
+          updatePqrsdfFields.push("extensionDate");
+          if (pqrsdf.person?.email) {
+            await this.EmailService.sendEmail(
+              [pqrsdf.person.email],
+              "Respuesta a radicado " + pqrsdf.filingNumber,
+              `Se le informa que la PQRSDF ${
+                pqrsdf.filingNumber
+              } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
+                pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
+              } días más.`,
+              file?.tmpPath
+            );
+          }
+        }
+
+        if (!pqrsdf?.response?.assignedUserId) {
+          delete pqrsdf.response.assignedUserId;
+          delete pqrsdf.response.assignedUserId;
+        }
+
+        await PqrsdfResponse.create(pqrsdf?.response);
+
+        res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
+      }
+    });
+    return res?.id ? res : null;
+  }
+
+  private async uploadBucket(file: MultipartFileContract) {
+    let upload = false;
+    let filePath = "";
+    let tmpPath = "";
+    const bucket = this.storage.bucket(bucketName);
+    if (file?.tmpPath) {
+      const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
+      const [fileCloud] = await bucket.upload(file.tmpPath, {
+        destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
+      });
+
+      if (fileCloud.metadata.id) {
+        filePath = fileCloud.metadata.id;
+        upload = true;
+        tmpPath = file?.tmpPath;
+      }
+    }
+
+    return {
+      filePath: filePath,
+      upload: upload,
+      tmpPath: tmpPath,
+    };
+  }
+
+  async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null> {
     let res: any;
 
     await Database.transaction(async (trx) => {
@@ -78,22 +268,26 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           : (await Person.create(pqrsdf.person)).useTransaction(trx);
 
         //TODO UPLOAD
+        let upload = false;
         if (file) {
           const bucket = this.storage.bucket(bucketName);
           if (!file.tmpPath) return false;
+          const tempDate = DateTime.now().toFormat("yyyy_MM_DD_HH_mm_ss");
           const [fileCloud] = await bucket.upload(file.tmpPath, {
-            destination: `${"proyectos-digitales/"}${file.clientName}`,
+            destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
           });
 
           if (fileCloud.metadata.id) {
             pqrsdf.file.name = fileCloud.metadata.id;
+            upload = true;
           }
         }
-        let upload = true;
 
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
         if (newFile) {
           pqrsdf.fileId = newFile.id;
+        } else {
+          delete pqrsdf.fileId;
         }
         const responsible = await this.getResponsible(pqrsdf.requestSubjectId);
         pqrsdf.responsibleId = responsible?.id ?? 1;
@@ -133,7 +327,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       isFiltered = true;
     }
     if (filters?.contactNumber) {
-      query.where("firstContactNumber", filters.contactNumber).orWhere("secondContactNumber", filters.contactNumber);
+      query
+        .whereILike("firstContactNumber", `%${filters.contactNumber}%`)
+        .orWhereILike("secondContactNumber", `%${filters.contactNumber}%`);
       isFiltered = true;
     }
 
@@ -161,6 +357,17 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
+  async getResponsibleByUserId(userId: number): Promise<WorkEntity | null> {
+    return WorkEntity.query()
+      .where("status", 1)
+      .where("userId", userId)
+      .preload("workEntityType", (workEntityType) => {
+        workEntityType.preload("dependence");
+        workEntityType.preload("status");
+      })
+      .first();
+  }
+
   async getResponsible(affair: number): Promise<WorkEntity | null> {
     const responsibles = await WorkEntity.query()
       .where("status", 1)
@@ -170,7 +377,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         });
       })
       .preload("pqrsdfs")
-      .preload("workEntityType");
+      .preload("workEntityType", (workEntityType) => {
+        workEntityType.preload("dependence");
+        workEntityType.preload("status");
+      });
     let max = 0;
     let finalResponsible: any;
     responsibles.forEach((responsible) => {
@@ -224,14 +434,25 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return serializePerson;
   }
 
-  private async formatPqrsdf(pqrsdf: Pqrsdf | null): Promise<IPqrsdf | null> {
+  private async formatPqrsdf(pqrsdf: Pqrsdf | null, user: IUser | null = null): Promise<IPqrsdf | null> {
     let serializePqrsdf: any = null;
     if (pqrsdf) {
       await pqrsdf.load("person", (person) => {
         person.preload("entityType");
       });
-      await pqrsdf.load("requestSubject");
-      await pqrsdf.load("file");
+      await pqrsdf.load("responsible", (responsible) => {
+        responsible.preload("workEntityType", (workEntityType) => {
+          workEntityType.preload("dependence");
+        });
+      });
+      await pqrsdf.load("status");
+      await pqrsdf.load("pqrsdfResponses");
+      await pqrsdf.load("requestSubject", (requestSubject) => {
+        requestSubject.preload("requestObject");
+      });
+      if (pqrsdf?.fileId) {
+        await pqrsdf.load("file");
+      }
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
 
@@ -240,7 +461,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       const departments = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.DEPARTMENTS);
       const countries = await this.GenericListsExternalService.getItemsByGrouper(EGrouperCodes.COUNTRIES);
 
+      if (!user) {
+        user = (await this.AuthExternalService.getUserById(pqrsdf.responsible.userId)).data;
+      }
+
       serializePqrsdf = pqrsdf.serialize() as IPqrsdf;
+      serializePqrsdf.responsible.user = user;
       if (serializePqrsdf.person) {
         serializePqrsdf.person.documentType = documentTypes.data.find(
           (documentType) => documentType.id == serializePqrsdf.person?.documentTypeId
@@ -268,6 +494,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   async updatePerson(personData: IPerson): Promise<IPerson | null> {
     const person = await Person.query().where("identification", personData.identification).firstOrFail();
     if (person) {
+      delete personData.documentType;
+      if (personData?.birthdate) {
+        personData.birthdate = new Date(personData.birthdate);
+      }
+      if (!personData?.departmentId) {
+        delete personData?.departmentId
+      }
+      if (!personData?.municipalityId) {
+        delete personData?.municipalityId
+      }
       await person.merge(personData).save();
     }
 
@@ -293,16 +529,31 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return [];
   }
 
-  async updatePqrsdf(pqrsdf: IPqrsdf): Promise<IPqrsdf | null> {
-    return pqrsdf;
+  async updatePqrsdf(
+    pqrsdf: IPqrsdf,
+    fields: string[] = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"]
+  ): Promise<IPqrsdf | null> {
+    const pqrsdfToUpdate = await Pqrsdf.find(pqrsdf.id);
+    let formattedPqrsdf = pqrsdf;
+    if (pqrsdfToUpdate) {
+      fields.forEach((field) => {
+        pqrsdfToUpdate[field] = pqrsdf[field];
+      });
+      await pqrsdfToUpdate.save();
+      const newPqrsdfData = await this.formatPqrsdf(pqrsdfToUpdate);
+      formattedPqrsdf = newPqrsdfData ? newPqrsdfData : pqrsdf;
+      formattedPqrsdf.response = pqrsdf.response;
+    }
+    return formattedPqrsdf;
   }
 
   async uploadFile(file: MultipartFileContract): Promise<boolean> {
     try {
       const bucket = this.storage.bucket(bucketName);
       if (!file.tmpPath) return false;
+      const tempDate = DateTime.now().toFormat("yyyy_MM_DD_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
-        destination: `${"proyectos-digitales/"}${file.clientName}`,
+        destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
       });
 
       return !!fileCloud;
@@ -311,89 +562,39 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
   }
 
-  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<null | IpqrsdfByReques> {
+  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<IPqrsdf[]> {
     const { userId, typeReques } = filters;
 
     let res: any;
 
     try {
       if (userId && typeReques !== 3) {
-        const query = Database.from("PQR_PQRSDF")
-          .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
-          .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
-          .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-          .join(
-            "OBS_OBJECTO_SOLICITUD",
-            "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
-            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
-          )
-          .join(
-            "LEP_LISTADO_ESTADO_PQRSDF",
-            "PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
-            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
-          )
-          .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
-          .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
-          .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "!=", 3)
-          .select(
-            "PQR_CODIGO",
-            "PQR_NRO_RADICADO",
-            "PQR_FECHA_CREACION",
-            "PER_NUMERO_DOCUMENTO",
-            "PER_PRIMER_NOMBRE",
-            "PER_SEGUNDO_NOMBRE",
-            "PER_PRIMER_APELLIDO",
-            "PER_SEGUNDO_APELLIDO",
-            "ASO_ASUNTO",
-            "LEP_ESTADO",
-            "OBS_TIPO_DIAS",
-            "OBS_TERMINO_DIAS",
-            "PRG_DESCRIPCION"
-          );
-
-        res = await query;
-      }
-
-      if (userId && typeReques === 3) {
-        const query = Database.from("PQR_PQRSDF")
-        .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
-        .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
-        .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-        .join(
-          "OBS_OBJECTO_SOLICITUD",
-          "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
-          "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
-        )
-        .join(
-          "LEP_LISTADO_ESTADO_PQRSDF",
-          " PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
-          "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
-        )
-        .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
-        .join(
-          "SRB_SOLICITUD_REABRIR",
-          " PQR_PQRSDF.PQR_CODSRB_SRB_SOLICITU_REABRIR",
-          "SRB_SOLICITUD_REABRIR.SRB_CODIGO"
-        )
-        .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
-        .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "=", 3)
-        .select(
-          "PQR_CODIGO",
-          "PQR_NRO_RADICADO",
-          "PQR_FECHA_CREACION",
-          "PER_NUMERO_DOCUMENTO",
-          "PER_PRIMER_NOMBRE",
-          "PER_SEGUNDO_NOMBRE",
-          "PER_PRIMER_APELLIDO",
-          "PER_SEGUNDO_APELLIDO",
-          "ASO_ASUNTO",
-          "LEP_ESTADO",
-          "OBS_TIPO_DIAS",
-          "OBS_TERMINO_DIAS",
-          "PRG_DESCRIPCION",
-          "SBR_ESTADO"
-        );
-
+        const query = Pqrsdf.query()
+        .preload("person", (person) => {
+          person.preload("entityType");
+        })
+        .preload("responsible", (responsible) => {
+          responsible.preload("workEntityType", (workEntityType) => {
+            workEntityType.preload("dependence");
+          });
+        })
+        .preload("status")
+        .preload("reopenRequest")
+        .preload("canalesAttencion")
+        .preload("requestSubject", (requestSubject) => {
+          requestSubject.preload("requestObject")
+        })
+        .preload("responseMedium")
+        .preload("requestType")
+        .preload("program")
+        .whereHas("responsible", (responsible) =>{
+          responsible.where("userId",userId)
+        });
+        if (typeReques!=3) {
+          query.whereNot('statusId',3)
+        }else{
+          query.where('statusId',3)
+        }
         res = await query;
       }
     } catch (error) {}
@@ -401,7 +602,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return res;
   }
 
-  async createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null> {
+  async createRequestReopen(justification: IReopenRequest): Promise<IReopenRequest | null> {
     let res: any;
     await Database.transaction(async (trx) => {
       // Crea una nueva solicitud de reapertura

@@ -1,4 +1,4 @@
-import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
 import File from "./File";
 import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
@@ -10,6 +10,8 @@ import WorkEntity from "./WorkEntity";
 import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
 import PrgPrograma from "./PrgPrograma";
 import Motive from "./Motive";
+import PqrsdfResponse from "./PqrsdfResponse";
+import SrbSolicitudReabrir from "./SrbSolicitudReabrir";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -41,6 +43,9 @@ export default class Pqrsdf extends BaseModel {
   @column({ columnName: "PQR_NRO_RADICADO", serializeAs: "filingNumber" })
   public filingNumber: number;
 
+  @column({ columnName: "PQR_NRO_RADICADO_SALIDA", serializeAs: "exitFilingNumber" })
+  public exitFilingNumber: number;
+
   @column({ columnName: "PQR_CLASIFICACION", serializeAs: "clasification" })
   public clasification: string;
 
@@ -56,6 +61,9 @@ export default class Pqrsdf extends BaseModel {
   @column.date({ columnName: "PQR_FECHA_RESPUESTA", serializeAs: "answerDate" })
   public answerDate: DateTime;
 
+  @column.date({ columnName: "PQR_FECHA_PRORROGA", serializeAs: "extensionDate" })
+  public extensionDate: DateTime;
+
   @column({ columnName: "PQR_CODCAD_CANALES_ATENCION_DETALLE_PQRSDF", serializeAs: "idCanalesAttencion" })
   public idCanalesAttencion: number;
 
@@ -65,11 +73,20 @@ export default class Pqrsdf extends BaseModel {
   @column({ columnName: "PQR_CODMOV_MOTIVO", serializeAs: "motiveId" })
   public motiveId: number;
 
+  @column({ columnName: "PQR_CODSRB_SRB_SOLICITU_REABRIR", serializeAs: "reopenRequestId" })
+  public reopenRequestId: number;
+
   @belongsTo(() => Motive, {
     localKey: "id",
     foreignKey: "motiveId",
   })
   public motive: BelongsTo<typeof Motive>;
+
+  @belongsTo(() => SrbSolicitudReabrir, {
+    localKey: "srb_codigo",
+    foreignKey: "reopenRequestId",
+  })
+  public reopenRequest: BelongsTo<typeof SrbSolicitudReabrir>;
 
   @belongsTo(() => PrgPrograma, {
     localKey: "prg_codigo",
@@ -77,13 +94,11 @@ export default class Pqrsdf extends BaseModel {
   })
   public program: BelongsTo<typeof PrgPrograma>;
 
-
   @belongsTo(() => CadCanalesAtencionDetalle, {
     localKey: "cad_codigo",
     foreignKey: "idCanalesAttencion",
   })
   public canalesAttencion: BelongsTo<typeof CadCanalesAtencionDetalle>;
-
 
   @belongsTo(() => TsoTipoSolicitud, {
     localKey: "tso_codigo",
@@ -121,6 +136,12 @@ export default class Pqrsdf extends BaseModel {
   })
   public requestSubject: BelongsTo<typeof AsoAsuntoSolicitud>;
 
+  @hasMany(() => PqrsdfResponse, {
+    localKey: "id",
+    foreignKey: "pqrsdfId",
+  })
+  public pqrsdfResponses: HasMany<typeof PqrsdfResponse>;
+
   @belongsTo(() => File, {
     localKey: "id",
     foreignKey: "fileId",
@@ -147,5 +168,4 @@ export default class Pqrsdf extends BaseModel {
     serializeAs: "updatedAt",
   })
   public updatedAt: DateTime;
-
 }

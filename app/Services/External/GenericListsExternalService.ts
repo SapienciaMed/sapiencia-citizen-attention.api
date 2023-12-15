@@ -12,8 +12,15 @@ export default class GenericListsExternalService implements IGenericListsExterna
       baseURL: process.env.APP_API_CORE,
     });
   }
-  public async getItemsByGrouper(grouper: EGrouperCodes): Promise<ApiResponse<IGenericData[]>> {
-    const items = await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-grouper/${grouper}`);
+  public async getItemsByGrouper(grouper: EGrouperCodes, parentId?: number): Promise<ApiResponse<IGenericData[]>> {
+    const items = !parentId
+      ? await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-grouper/${grouper}`)
+      : await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-parent`, {
+          params: {
+            grouper: grouper,
+            parentItemCode: parentId,
+          },
+        });
 
     return items.data;
   }

@@ -52,8 +52,16 @@ export default class extends BaseSchema {
         .unsigned()
         .references("ARC_CODIGO")
         .inTable("ARC_ARCHIVO")
-        .notNullable()
+        .nullable()
         .comment("llave foranea a la tabla tipos de solicitud (FK ARC_ARCHIVO)");
+
+      table
+        .integer("PQR_CODMOV_MOTIVO")
+        .unsigned()
+        .nullable()
+        .references("MOV_MOTIVOS.MOV_CODIGO")
+        .after("PQR_CODPRG_PROGRAMA")
+        .comment("Llave foranea a la tabla motivos(FK_MOV_CODIGO)");
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
