@@ -272,7 +272,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (file) {
           const bucket = this.storage.bucket(bucketName);
           if (!file.tmpPath) return false;
-          const tempDate = DateTime.now().toFormat("yyyy_MM_DD_HH_mm_ss");
+          const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
           const [fileCloud] = await bucket.upload(file.tmpPath, {
             destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
           });
@@ -551,7 +551,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     try {
       const bucket = this.storage.bucket(bucketName);
       if (!file.tmpPath) return false;
-      const tempDate = DateTime.now().toFormat("yyyy_MM_DD_HH_mm_ss");
+      const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
         destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
       });
