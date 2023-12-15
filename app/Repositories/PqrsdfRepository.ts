@@ -3,12 +3,7 @@ import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import {
-  IPqrsdf,
-  IPqrsdfFilters,
-  IReopenRequest,
-  IrequestPqrsdf
-} from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IPqrsdfFilters, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { IUser } from "App/Interfaces/UserInterfaces";
 import File from "App/Models/File";
 import LpaListaParametro from "App/Models/LpaListaParametro";
@@ -96,7 +91,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       users = (await this.AuthExternalService.getUsersByIds(ids)).data;
     }
     for await (const pqrsdf of pqrsdfs) {
-      let pqrsdfFormatted = await this.formatPqrsdf(pqrsdf, users.filter((user) => user.id == pqrsdf.responsible.userId)[0]);
+      let pqrsdfFormatted = await this.formatPqrsdf(
+        pqrsdf,
+        users.filter((user) => user.id == pqrsdf.responsible.userId)[0]
+      );
       if (pqrsdfFormatted) {
         pqrsdfsFormatted.push(pqrsdfFormatted);
       }
@@ -259,7 +257,15 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
     await Database.transaction(async (trx) => {
       if (pqrsdf?.person) {
-        const existPerson = pqrsdf.person.identification ? await Person.query().where("identification", pqrsdf.person.identification).first() : null;
+        const existPerson = pqrsdf.person.identification
+          ? await Person.query().where("identification", pqrsdf.person.identification).first()
+          : null;
+        if (!pqrsdf?.person?.departmentId) {
+          delete pqrsdf?.person?.departmentId;
+        }
+        if (!pqrsdf?.person?.municipalityId) {
+          delete pqrsdf?.person?.municipalityId;
+        }
         if (existPerson) {
           await this.updatePerson(pqrsdf?.person);
         }
@@ -498,12 +504,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       if (personData?.birthdate) {
         personData.birthdate = new Date(personData.birthdate);
       }
-      if (!personData?.departmentId) {
-        delete personData?.departmentId
-      }
-      if (!personData?.municipalityId) {
-        delete personData?.municipalityId
-      }
       await person.merge(personData).save();
     }
 
@@ -570,30 +570,30 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     try {
       if (userId && typeReques !== 3) {
         const query = Pqrsdf.query()
-        .preload("person", (person) => {
-          person.preload("entityType");
-        })
-        .preload("responsible", (responsible) => {
-          responsible.preload("workEntityType", (workEntityType) => {
-            workEntityType.preload("dependence");
+          .preload("person", (person) => {
+            person.preload("entityType");
+          })
+          .preload("responsible", (responsible) => {
+            responsible.preload("workEntityType", (workEntityType) => {
+              workEntityType.preload("dependence");
+            });
+          })
+          .preload("status")
+          .preload("reopenRequest")
+          .preload("canalesAttencion")
+          .preload("requestSubject", (requestSubject) => {
+            requestSubject.preload("requestObject");
+          })
+          .preload("responseMedium")
+          .preload("requestType")
+          .preload("program")
+          .whereHas("responsible", (responsible) => {
+            responsible.where("userId", userId);
           });
-        })
-        .preload("status")
-        .preload("reopenRequest")
-        .preload("canalesAttencion")
-        .preload("requestSubject", (requestSubject) => {
-          requestSubject.preload("requestObject")
-        })
-        .preload("responseMedium")
-        .preload("requestType")
-        .preload("program")
-        .whereHas("responsible", (responsible) =>{
-          responsible.where("userId",userId)
-        });
-        if (typeReques!=3) {
-          query.whereNot('statusId',3)
-        }else{
-          query.where('statusId',3)
+        if (typeReques != 3) {
+          query.whereNot("statusId", 3);
+        } else {
+          query.where("statusId", 3);
         }
         res = await query;
       }
