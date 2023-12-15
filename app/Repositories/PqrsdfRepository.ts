@@ -266,6 +266,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (!pqrsdf?.person?.municipalityId) {
           delete pqrsdf?.person?.municipalityId;
         }
+        if (!pqrsdf?.person?.firstName) {
+          delete pqrsdf?.person?.firstName;
+          delete pqrsdf?.person?.secondName;
+          delete pqrsdf?.person?.firstSurname;
+          delete pqrsdf?.person?.secondSurname;
+        }
         if (existPerson) {
           await this.updatePerson(pqrsdf?.person);
         }
