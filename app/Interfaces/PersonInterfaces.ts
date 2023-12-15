@@ -21,8 +21,8 @@ export interface IPerson {
   email: string;
   address: string;
   countryId: number;
-  departmentId: number;
-  municipalityId: number;
+  departmentId?: number;
+  municipalityId?: number;
   country?: IGenericData;
   department?: IGenericData;
   municipality?: IGenericData;

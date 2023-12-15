@@ -26,8 +26,16 @@ export default class extends BaseSchema {
       table.string("PER_CORREO_ELECTRONICO", 100);
       table.string("PER_DIRECCION_RESIDENCIA", 100);
       table.integer("PQR_CODPAI_PAIS").unsigned().comment("Código del país (FK PQR_CODPAI_PAIS)");
-      table.integer("PQR_CODDEP_DEPARTAMENTO").unsigned().comment("Código del departamento (FK PQR_CODDEP_DEPARTAMENTO)");
-      table.integer("PQR_CODMUN_MUNICIPIO").unsigned().comment("Código del municipio (FK PQR_CODMUN_MUNICIPIO)");
+      table
+        .integer("PQR_CODDEP_DEPARTAMENTO")
+        .unsigned()
+        .comment("Código del departamento (FK PQR_CODDEP_DEPARTAMENTO)")
+        .nullable();
+      table
+        .integer("PQR_CODMUN_MUNICIPIO")
+        .unsigned()
+        .comment("Código del municipio (FK PQR_CODMUN_MUNICIPIO)")
+        .nullable();
 
       table.boolean("PER_BENEFICIARIO").defaultTo(false);
       /**

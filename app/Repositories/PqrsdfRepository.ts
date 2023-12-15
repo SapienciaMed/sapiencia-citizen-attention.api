@@ -219,7 +219,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
         if (!pqrsdf?.response?.assignedUserId) {
           delete pqrsdf.response.assignedUserId;
-          delete pqrsdf.response.assignedDependenceId;
+          delete pqrsdf.response.assignedUserId;
         }
 
         await PqrsdfResponse.create(pqrsdf?.response);
@@ -498,6 +498,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       delete personData.documentType;
       if (personData?.birthdate) {
         personData.birthdate = new Date(personData.birthdate);
+      }
+      if (!personData?.departmentId) {
+        delete personData?.departmentId
+      }
+      if (!personData?.municipalityId) {
+        delete personData?.municipalityId
       }
       await person.merge(personData).save();
     }
