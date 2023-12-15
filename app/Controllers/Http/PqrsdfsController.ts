@@ -17,7 +17,13 @@ export default class PqrsdfsController {
       const data = await request.validate(PqrsdfFiltersValidator);
       return response.send(await PqrsdfProvider.getPqrsdfByFilters(data));
     } catch (err) {
-      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+      return response.badRequest(
+        new ApiResponse(
+          err?.messages,
+          EResponseCodes.FAIL,
+          String(err) + ": " + (err?.messages?.errors?.[0].message ?? "")
+        )
+      );
     }
   }
 
