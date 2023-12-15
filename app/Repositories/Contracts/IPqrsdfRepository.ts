@@ -4,7 +4,7 @@ import {
   IPqrsdfFilters,
   IpqrsdfByRequest,
   IrequestPqrsdf,
-  IrequestReopen,
+  IReopenRequest,
 } from "App/Interfaces/PqrsdfInterfaces";
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { IPagingData } from "App/Utils/ApiResponses";
@@ -21,6 +21,6 @@ export interface IPqrsdfRepository {
   createPqrsdf(prsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null>;
   updatePqrsdf(prsdf: IPqrsdf): Promise<IPqrsdf | null>;
   uploadFile(file: MultipartFileContract): Promise<boolean>;
-  getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<IpqrsdfByRequest | null>;
-  createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null>;
+  getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<IPqrsdf[]>;
+  createRequestReopen(justification: IReopenRequest): Promise<IReopenRequest | null>;
 }

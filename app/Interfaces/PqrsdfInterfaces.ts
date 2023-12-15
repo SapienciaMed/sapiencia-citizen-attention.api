@@ -17,6 +17,7 @@ export interface IPqrsdf {
   requestSubjectId: number;
   fileId?: number;
   motiveId?: number;
+  reopenRequestId?: number;
   statusId?: number;
   filingNumber?: number;
   exitFilingNumber?: number;
@@ -26,6 +27,7 @@ export interface IPqrsdf {
   description: string;
   requestType?: IRequestType;
   motive?: IMotive;
+  reopenRequest?: IReopenRequest;
   person?: IPerson;
   answer?: string;
   program?: Iprogram;
@@ -92,7 +94,8 @@ export interface IpqrsdfByRequest {
   SBR_ESTADO?: string;
 }
 
-export interface IrequestReopen {
+export interface IReopenRequest {
+  srb_codigo?: number;
   srb_justificacion?: string;
   sbr_estado?: boolean;
 }

@@ -11,6 +11,7 @@ import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
 import PrgPrograma from "./PrgPrograma";
 import Motive from "./Motive";
 import PqrsdfResponse from "./PqrsdfResponse";
+import SrbSolicitudReabrir from "./SrbSolicitudReabrir";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -72,11 +73,20 @@ export default class Pqrsdf extends BaseModel {
   @column({ columnName: "PQR_CODMOV_MOTIVO", serializeAs: "motiveId" })
   public motiveId: number;
 
+  @column({ columnName: "PQR_CODSRB_SRB_SOLICITU_REABRIR", serializeAs: "reopenRequestId" })
+  public reopenRequestId: number;
+
   @belongsTo(() => Motive, {
     localKey: "id",
     foreignKey: "motiveId",
   })
   public motive: BelongsTo<typeof Motive>;
+
+  @belongsTo(() => SrbSolicitudReabrir, {
+    localKey: "srb_codigo",
+    foreignKey: "reopenRequestId",
+  })
+  public reopenRequest: BelongsTo<typeof SrbSolicitudReabrir>;
 
   @belongsTo(() => PrgPrograma, {
     localKey: "prg_codigo",

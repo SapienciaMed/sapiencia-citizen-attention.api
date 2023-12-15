@@ -6,7 +6,7 @@ import {
   IPqrsdfFilters,
   IpqrsdfByRequest,
   IrequestPqrsdf,
-  IrequestReopen,
+  IReopenRequest,
 } from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
@@ -101,20 +101,20 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByRequest | null>> {
+  public async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IPqrsdf[]>> {
     const res = await this.PqrsdfRepository.getPqrsdfByRequest(filters);
 
     if (!res) {
-      return new ApiResponse({} as IpqrsdfByRequest, EResponseCodes.FAIL, "Registro no encontrado");
+      return new ApiResponse([] as IPqrsdf[], EResponseCodes.FAIL, "Registro no encontrado");
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async createRequestReopen(justification: IrequestReopen): Promise<ApiResponse<IrequestReopen | null>> {
+  public async createRequestReopen(justification: IReopenRequest): Promise<ApiResponse<IReopenRequest | null>> {
     const res = await this.PqrsdfRepository.createRequestReopen(justification);
     if (!res) {
-      return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "No se pue        de crear la solicitud");
+      return new ApiResponse({} as IReopenRequest, EResponseCodes.FAIL, "No se pue        de crear la solicitud");
     }
     return new ApiResponse(res, EResponseCodes.OK, "Solicitud creada con éxito");
   }

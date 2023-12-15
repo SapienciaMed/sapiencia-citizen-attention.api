@@ -8,7 +8,7 @@ import {
   IPqrsdfFilters,
   IpqrsdfByRequest,
   IrequestPqrsdf,
-  IrequestReopen,
+  IReopenRequest,
 } from "App/Interfaces/PqrsdfInterfaces";
 import File from "App/Models/File";
 import Person from "App/Models/Person";
@@ -563,89 +563,39 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
   }
 
-  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<null | IpqrsdfByRequest> {
+  async getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<IPqrsdf[]> {
     const { userId, typeReques } = filters;
 
     let res: any;
 
     try {
       if (userId && typeReques !== 3) {
-        const query = Database.from("PQR_PQRSDF")
-          .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
-          .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
-          .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-          .join(
-            "OBS_OBJECTO_SOLICITUD",
-            "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
-            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
-          )
-          .join(
-            "LEP_LISTADO_ESTADO_PQRSDF",
-            "PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
-            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
-          )
-          .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
-          .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
-          .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "!=", 3)
-          .select(
-            "PQR_CODIGO",
-            "PQR_NRO_RADICADO",
-            "PQR_FECHA_CREACION",
-            "PER_NUMERO_DOCUMENTO",
-            "PER_PRIMER_NOMBRE",
-            "PER_SEGUNDO_NOMBRE",
-            "PER_PRIMER_APELLIDO",
-            "PER_SEGUNDO_APELLIDO",
-            "ASO_ASUNTO",
-            "LEP_ESTADO",
-            "OBS_TIPO_DIAS",
-            "OBS_TERMINO_DIAS",
-            "PRG_DESCRIPCION"
-          );
-
-        res = await query;
-      }
-
-      if (userId && typeReques === 3) {
-        const query = Database.from("PQR_PQRSDF")
-          .join("ENT_ENTIDAD_TRABAJO", " PQR_PQRSDF.PQR_CODENT_ENTIDAD_TRABAJO", "ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
-          .join("PER_PERSONAS", " PQR_PQRSDF.PQR_CODPER_PERSONA", "PER_PERSONAS.PER_CODIGO")
-          .join("ASO_ASUNTO_SOLICITUD", " PQR_PQRSDF.PQR_CODTSO_TIPO_SOLICITUD", "ASO_ASUNTO_SOLICITUD.ASO_CODIGO")
-          .join(
-            "OBS_OBJECTO_SOLICITUD",
-            "ASO_ASUNTO_SOLICITUD.ASO_CODOBS_OBJETO_SOLICITUD",
-            "OBS_OBJECTO_SOLICITUD.OBS_CODIGO"
-          )
-          .join(
-            "LEP_LISTADO_ESTADO_PQRSDF",
-            " PQR_PQRSDF.PQR_CODLEP_LISTADO_ESTADO_PQRSDF",
-            "LEP_LISTADO_ESTADO_PQRSDF.LEP_CODIGO"
-          )
-          .join("PRG_PROGRAMAS", " PQR_PQRSDF.PQR_CODPRG_PROGRAMA", "PRG_PROGRAMAS.PRG_CODIGO")
-          .join(
-            "SRB_SOLICITUD_REABRIR",
-            " PQR_PQRSDF.PQR_CODSRB_SRB_SOLICITU_REABRIR",
-            "SRB_SOLICITUD_REABRIR.SRB_CODIGO"
-          )
-          .where("ENT_ENTIDAD_TRABAJO.ENT_CODUSR_USUARIO", userId)
-          .where("PQR_CODLEP_LISTADO_ESTADO_PQRSDF", "=", 3)
-          .select(
-            "PQR_CODIGO",
-            "PQR_NRO_RADICADO",
-            "PQR_FECHA_CREACION",
-            "PER_NUMERO_DOCUMENTO",
-            "PER_PRIMER_NOMBRE",
-            "PER_SEGUNDO_NOMBRE",
-            "PER_PRIMER_APELLIDO",
-            "PER_SEGUNDO_APELLIDO",
-            "ASO_ASUNTO",
-            "LEP_ESTADO",
-            "OBS_TIPO_DIAS",
-            "OBS_TERMINO_DIAS",
-            "PRG_DESCRIPCION",
-            "SBR_ESTADO"
-          );
-
+        const query = Pqrsdf.query()
+        .preload("person", (person) => {
+          person.preload("entityType");
+        })
+        .preload("responsible", (responsible) => {
+          responsible.preload("workEntityType", (workEntityType) => {
+            workEntityType.preload("dependence");
+          });
+        })
+        .preload("status")
+        .preload("reopenRequest")
+        .preload("canalesAttencion")
+        .preload("requestSubject", (requestSubject) => {
+          requestSubject.preload("requestObject")
+        })
+        .preload("responseMedium")
+        .preload("requestType")
+        .preload("program")
+        .whereHas("responsible", (responsible) =>{
+          responsible.where("userId",userId)
+        });
+        if (typeReques!=3) {
+          query.whereNot('statusId',3)
+        }else{
+          query.where('statusId',3)
+        }
         res = await query;
       }
     } catch (error) {}
@@ -653,7 +603,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return res;
   }
 
-  async createRequestReopen(justification: IrequestReopen): Promise<IrequestReopen | null> {
+  async createRequestReopen(justification: IReopenRequest): Promise<IReopenRequest | null> {
     let res: any;
     await Database.transaction(async (trx) => {
       // Crea una nueva solicitud de reapertura
