@@ -6,11 +6,12 @@ import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import {
   IPqrsdf,
   IPqrsdfFilters,
-  IpqrsdfByRequest,
-  IrequestPqrsdf,
   IReopenRequest,
+  IrequestPqrsdf
 } from "App/Interfaces/PqrsdfInterfaces";
+import { IUser } from "App/Interfaces/UserInterfaces";
 import File from "App/Models/File";
+import LpaListaParametro from "App/Models/LpaListaParametro";
 import Person from "App/Models/Person";
 import Pqrsdf from "App/Models/Pqrsdf";
 import PqrsdfResponse from "App/Models/PqrsdfResponse";
@@ -22,8 +23,6 @@ import { IGenericListsExternalService } from "App/Services/External/Contracts/IG
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
-import LpaListaParametro from "App/Models/LpaListaParametro";
-import { IUser } from "App/Interfaces/UserInterfaces";
 
 //const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";

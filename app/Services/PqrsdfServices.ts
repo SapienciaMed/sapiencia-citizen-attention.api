@@ -4,9 +4,8 @@ import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import {
   IPqrsdf,
   IPqrsdfFilters,
-  IpqrsdfByRequest,
-  IrequestPqrsdf,
   IReopenRequest,
+  IrequestPqrsdf
 } from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";

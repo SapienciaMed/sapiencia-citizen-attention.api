@@ -1,12 +1,11 @@
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import {
   IPqrsdf,
   IPqrsdfFilters,
-  IpqrsdfByRequest,
-  IrequestPqrsdf,
   IReopenRequest,
+  IrequestPqrsdf
 } from "App/Interfaces/PqrsdfInterfaces";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IPqrsdfServices {
