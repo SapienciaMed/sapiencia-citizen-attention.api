@@ -87,6 +87,7 @@ export default class CitizenAttentionController {
 
   public async getPrograms({ response }: HttpContextContract) {
     try {
+      console.log('akive1')
       return response.send(await CitizenAttentionProvider.getPrograms());
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
