@@ -10,9 +10,9 @@ export interface IPerson {
   entityType?: ILegalEntityType;
   identification: string;
   password: string;
-  firstName: string;
+  firstName?: string;
   secondName?: string;
-  firstSurname: string;
+  firstSurname?: string;
   secondSurname?: string;
   businessName?: string;
   birthdate?: Date;
