@@ -349,8 +349,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   }
 
   async getFile(filePath: string) {
-    const file = this.storage.bucket(bucketName).file(filePath);
-    return file.publicUrl();
+    try {
+      const file = this.storage.bucket(bucketName).file(filePath);
+      return file.publicUrl();
+    } catch (error) {
+      return filePath;
+    }
   }
 
   async getPeopleByFilters(filters: IPersonFilters): Promise<IPagingData<IPerson | null>> {
@@ -517,7 +521,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
       serializePqrsdf = pqrsdf.serialize() as IPqrsdf;
       if (pqrsdf?.fileId) {
-        serializePqrsdf.file.name = await this.getFile(pqrsdf.file.name);
+        serializePqrsdf.file.filePath = await this.getFile(pqrsdf.file.name);
       }
       serializePqrsdf.responsible.user = user;
       if (serializePqrsdf.person) {
@@ -601,6 +605,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
         destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
+        public: true,
       });
 
       return !!fileCloud;
