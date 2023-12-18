@@ -115,6 +115,18 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           .where("pqrsdfId", pqrsdf.id)
           .orderBy("createdAt", "desc")
           .first();
+        if (!pqrsdf?.person?.departmentId) {
+          delete pqrsdf?.person?.departmentId;
+        }
+        if (!pqrsdf?.person?.municipalityId) {
+          delete pqrsdf?.person?.municipalityId;
+        }
+        if (!pqrsdf?.person?.firstName) {
+          delete pqrsdf?.person?.firstName;
+          delete pqrsdf?.person?.secondName;
+          delete pqrsdf?.person?.firstSurname;
+          delete pqrsdf?.person?.secondSurname;
+        }
         if (pqrsdf?.person) {
           await this.updatePerson(pqrsdf.person);
         }
