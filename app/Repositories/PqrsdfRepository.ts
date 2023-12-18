@@ -189,6 +189,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
               "Solicitud cerrada PQRSDF " + pqrsdf.filingNumber,
+              `Reciba un cordial saludo.<br><br>`+
               `En atención a la solicitud con radicado ${pqrsdf.filingNumber}, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${pqrsdf.exitFilingNumber}.<br>` +
                 `Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.` +
                 satisfactionUrl
@@ -205,6 +206,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [assignedUser.email],
               "Asignación de PQRSDF " + pqrsdf.filingNumber,
+              `Reciba un cordial saludo.<br><br>`+
               `Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
             );
           }
@@ -216,6 +218,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
               "Respuesta a radicado " + pqrsdf.filingNumber,
+              `Reciba un cordial saludo.<br><br>`+
               `Se le informa que la PQRSDF ${
                 pqrsdf.filingNumber
               } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
@@ -264,6 +267,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     };
   }
 
+  async deleteFile(filePath: string) {
+    // Deletes the file from the bucket
+    try {
+      await this.storage.bucket(bucketName).file(filePath).delete();
+      console.log(`gs://${bucketName}/${filePath} deleted.`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null> {
     let res: any;
 
@@ -294,17 +307,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         //TODO UPLOAD
         let upload = false;
         if (file) {
-          const bucket = this.storage.bucket(bucketName);
-          if (!file.tmpPath) return false;
-          const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
-          const [fileCloud] = await bucket.upload(file.tmpPath, {
-            destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
-          });
-
-          if (fileCloud.metadata.id) {
-            pqrsdf.file.name = fileCloud.metadata.id;
-            upload = true;
-          }
+          const responseFile = await this.uploadBucket(file);
+          upload = responseFile.upload;
+          pqrsdf.file = {
+            isActive: true,
+            name: responseFile.filePath,
+          };
         }
 
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
@@ -322,6 +330,20 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         res = await this.formatPqrsdf(newPqrsdf);
 
         //TODO EMAIL
+        if (pqrsdf.person?.email) {
+          const queryPqrsdfUrl = await LpaListaParametro.find(2);
+          await this.EmailService.sendEmail(
+            [pqrsdf.person.email],
+            `Radicación de PQRSDF con número ${pqrsdf.filingNumber} en Sapiencia `,
+            `Reciba un cordial saludo.<br><br>`+
+            `Gracias por comunicarse con SAPIENCIA la agencia de educación Postsecundaria de Medellín.<br>`+
+            `Le informamos que su solicitud ha sido radicada exitosamente con el número ${pqrsdf.filingNumber}, puede realizar seguimiento a través de` +
+              queryPqrsdfUrl
+              ? `<a href="${queryPqrsdfUrl?.lpa_valor}" target="_blank">${queryPqrsdfUrl?.lpa_descripcion}</a>`
+              : "",
+            file?.tmpPath
+          );
+        }
       }
     });
     return res?.id ? res : null;
