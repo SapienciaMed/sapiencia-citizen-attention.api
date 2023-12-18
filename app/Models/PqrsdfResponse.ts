@@ -3,6 +3,8 @@ import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
 import DepDependencia from "./DepDependencia";
 import Factor from "./Factor";
 import ResponseType from "./ResponseType";
+import File from "./File";
+import WorkEntity from "./WorkEntity";
 
 export default class PqrsdfResponse extends BaseModel {
   public static table = "RPF_RESPUESTA_PQRSDF";
@@ -69,6 +71,18 @@ export default class PqrsdfResponse extends BaseModel {
     foreignKey: "responseTypeId",
   })
   public responseType: BelongsTo<typeof ResponseType>;
+
+  @belongsTo(() => File, {
+    localKey: "id",
+    foreignKey: "fileId",
+  })
+  public file: BelongsTo<typeof File>;
+
+  @belongsTo(() => WorkEntity, {
+    localKey: "id",
+    foreignKey: "workEntityId",
+  })
+  public workEntity: BelongsTo<typeof WorkEntity>;
 
   @column({ columnName: "RPF_OBSERVACION", serializeAs: "observation" })
   public observation: string;
