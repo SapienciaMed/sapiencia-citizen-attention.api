@@ -19,7 +19,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-//const keyFilename = process.env.GCLOUD_KEYFILE;
+const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -30,7 +30,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    //this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage({ keyFilename }); //-->Local
     this.storage = new Storage();
   }
 
@@ -248,7 +248,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     let tmpPath = "";
     const bucket = this.storage.bucket(bucketName);
     if (file?.tmpPath) {
-      const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
+      const tempDate = DateTime.now().setZone("America/Bogota").toFormat("yyyy_MM_dd_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
         destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
       });
@@ -348,13 +348,40 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return res?.id ? res : null;
   }
 
+  getBase64Encode(b64: string) {
+    const signatures = {
+      JVBERi0: "application/pdf",
+      R0lGODdh: "image/gif",
+      R0lGODlh: "image/gif",
+      iVBORw0KGgo: "image/png",
+      "/9j/": "image/jpg",
+    };
+    for (let s in signatures) {
+      if (b64.startsWith(s)) {
+        return signatures[s];
+      }
+    }
+  }
+
   async getFile(filePath: string) {
     try {
-      const file = this.storage.bucket(bucketName).file(filePath);
-      return file.publicUrl();
+      let path = filePath.replace(bucketName + "/", "").split("/");
+      if (path.length > 1) {
+        path.pop();
+      }
+      const _this = this;
+      await this.storage
+        .bucket(bucketName)
+        .file(path.join("/"))
+        .download()
+        .then(function (data) {
+          filePath = data[0].toString("base64");
+          filePath = `data:${_this.getBase64Encode(filePath)};base64,${filePath}`;
+        });
     } catch (error) {
-      return filePath;
+      return "";
     }
+    return filePath;
   }
 
   async getPeopleByFilters(filters: IPersonFilters): Promise<IPagingData<IPerson | null>> {
@@ -520,7 +547,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       }
 
       serializePqrsdf = pqrsdf.serialize() as IPqrsdf;
-      if (pqrsdf?.fileId) {
+      if (pqrsdf?.fileId && pqrsdf.file) {
         serializePqrsdf.file.filePath = await this.getFile(pqrsdf.file.name);
       }
       serializePqrsdf.responsible.user = user;
