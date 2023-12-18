@@ -3,6 +3,7 @@ import { IGenericData } from "App/Interfaces/GenericDataInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { IGenericListsExternalService } from "./Contracts/IGenericListsExternalService";
 import axios, { AxiosInstance } from "axios";
+import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 
 export default class GenericListsExternalService implements IGenericListsExternalService {
   private apiCore: AxiosInstance;
@@ -13,15 +14,28 @@ export default class GenericListsExternalService implements IGenericListsExterna
     });
   }
   public async getItemsByGrouper(grouper: EGrouperCodes, parentId?: number): Promise<ApiResponse<IGenericData[]>> {
-    const items = !parentId
-      ? await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-grouper/${grouper}`)
-      : await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-parent`, {
-          params: {
-            grouper: grouper,
-            parentItemCode: parentId,
-          },
-        });
+    let items: ApiResponse<IGenericData[]> = {
+      data: [],
+      operation: {
+        code: EResponseCodes.OK,
+      },
+    };
 
-    return items.data;
+    try {
+      items = (
+        !parentId
+          ? await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-grouper/${grouper}`)
+          : await this.apiCore.get<ApiResponse<IGenericData[]>>(`generic-list/get-by-parent`, {
+              params: {
+                grouper: grouper,
+                parentItemCode: parentId,
+              },
+            })
+      ).data;
+    } catch (error) {
+      items.data = [];
+    }
+
+    return items;
   }
 }
