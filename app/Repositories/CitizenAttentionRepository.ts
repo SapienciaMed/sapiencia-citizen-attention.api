@@ -94,6 +94,8 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
   }
 
   async getPrograms(): Promise<IProgram[]> {
+
+    console.log('akive')
     const res = await PrgPrograma.query()
       .preload("clpClasificacionPrograma")
       .preload("depDependencia")

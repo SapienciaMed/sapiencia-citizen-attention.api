@@ -25,6 +25,22 @@ Route.get("/", async () => {
 });
 
 Route.group(() => {
+  Route.get("/get-countries", "CitizenAttentionController.getCountries");
+  Route.get("/get-programs", "CitizenAttentionController.getPrograms");
+  Route.get("/get-departments", "CitizenAttentionController.getDepartments");
+  Route.get("/get-municipalities", "CitizenAttentionController.getMunicipalities");
+  Route.get("/get-corregimientos", "CitizenAttentionController.getCorregimientos");
+}).prefix("/api/v1/citizen-attention").middleware("userOrBenefactor")
+
+Route.group(() => {
+Route.get("get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
+Route.post("create", "PqrsdfsController.createPqrsdf");
+Route.post("upload", "PqrsdfsController.uploadFile");
+})
+.prefix("/api/v1/pqrsdf/")
+.middleware("userOrBenefactor");
+
+Route.group(() => {
   Route.group(() => {
     Route.get("/get-by-id/:id", "BusinessController.getBusinessById");
   }).prefix("/business");
@@ -68,18 +84,13 @@ Route.group(() => {
   /* Citizen attentions */
   Route.group(() => {
     Route.get("/get-stratums", "CitizenAttentionController.getStratums");
-    Route.get("/get-programs", "CitizenAttentionController.getPrograms");
-    Route.get("/get-countries", "CitizenAttentionController.getCountries");
     Route.post("/update", "CitizenAttentionController.updateCitizenAttention");
-    Route.get("/get-departments", "CitizenAttentionController.getDepartments");
     Route.get("/get-value-groups", "CitizenAttentionController.getValueGroups");
     Route.get("/get-dependencies", "CitizenAttentionController.getDependencies");
     Route.get("/get-by-id", "CitizenAttentionController.getCitizenAttentionById");
     Route.get("/get-request-types", "CitizenAttentionController.getRequestTypes");
     Route.get("/get-document-type", "ListadoGenericosController.getDocumentType");
     Route.get("/get-response-types", "CitizenAttentionController.getResponseTypes");
-    Route.get("/get-municipalities", "CitizenAttentionController.getMunicipalities");
-    Route.get("/get-corregimientos", "CitizenAttentionController.getCorregimientos");
     Route.get("/get-sevice-channels", "CitizenAttentionController.getSeviceChannels");
     Route.get("/get-response-mediums", "CitizenAttentionController.getResponseMediums");
     Route.get("/get-legal-entity-types", "CitizenAttentionController.getLegalEntityTypes");
@@ -120,13 +131,9 @@ Route.group(() => {
   .prefix("/api/v1/")
   .middleware("auth");
 
-Route.group(() => {
-  Route.get("get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
-  Route.post("create", "PqrsdfsController.createPqrsdf");
-  Route.post("upload", "PqrsdfsController.uploadFile");
-})
-  .prefix("/api/v1/pqrsdf/")
-  .middleware("userOrBenefactor");
+
+
+
 
 /**************************
  ******TABLAS MAESTRAS******
