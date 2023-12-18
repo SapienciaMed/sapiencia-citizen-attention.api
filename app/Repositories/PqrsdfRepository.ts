@@ -19,7 +19,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-const keyFilename = process.env.GCLOUD_KEYFILE;
+// const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
