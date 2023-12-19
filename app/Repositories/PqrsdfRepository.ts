@@ -240,7 +240,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         }
 
         await PqrsdfResponse.create(pqrsdf?.response);
-        updatePqrsdfFields.push("statusId");
+        if (pqrsdf?.statusId) {
+          updatePqrsdfFields.push("statusId");
+        }
         res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
       }
     });
