@@ -192,12 +192,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
               "Solicitud cerrada PQRSDF " + pqrsdf.filingNumber,
-              `Reciba un cordial saludo.<br><br>` +
-                `En atención a la solicitud con radicado ${pqrsdf.filingNumber}, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${pqrsdf.exitFilingNumber}.<br>` +
-                `Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.` +
-                satisfactionUrl
-                ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>`
-                : "",
+              `Reciba un cordial saludo.<br><br>
+              En atención a la solicitud con radicado ${
+                pqrsdf.filingNumber
+              }, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${
+                pqrsdf.exitFilingNumber
+              }.<br>
+              Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.
+                ${satisfactionUrl ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>` : ""}`,
               file?.tmpPath
             );
           }
@@ -209,8 +211,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [assignedUser.email],
               "Asignación de PQRSDF " + pqrsdf.filingNumber,
-              `Reciba un cordial saludo.<br><br>` +
-                `Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
+              `Reciba un cordial saludo.<br><br>
+              Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
             );
           }
         }
@@ -220,13 +222,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           if (pqrsdf.person?.email) {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
-              "Respuesta a radicado " + pqrsdf.filingNumber,
-              `Reciba un cordial saludo.<br><br>` +
-                `Se le informa que la PQRSDF ${
-                  pqrsdf.filingNumber
-                } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
-                  pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
-                } días más.`,
+              `Respuesta a radicado ${pqrsdf.filingNumber}`,
+              `Reciba un cordial saludo.<br><br>
+              Se le informa que la PQRSDF ${
+                pqrsdf.filingNumber
+              } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
+                pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
+              } días más.`,
               file?.tmpPath
             );
           }
@@ -238,8 +240,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         }
 
         await PqrsdfResponse.create(pqrsdf?.response);
-
-        pqrsdf.statusId = pqrsdf.statusId;
         updatePqrsdfFields.push("statusId");
         res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
       }
@@ -624,7 +624,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       });
       await pqrsdfToUpdate.save();
       const newPqrsdfData = await this.formatPqrsdf(pqrsdfToUpdate);
-      formattedPqrsdf = newPqrsdfData ? newPqrsdfData : pqrsdf;
+      formattedPqrsdf = newPqrsdfData ?? pqrsdf;
       formattedPqrsdf.response = pqrsdf.response;
     }
     return formattedPqrsdf;
