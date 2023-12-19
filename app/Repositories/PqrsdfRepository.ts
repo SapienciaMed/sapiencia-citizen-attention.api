@@ -85,16 +85,19 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   private async formatPqrsdfs(pqrsdfs: Pqrsdf[]): Promise<IPqrsdf[]> {
     let pqrsdfsFormatted: IPqrsdf[] = [];
-    let ids = pqrsdfs.map((pqrsdf) => pqrsdf.responsible.userId);
+
+    const ids = pqrsdfs.map((pqrsdf) => pqrsdf?.responsible?.userId);
+
     let users: IUser[] = [];
-    if (!users.length) {
+    if (ids.length > 0) {
       users = (await this.AuthExternalService.getUsersByIds(ids)).data;
     }
     for await (const pqrsdf of pqrsdfs) {
-      let pqrsdfFormatted = await this.formatPqrsdf(
-        pqrsdf,
-        users.filter((user) => user.id == pqrsdf.responsible.userId)[0]
-      );
+      const user = users.find((user) => user.id == pqrsdf?.responsible?.userId);
+
+      if (!user) continue;
+
+      let pqrsdfFormatted = await this.formatPqrsdf(pqrsdf, user);
       if (pqrsdfFormatted) {
         pqrsdfsFormatted.push(pqrsdfFormatted);
       }
