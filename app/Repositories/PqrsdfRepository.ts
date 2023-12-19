@@ -639,7 +639,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
         destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
-        public: true,
       });
 
       return !!fileCloud;
