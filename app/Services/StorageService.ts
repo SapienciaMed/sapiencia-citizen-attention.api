@@ -5,20 +5,20 @@ import { IStorageService } from "./Contracts/IStorageService";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 
 
-//const keyFilename = process.env.GCLOUD_KEYFILE;  //-->Local
+// const keyFilename = process.env.GCLOUD_KEYFILE;  //-->Local
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class StorageService implements IStorageService{
     storage: Storage;
 
     constructor() {
-        //this.storage = new Storage({ keyFilename }); //-->Local
+        // this.storage = new Storage({ keyFilename }); //-->Local
         this.storage = new Storage();
     }
-    
+
 
     public async getFiles(path?: string): Promise<ApiResponse<IFiles[]>> {
-        const [files] = await this.storage.bucket(bucketName).getFiles({prefix: path});  
+        const [files] = await this.storage.bucket(bucketName).getFiles({prefix: path});
         const response = files.map(file => {
             const fileName = file.metadata.name?.split("/");
             return {

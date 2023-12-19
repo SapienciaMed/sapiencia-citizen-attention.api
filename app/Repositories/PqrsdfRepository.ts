@@ -19,7 +19,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-//const keyFilename = process.env.GCLOUD_KEYFILE;
+// const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -30,7 +30,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    //this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage({ keyFilename }); //-->Local
     this.storage = new Storage();
   }
 
@@ -85,16 +85,19 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   private async formatPqrsdfs(pqrsdfs: Pqrsdf[]): Promise<IPqrsdf[]> {
     let pqrsdfsFormatted: IPqrsdf[] = [];
-    let ids = pqrsdfs.map((pqrsdf) => pqrsdf.responsible.userId);
+
+    const ids = pqrsdfs.map((pqrsdf) => pqrsdf?.responsible?.userId);
+
     let users: IUser[] = [];
-    if (!users.length) {
+    if (ids.length > 0) {
       users = (await this.AuthExternalService.getUsersByIds(ids)).data;
     }
     for await (const pqrsdf of pqrsdfs) {
-      let pqrsdfFormatted = await this.formatPqrsdf(
-        pqrsdf,
-        users.filter((user) => user.id == pqrsdf.responsible.userId)[0]
-      );
+      const user = users.find((user) => user.id == pqrsdf?.responsible?.userId);
+
+      if (!user) continue;
+
+      let pqrsdfFormatted = await this.formatPqrsdf(pqrsdf, user);
       if (pqrsdfFormatted) {
         pqrsdfsFormatted.push(pqrsdfFormatted);
       }
@@ -115,6 +118,18 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           .where("pqrsdfId", pqrsdf.id)
           .orderBy("createdAt", "desc")
           .first();
+        if (!pqrsdf?.person?.departmentId) {
+          delete pqrsdf?.person?.departmentId;
+        }
+        if (!pqrsdf?.person?.municipalityId) {
+          delete pqrsdf?.person?.municipalityId;
+        }
+        if (!pqrsdf?.person?.firstName) {
+          delete pqrsdf?.person?.firstName;
+          delete pqrsdf?.person?.secondName;
+          delete pqrsdf?.person?.firstSurname;
+          delete pqrsdf?.person?.secondSurname;
+        }
         if (pqrsdf?.person) {
           await this.updatePerson(pqrsdf.person);
         }
@@ -177,11 +192,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
               "Solicitud cerrada PQRSDF " + pqrsdf.filingNumber,
-              `En atención a la solicitud con radicado ${pqrsdf.filingNumber}, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${pqrsdf.exitFilingNumber}.<br>` +
-                `Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.` +
-                satisfactionUrl
-                ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>`
-                : "",
+              `En atención a la solicitud con radicado ${
+                pqrsdf.filingNumber
+              }, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${
+                pqrsdf.exitFilingNumber
+              }.<br>
+              Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.
+                ${satisfactionUrl ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>` : ""}`,
               file?.tmpPath
             );
           }
@@ -203,7 +220,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           if (pqrsdf.person?.email) {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
-              "Respuesta a radicado " + pqrsdf.filingNumber,
+              `Respuesta a radicado ${pqrsdf.filingNumber}`,
               `Se le informa que la PQRSDF ${
                 pqrsdf.filingNumber
               } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
@@ -220,7 +237,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         }
 
         await PqrsdfResponse.create(pqrsdf?.response);
-
+        if (pqrsdf?.statusId) {
+          updatePqrsdfFields.push("statusId");
+        }
         res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
       }
     });
@@ -233,7 +252,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     let tmpPath = "";
     const bucket = this.storage.bucket(bucketName);
     if (file?.tmpPath) {
-      const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
+      const tempDate = DateTime.now().setZone("America/Bogota").toFormat("yyyy_MM_dd_HH_mm_ss");
       const [fileCloud] = await bucket.upload(file.tmpPath, {
         destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
       });
@@ -250,6 +269,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       upload: upload,
       tmpPath: tmpPath,
     };
+  }
+
+  async deleteFile(filePath: string) {
+    // Deletes the file from the bucket
+    try {
+      await this.storage.bucket(bucketName).file(filePath).delete();
+      console.log(`gs://${bucketName}/${filePath} deleted.`);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async createPqrsdf(pqrsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null> {
@@ -282,17 +311,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         //TODO UPLOAD
         let upload = false;
         if (file) {
-          const bucket = this.storage.bucket(bucketName);
-          if (!file.tmpPath) return false;
-          const tempDate = DateTime.now().toFormat("yyyy_MM_dd_HH_mm_ss");
-          const [fileCloud] = await bucket.upload(file.tmpPath, {
-            destination: `${"proyectos-digitales/"}${tempDate + "_" + file.clientName}`,
-          });
-
-          if (fileCloud.metadata.id) {
-            pqrsdf.file.name = fileCloud.metadata.id;
-            upload = true;
-          }
+          const responseFile = await this.uploadBucket(file);
+          upload = responseFile.upload;
+          pqrsdf.file = {
+            isActive: true,
+            name: responseFile.filePath,
+          };
         }
 
         const newFile = pqrsdf?.file && upload ? (await File.create(pqrsdf?.file)).useTransaction(trx) : null;
@@ -310,9 +334,61 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         res = await this.formatPqrsdf(newPqrsdf);
 
         //TODO EMAIL
+        if (pqrsdf.person?.email) {
+          const queryPqrsdfUrl = await LpaListaParametro.find(2);
+          await this.EmailService.sendEmail(
+            [pqrsdf.person.email],
+            `Radicación de PQRSDF con número ${pqrsdf.filingNumber} en Sapiencia `,
+            `Gracias por comunicarse con SAPIENCIA la agencia de educación Postsecundaria de Medellín.<br>
+            Le informamos que su solicitud ha sido radicada exitosamente con el número ${
+              pqrsdf.filingNumber
+            }, puede realizar seguimiento a través de
+            ${
+              queryPqrsdfUrl
+                ? `<a href="${queryPqrsdfUrl?.lpa_valor}" target="_blank">${queryPqrsdfUrl?.lpa_descripcion}</a>`
+                : ""
+            }`
+          );
+        }
       }
     });
     return res?.id ? res : null;
+  }
+
+  getBase64Encode(b64: string) {
+    const signatures = {
+      JVBERi0: "application/pdf",
+      R0lGODdh: "image/gif",
+      R0lGODlh: "image/gif",
+      iVBORw0KGgo: "image/png",
+      "/9j/": "image/jpg",
+    };
+    for (let s in signatures) {
+      if (b64.startsWith(s)) {
+        return signatures[s];
+      }
+    }
+  }
+
+  async getFile(filePath: string) {
+    try {
+      let path = filePath.replace(bucketName + "/", "").split("/");
+      if (path.length > 1) {
+        path.pop();
+      }
+      const _this = this;
+      await this.storage
+        .bucket(bucketName)
+        .file(path.join("/"))
+        .download()
+        .then(function (data) {
+          filePath = data[0].toString("base64");
+          filePath = `data:${_this.getBase64Encode(filePath)};base64,${filePath}`;
+        });
+    } catch (error) {
+      return "";
+    }
+    return filePath;
   }
 
   async getPeopleByFilters(filters: IPersonFilters): Promise<IPagingData<IPerson | null>> {
@@ -478,6 +554,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       }
 
       serializePqrsdf = pqrsdf.serialize() as IPqrsdf;
+      if (pqrsdf?.fileId && pqrsdf.file) {
+        serializePqrsdf.file.filePath = await this.getFile(pqrsdf.file.name);
+      }
       serializePqrsdf.responsible.user = user;
       if (serializePqrsdf.person) {
         serializePqrsdf.person.documentType = documentTypes.data.find(
@@ -547,7 +626,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       });
       await pqrsdfToUpdate.save();
       const newPqrsdfData = await this.formatPqrsdf(pqrsdfToUpdate);
-      formattedPqrsdf = newPqrsdfData ? newPqrsdfData : pqrsdf;
+      formattedPqrsdf = newPqrsdfData ?? pqrsdf;
       formattedPqrsdf.response = pqrsdf.response;
     }
     return formattedPqrsdf;
