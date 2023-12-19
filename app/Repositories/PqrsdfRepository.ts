@@ -192,8 +192,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
               "Solicitud cerrada PQRSDF " + pqrsdf.filingNumber,
-              `Reciba un cordial saludo.<br><br>
-              En atención a la solicitud con radicado ${
+              `En atención a la solicitud con radicado ${
                 pqrsdf.filingNumber
               }, la Agencia de Educación Postsecundaria de Medellín - Sapiencia, emite comunicación a través de radicado de respuesta N° ${
                 pqrsdf.exitFilingNumber
@@ -211,8 +210,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [assignedUser.email],
               "Asignación de PQRSDF " + pqrsdf.filingNumber,
-              `Reciba un cordial saludo.<br><br>
-              Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
+              `Se le informa que la PQRSDF ${pqrsdf.filingNumber} le ha sido asignada para su gestión, por favor verifique su bandeja.`
             );
           }
         }
@@ -223,8 +221,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
               `Respuesta a radicado ${pqrsdf.filingNumber}`,
-              `Reciba un cordial saludo.<br><br>
-              Se le informa que la PQRSDF ${
+              `Se le informa que la PQRSDF ${
                 pqrsdf.filingNumber
               } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
                 pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
@@ -342,12 +339,15 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           await this.EmailService.sendEmail(
             [pqrsdf.person.email],
             `Radicación de PQRSDF con número ${pqrsdf.filingNumber} en Sapiencia `,
-            `Reciba un cordial saludo.<br><br>` +
-              `Gracias por comunicarse con SAPIENCIA la agencia de educación Postsecundaria de Medellín.<br>` +
-              `Le informamos que su solicitud ha sido radicada exitosamente con el número ${pqrsdf.filingNumber}, puede realizar seguimiento a través de` +
+            `Gracias por comunicarse con SAPIENCIA la agencia de educación Postsecundaria de Medellín.<br>
+            Le informamos que su solicitud ha sido radicada exitosamente con el número ${
+              pqrsdf.filingNumber
+            }, puede realizar seguimiento a través de
+            ${
               queryPqrsdfUrl
-              ? `<a href="${queryPqrsdfUrl?.lpa_valor}" target="_blank">${queryPqrsdfUrl?.lpa_descripcion}</a>`
-              : ""
+                ? `<a href="${queryPqrsdfUrl?.lpa_valor}" target="_blank">${queryPqrsdfUrl?.lpa_descripcion}</a>`
+                : ""
+            }`
           );
         }
       }
