@@ -180,7 +180,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           (pqrsdf?.response?.responseTypeId == 1 || pqrsdf?.response?.responseTypeId == 2) &&
           pqrsdf.response?.assignedUserId
         ) {
-          pqrsdf.responsibleId = respondingUserEntity?.id;
+          pqrsdf.responsibleId = assignedUserEntity?.id;
+          updatePqrsdfFields.push("responsibleId");
           pqrsdf.statusId = assignedUserEntity?.workEntityType.associatedStatusId;
           if (!lastResponse) {
             newResponsible = true;
