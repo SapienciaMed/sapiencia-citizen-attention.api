@@ -170,7 +170,7 @@ export default class PqrsdfsController {
       const filingNumber = await this.getFilingNumber();
 
       const file = request.files("file");
-      // const supportFiles = request.files("supportFiles");
+      const supportFiles = request.files("supportFiles") ?? [];
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf) as IPqrsdf;
       if (dataPqrsdf.response) {
@@ -180,7 +180,7 @@ export default class PqrsdfsController {
         dataPqrsdf.exitFilingNumber = await this.getFilingNumber("03");
       }
 
-      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0]));
+      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0], supportFiles));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
