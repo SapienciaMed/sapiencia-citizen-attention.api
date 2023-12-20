@@ -1,12 +1,7 @@
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import {
-  IPqrsdf,
-  IPqrsdfFilters,
-  IReopenRequest,
-  IrequestPqrsdf
-} from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IPqrsdfFilters, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
@@ -19,8 +14,12 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async createResponse(prsdf: IPqrsdf, file: MultipartFileContract): Promise<ApiResponse<IPqrsdf | null>> {
-    const res = await this.PqrsdfRepository.createResponse(prsdf, file);
+  public async createResponse(
+    prsdf: IPqrsdf,
+    file: MultipartFileContract,
+    supportFiles: MultipartFileContract[] = []
+  ): Promise<ApiResponse<IPqrsdf | null>> {
+    const res = await this.PqrsdfRepository.createResponse(prsdf, file, supportFiles);
     if (!res) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "No se puede crear la respuesta de la PQRSDF");
     }
