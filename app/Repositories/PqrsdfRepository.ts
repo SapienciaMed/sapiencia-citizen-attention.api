@@ -119,18 +119,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           .where("pqrsdfId", pqrsdf.id)
           .orderBy("createdAt", "desc")
           .first();
-        if (!pqrsdf?.person?.departmentId) {
-          delete pqrsdf?.person?.departmentId;
-        }
-        if (!pqrsdf?.person?.municipalityId) {
-          delete pqrsdf?.person?.municipalityId;
-        }
-        if (!pqrsdf?.person?.firstName) {
-          delete pqrsdf?.person?.firstName;
-          delete pqrsdf?.person?.secondName;
-          delete pqrsdf?.person?.firstSurname;
-          delete pqrsdf?.person?.secondSurname;
-        }
         if (pqrsdf?.person) {
           await this.updatePerson(pqrsdf.person);
         }
@@ -621,6 +609,18 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   async updatePerson(personData: IPerson): Promise<IPerson | null> {
     const person = await Person.query().where("identification", personData.identification).firstOrFail();
     if (person) {
+      if (!personData?.departmentId) {
+        delete personData?.departmentId;
+      }
+      if (!personData?.municipalityId) {
+        delete personData?.municipalityId;
+      }
+      if (!personData?.firstName) {
+        delete personData?.firstName;
+        delete personData?.secondName;
+        delete personData?.firstSurname;
+        delete personData?.secondSurname;
+      }
       delete personData.documentType;
       if (personData?.birthdate) {
         personData.birthdate = new Date(personData.birthdate);
