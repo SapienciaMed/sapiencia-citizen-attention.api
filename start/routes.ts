@@ -100,7 +100,11 @@ Route.group(() => {
     Route.post("/create", "CitizenAttentionController.createCitizenAttention").middleware(
       "auth:ATENCION_CIUDADANA_CREAR"
     );
+    Route.post("/get-programsby-user", "ExternalController.getProgramByUser")
+    Route.post("/get-subject-by-user", "ExternalController.getSubjectByUser")
   }).prefix("/citizen-attention");
+
+
 
   /* Work entities */
   Route.group(() => {
