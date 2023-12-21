@@ -1,7 +1,7 @@
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import { IPqrsdf, IPqrsdfFilters, IPqrsdfResponse, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
-import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagination, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IPqrsdfServices {
   createPqrsdf(prsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<ApiResponse<IPqrsdf | null>>;
