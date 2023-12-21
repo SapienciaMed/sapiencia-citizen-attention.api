@@ -30,15 +30,17 @@ Route.group(() => {
   Route.get("/get-departments", "CitizenAttentionController.getDepartments");
   Route.get("/get-municipalities", "CitizenAttentionController.getMunicipalities");
   Route.get("/get-corregimientos", "CitizenAttentionController.getCorregimientos");
-}).prefix("/api/v1/citizen-attention").middleware("userOrBenefactor")
+})
+  .prefix("/api/v1/citizen-attention")
+  .middleware("userOrBenefactor");
 
 Route.group(() => {
-Route.get("get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
-Route.post("create", "PqrsdfsController.createPqrsdf");
-Route.post("upload", "PqrsdfsController.uploadFile");
+  Route.get("get-person-by-document/:identification", "PqrsdfsController.getPersonByDocument");
+  Route.post("create", "PqrsdfsController.createPqrsdf");
+  Route.post("upload", "PqrsdfsController.uploadFile");
 })
-.prefix("/api/v1/pqrsdf/")
-.middleware("userOrBenefactor");
+  .prefix("/api/v1/pqrsdf/")
+  .middleware("userOrBenefactor");
 
 Route.group(() => {
   Route.group(() => {
@@ -72,6 +74,7 @@ Route.group(() => {
   /* PQRSDF */
   Route.group(() => {
     Route.post("/get-paginated", "PqrsdfsController.getPqrsdfByFilters");
+    Route.post("/get-responses", "PqrsdfsController.getPqrsdfResponnses");
     Route.post("/create-request-reopen", "PqrsdfsController.createRequestReopen");
     Route.get("/get-by-id/:id", "PqrsdfsController.getPrsdfById");
     Route.post("/get-people-by-filters", "PqrsdfsController.getPeopleByFilters");
@@ -108,7 +111,9 @@ Route.group(() => {
     Route.post("/update", "WorkEntityController.updateWorkEntity").middleware("auth:ENTIDADES_TRABAJO_EDITAR");
     Route.get("/get-types", "WorkEntityController.getWorkEntityTypes");
     Route.get("/get-programs", "WorkEntityController.getProgramsAffairs");
-    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
+    Route.get("/get-by-id/:id", "WorkEntityController.getWorkEntityById").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
     Route.post("/get-by-filters", "WorkEntityController.getWorkEntityByFilters").middleware(
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
@@ -119,8 +124,9 @@ Route.group(() => {
       "auth:ENTIDADES_TRABAJO_CONSULTAR"
     );
     Route.get("/get-entitymanagers-by-entityType-id/:id", "WorkEntityController.getEntityManagersByEntityTypeId");
-    Route.get("/get-by-user-id/:id", "WorkEntityController.getWorkEntityByUserId").middleware("auth:ENTIDADES_TRABAJO_CONSULTAR");
-
+    Route.get("/get-by-user-id/:id", "WorkEntityController.getWorkEntityByUserId").middleware(
+      "auth:ENTIDADES_TRABAJO_CONSULTAR"
+    );
   }).prefix("/work-entity");
 
   /*ARCHIVOS*/
@@ -130,10 +136,6 @@ Route.group(() => {
 })
   .prefix("/api/v1/")
   .middleware("auth");
-
-
-
-
 
 /**************************
  ******TABLAS MAESTRAS******

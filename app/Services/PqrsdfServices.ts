@@ -1,9 +1,15 @@
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IPqrsdfFilters, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import {
+  IPqrsdf,
+  IPqrsdfFilters,
+  IPqrsdfResponse,
+  IReopenRequest,
+  IrequestPqrsdf,
+} from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
-import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagination, IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 
 export default class PqrsdfServices implements IPqrsdfServices {
@@ -11,6 +17,16 @@ export default class PqrsdfServices implements IPqrsdfServices {
 
   async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>> {
     const res = await this.PqrsdfRepository.getPqrsdfByFilters(filters);
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getPqrsdfResponnses(pagination: IPagination): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>> {
+    const res = await this.PqrsdfRepository.getPqrsdfResponnses(pagination);
+
+    if (!res.array.length) {
+      return new ApiResponse(res, EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
     return new ApiResponse(res, EResponseCodes.OK);
   }
 

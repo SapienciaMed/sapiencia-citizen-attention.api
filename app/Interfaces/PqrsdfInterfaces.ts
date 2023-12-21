@@ -6,6 +6,7 @@ import { IRequestSubjectType } from "./RequestSubjectTypeInterfaces";
 import { IRequestType } from "./RequestTypeInterfaces";
 import { IResponseMedium } from "./ResponseMediumInterfaces";
 import { IWorkEntity } from "./WorkEntityInterfaces";
+import { IUser } from "./UserInterfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -113,8 +114,10 @@ export interface IPqrsdfResponse {
   fileId?: number;
   file?: IFile;
   assignedUserId?: number;
+  assignedUser?: IUser;
   assignedDependenceId?: number;
   respondingUserId: number;
+  respondingUser?: IUser;
   respondingDependenceId?: number;
   observation?: string;
   createdAt?: DateTime;

@@ -3,7 +3,13 @@ import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IPqrsdfFilters, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import {
+  IPqrsdf,
+  IPqrsdfFilters,
+  IPqrsdfResponse,
+  IReopenRequest,
+  IrequestPqrsdf,
+} from "App/Interfaces/PqrsdfInterfaces";
 import { IUser } from "App/Interfaces/UserInterfaces";
 import File from "App/Models/File";
 import LpaListaParametro from "App/Models/LpaListaParametro";
@@ -15,7 +21,7 @@ import WorkEntity from "App/Models/WorkEntity";
 import { IEmailService } from "App/Services/Contracts/IEmailService";
 import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
-import { IPagingData } from "App/Utils/ApiResponses";
+import { IPagination, IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 import { IFile } from "App/Interfaces/FileInterfaces";
@@ -730,6 +736,70 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     } catch (error) {}
 
     return res;
+  }
+
+  async formatResponses(pqrsdfResponses: PqrsdfResponse[]): Promise<IPqrsdfResponse[]> {
+    let pqrsdfResponsesFormatted: IPqrsdfResponse[] = [];
+    let ids = [
+      ...new Set([
+        ...pqrsdfResponses.map((response) => response.assignedUserId),
+        ...pqrsdfResponses.map((response) => response.respondingUserId),
+      ]),
+    ];
+    let users: IUser[] = [];
+    if (!users.length) {
+      users = (await this.AuthExternalService.getUsersByIds(ids)).data;
+    }
+    for await (const pqrsdfResponse of pqrsdfResponses) {
+      let pqrsdfResponseFormatted: IPqrsdfResponse = await this.formatResponse(pqrsdfResponse, users);
+      pqrsdfResponsesFormatted.push(pqrsdfResponseFormatted);
+    }
+    return pqrsdfResponsesFormatted;
+  }
+
+  async formatResponse(pqrsdfResponse: PqrsdfResponse, users: IUser[]): Promise<IPqrsdfResponse> {
+    if (pqrsdfResponse?.assignedDependenceId) {
+      await pqrsdfResponse.load("assignedDependence");
+    }
+    if (pqrsdfResponse?.WorkEntityId) {
+      await pqrsdfResponse.load("workEntity");
+    }
+    if (pqrsdfResponse?.assignedDependenceId) {
+      await pqrsdfResponse.load("assignedDependence");
+    }
+    if (pqrsdfResponse?.factorId) {
+      await pqrsdfResponse.load("factor");
+    }
+    if (pqrsdfResponse?.fileId) {
+      await pqrsdfResponse.load("file");
+    }
+    await pqrsdfResponse.load("responseType");
+
+    let pqrsdfResponseFormatted = pqrsdfResponse.serialize() as IPqrsdfResponse;
+    if (pqrsdfResponseFormatted.assignedUserId) {
+      pqrsdfResponseFormatted.assignedUser = users.filter(
+        (user) => user.id == pqrsdfResponseFormatted.assignedUserId
+      )[0];
+    }
+    if (pqrsdfResponseFormatted.respondingUserId) {
+      pqrsdfResponseFormatted.respondingUser = users.filter(
+        (user) => user.id == pqrsdfResponseFormatted.respondingUserId
+      )[0];
+    }
+
+    return pqrsdfResponseFormatted;
+  }
+
+  async getPqrsdfResponnses(pagination: IPagination): Promise<IPagingData<IPqrsdfResponse | null>> {
+    const responsePagination = await PqrsdfResponse.query().paginate(pagination?.page ?? 1, pagination?.perPage ?? 10);
+
+    const { meta } = responsePagination.serialize();
+    let serializeResponses = await this.formatResponses(responsePagination.all());
+
+    return {
+      array: serializeResponses,
+      meta,
+    };
   }
 
   async createRequestReopen(justification: IReopenRequest): Promise<IReopenRequest | null> {
