@@ -780,6 +780,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     });
 
     let pqrsdfResponseFormatted = pqrsdfResponse.serialize() as IPqrsdfResponse;
+    if (pqrsdfResponse?.fileId && pqrsdfResponse.file && pqrsdfResponseFormatted?.file) {
+      pqrsdfResponseFormatted.file.filePath = await this.getFile(pqrsdfResponse.file.name);
+    }
     if (pqrsdfResponseFormatted.assignedUserId) {
       pqrsdfResponseFormatted.assignedUser = users.filter(
         (user) => user.id == pqrsdfResponseFormatted.assignedUserId
