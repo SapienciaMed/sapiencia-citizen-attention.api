@@ -5,6 +5,7 @@ import Factor from "./Factor";
 import ResponseType from "./ResponseType";
 import File from "./File";
 import WorkEntity from "./WorkEntity";
+import Pqrsdf from "./Pqrsdf";
 
 export default class PqrsdfResponse extends BaseModel {
   public static table = "RPF_RESPUESTA_PQRSDF";
@@ -77,6 +78,12 @@ export default class PqrsdfResponse extends BaseModel {
     foreignKey: "fileId",
   })
   public file: BelongsTo<typeof File>;
+
+  @belongsTo(() => Pqrsdf, {
+    localKey: "id",
+    foreignKey: "pqrsdfId",
+  })
+  public pqrsdf: BelongsTo<typeof Pqrsdf>;
 
   @belongsTo(() => WorkEntity, {
     localKey: "id",

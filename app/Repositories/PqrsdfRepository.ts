@@ -764,8 +764,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     if (pqrsdfResponse?.WorkEntityId) {
       await pqrsdfResponse.load("workEntity");
     }
-    if (pqrsdfResponse?.assignedDependenceId) {
-      await pqrsdfResponse.load("assignedDependence");
+    if (pqrsdfResponse?.respondingDependenceId) {
+      await pqrsdfResponse.load("respondingDependence");
     }
     if (pqrsdfResponse?.factorId) {
       await pqrsdfResponse.load("factor");
@@ -774,6 +774,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdfResponse.load("file");
     }
     await pqrsdfResponse.load("responseType");
+    await pqrsdfResponse.load("pqrsdf", (pqrsdf) => {
+      pqrsdf.preload("status");
+    });
 
     let pqrsdfResponseFormatted = pqrsdfResponse.serialize() as IPqrsdfResponse;
     if (pqrsdfResponseFormatted.assignedUserId) {
