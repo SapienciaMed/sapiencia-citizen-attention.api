@@ -112,7 +112,7 @@ export interface IPqrsdfResponse {
   pqrsdfId?: number;
   responseTypeId?: number;
   workEntityTypeId?: number;
-  WorkEntityId?: number;
+  workEntityId?: number;
   factorId?: number;
   fileId?: number;
   file?: IFile;

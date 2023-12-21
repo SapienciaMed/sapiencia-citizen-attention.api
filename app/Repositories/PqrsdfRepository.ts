@@ -170,7 +170,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
         const respondingUserEntity = await this.getResponsibleByUserId(pqrsdf.response.respondingUserId);
         pqrsdf.response.respondingDependenceId = respondingUserEntity?.workEntityType.dependenceId;
-        pqrsdf.response.WorkEntityId = respondingUserEntity?.id;
+        pqrsdf.response.workEntityId = respondingUserEntity?.id;
         //set assignedUser response data
         pqrsdf.response.assignedUserId = lastResponse ? lastResponse.assignedUserId : pqrsdf.response?.assignedUserId;
         let assignedUserEntity: WorkEntity | null = null;
@@ -761,7 +761,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     if (pqrsdfResponse?.assignedDependenceId) {
       await pqrsdfResponse.load("assignedDependence");
     }
-    if (pqrsdfResponse?.WorkEntityId) {
+    if (pqrsdfResponse?.workEntityId) {
       await pqrsdfResponse.load("workEntity");
     }
     if (pqrsdfResponse?.respondingDependenceId) {
