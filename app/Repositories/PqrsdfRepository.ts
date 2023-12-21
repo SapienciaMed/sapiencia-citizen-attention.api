@@ -794,7 +794,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   }
 
   async getPqrsdfResponnses(pagination: IPagination): Promise<IPagingData<IPqrsdfResponse | null>> {
-    const responsePagination = await PqrsdfResponse.query().paginate(pagination?.page ?? 1, pagination?.perPage ?? 10);
+    const responsePagination = await PqrsdfResponse.query()
+      .orderBy("createdAt", "asc")
+      .paginate(pagination?.page ?? 1, pagination?.perPage ?? 10);
 
     const { meta } = responsePagination.serialize();
     let serializeResponses = await this.formatResponses(responsePagination.all());
