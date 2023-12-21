@@ -2,12 +2,14 @@ import { Storage } from "@google-cloud/storage";
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { IFile } from "App/Interfaces/FileInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import {
   IPqrsdf,
   IPqrsdfFilters,
   IPqrsdfResponse,
   IReopenRequest,
+  IResponseFilters,
   IrequestPqrsdf,
 } from "App/Interfaces/PqrsdfInterfaces";
 import { IUser } from "App/Interfaces/UserInterfaces";
@@ -21,10 +23,9 @@ import WorkEntity from "App/Models/WorkEntity";
 import { IEmailService } from "App/Services/Contracts/IEmailService";
 import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
-import { IPagination, IPagingData } from "App/Utils/ApiResponses";
+import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
-import { IFile } from "App/Interfaces/FileInterfaces";
 
 // const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
@@ -793,10 +794,19 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     return pqrsdfResponseFormatted;
   }
 
-  async getPqrsdfResponnses(pagination: IPagination): Promise<IPagingData<IPqrsdfResponse | null>> {
+  async getPqrsdfResponnses(filters: IResponseFilters): Promise<IPagingData<IPqrsdfResponse | null>> {
+    if (!filters?.pqrsdfId) {
+      return {
+        array: [],
+        meta: {
+          total: 0,
+        },
+      };
+    }
     const responsePagination = await PqrsdfResponse.query()
+      .where("pqrsdfId", filters.pqrsdfId)
       .orderBy("createdAt", "asc")
-      .paginate(pagination?.page ?? 1, pagination?.perPage ?? 10);
+      .paginate(filters?.page ?? 1, filters?.perPage ?? 10);
 
     const { meta } = responsePagination.serialize();
     let serializeResponses = await this.formatResponses(responsePagination.all());

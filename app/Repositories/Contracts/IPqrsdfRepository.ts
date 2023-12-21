@@ -5,10 +5,11 @@ import {
   IPqrsdfFilters,
   IPqrsdfResponse,
   IReopenRequest,
+  IResponseFilters,
   IrequestPqrsdf,
 } from "App/Interfaces/PqrsdfInterfaces";
 import File from "App/Models/File";
-import { IPagination, IPagingData } from "App/Utils/ApiResponses";
+import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IPqrsdfRepository {
   getPqrsdfById(id: number): Promise<IPqrsdf | null>;
@@ -23,7 +24,7 @@ export interface IPqrsdfRepository {
   getPersonByDocument(identification: number): Promise<IPerson | null>;
   getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>>;
   updatePerson(person: IPerson): Promise<IPerson | null>;
-  getPqrsdfResponnses(pagination: IPagination): Promise<IPagingData<IPqrsdfResponse | null>>;
+  getPqrsdfResponnses(filters: IResponseFilters): Promise<IPagingData<IPqrsdfResponse | null>>;
   createPqrsdf(prsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<IPqrsdf | null>;
   updatePqrsdf(prsdf: IPqrsdf, fields: string[], newSupportFiles: File[]): Promise<IPqrsdf | null>;
   uploadFile(file: MultipartFileContract): Promise<boolean>;

@@ -1,7 +1,7 @@
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IPqrsdfFilters, IPqrsdfResponse, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
-import { ApiResponse, IPagination, IPagingData } from "App/Utils/ApiResponses";
+import { IPqrsdf, IPqrsdfFilters, IPqrsdfResponse, IReopenRequest, IResponseFilters, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IPqrsdfServices {
   createPqrsdf(prsdf: IPqrsdf, file: MultipartFileContract, filedNumber: number): Promise<ApiResponse<IPqrsdf | null>>;
@@ -14,7 +14,7 @@ export interface IPqrsdfServices {
   getPersonByDocument(identification: number): Promise<ApiResponse<IPerson | null>>;
   getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<ApiResponse<IPagingData<IPqrsdf>>>;
   getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPagingData<IPerson | null>>>;
-  getPqrsdfResponnses(pagination: IPagination): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>>;
+  getPqrsdfResponnses(filters: IResponseFilters): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>>;
   updatePerson(person: IPerson): Promise<ApiResponse<IPerson | null>>;
   getPqrsdfByIdentificationAndFilingNumber(
     identification: number,

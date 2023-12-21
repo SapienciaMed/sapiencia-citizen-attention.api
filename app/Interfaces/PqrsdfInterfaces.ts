@@ -131,3 +131,10 @@ export interface IPqrsdfResponse {
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
+
+export interface IResponseFilters {
+  responseType?: IResponseType;
+  pqrsdfId?: number;
+  perPage?: number;
+  page?: number;
+}

@@ -6,8 +6,8 @@ import EmailProvider from "@ioc:core.EmailProvider";
 import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
-import { ApiResponse, IPagination } from "App/Utils/ApiResponses";
+import { IPqrsdf, IResponseFilters, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { ApiResponse } from "App/Utils/ApiResponses";
 import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
 import jwt from "jsonwebtoken";
 
@@ -65,7 +65,7 @@ export default class PqrsdfsController {
 
   public async getPqrsdfResponnses({ request, response }: HttpContextContract) {
     try {
-      const pagination  = request.body() as IPagination;
+      const pagination = request.body() as IResponseFilters;
       return response.send(await PqrsdfProvider.getPqrsdfResponnses(pagination));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));

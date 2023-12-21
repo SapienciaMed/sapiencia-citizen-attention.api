@@ -6,10 +6,11 @@ import {
   IPqrsdfFilters,
   IPqrsdfResponse,
   IReopenRequest,
+  IResponseFilters,
   IrequestPqrsdf,
 } from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
-import { ApiResponse, IPagination, IPagingData } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { IPqrsdfServices } from "./Contracts/IPqrsdfServices";
 
 export default class PqrsdfServices implements IPqrsdfServices {
@@ -20,8 +21,8 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getPqrsdfResponnses(pagination: IPagination): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>> {
-    const res = await this.PqrsdfRepository.getPqrsdfResponnses(pagination);
+  async getPqrsdfResponnses(filters: IResponseFilters): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>> {
+    const res = await this.PqrsdfRepository.getPqrsdfResponnses(filters);
 
     if (!res.array.length) {
       return new ApiResponse(res, EResponseCodes.FAIL, "Registros no encontrados");
