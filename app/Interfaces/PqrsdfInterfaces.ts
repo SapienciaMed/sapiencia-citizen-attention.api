@@ -6,6 +6,10 @@ import { IRequestSubjectType } from "./RequestSubjectTypeInterfaces";
 import { IRequestType } from "./RequestTypeInterfaces";
 import { IResponseMedium } from "./ResponseMediumInterfaces";
 import { IWorkEntity } from "./WorkEntityInterfaces";
+import { IUser } from "./UserInterfaces";
+import { IFactor } from "./MasterTablesUtilityInterfaces";
+import { IResponseType } from "./ResponseTypeInterfaces";
+import { IDependence } from "./DependenceInterfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -39,6 +43,7 @@ export interface IPqrsdf {
   status?: IPqrsdfStatus;
   response?: IPqrsdfResponse;
   file: IFile;
+  supportFiles?: IFile[];
   closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
@@ -107,15 +112,29 @@ export interface IPqrsdfResponse {
   pqrsdfId?: number;
   responseTypeId?: number;
   workEntityTypeId?: number;
-  WorkEntityId?: number;
+  workEntityId?: number;
   factorId?: number;
   fileId?: number;
   file?: IFile;
+  factor?: IFactor;
+  responseType?: IResponseType;
+  pqrsdf?: IPqrsdf;
   assignedUserId?: number;
+  assignedUser?: IUser;
   assignedDependenceId?: number;
   respondingUserId: number;
+  respondingUser?: IUser;
   respondingDependenceId?: number;
+  assignedDependence?: IDependence;
+  respondingDependence?: IDependence;
   observation?: string;
   createdAt?: DateTime;
   updatedAt?: DateTime;
+}
+
+export interface IResponseFilters {
+  responseType?: IResponseType;
+  pqrsdfId?: number;
+  perPage?: number;
+  page?: number;
 }

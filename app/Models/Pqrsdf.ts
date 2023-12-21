@@ -1,4 +1,4 @@
-import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, BelongsTo, HasMany, ManyToMany, belongsTo, column, hasMany, manyToMany } from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
 import File from "./File";
 import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
@@ -147,6 +147,19 @@ export default class Pqrsdf extends BaseModel {
     foreignKey: "fileId",
   })
   public file: BelongsTo<typeof File>;
+
+  @manyToMany(() => File, {
+    pivotTable: 'ARP_ARCHIVO_APOYO_PQRSDF',
+    localKey: 'id',
+    relatedKey: 'id',
+    pivotForeignKey: 'ARP_CODPQR_PQRSDF',
+    serializeAs:'supportFiles',
+    pivotRelatedForeignKey: 'ARP_CODARC_ARCHVIO',
+    pivotColumns:[
+      'ARP_CODIGO'
+    ]
+  })
+  public supportFiles: ManyToMany<typeof File>;
 
   @column.dateTime({
     columnName: "PQR_FECHA_CIERRE",

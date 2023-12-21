@@ -2,8 +2,16 @@ import { Storage } from "@google-cloud/storage";
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { EGrouperCodes } from "App/Constants/GrouperCodesEnum";
+import { IFile } from "App/Interfaces/FileInterfaces";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IPqrsdfFilters, IReopenRequest, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import {
+  IPqrsdf,
+  IPqrsdfFilters,
+  IPqrsdfResponse,
+  IReopenRequest,
+  IResponseFilters,
+  IrequestPqrsdf,
+} from "App/Interfaces/PqrsdfInterfaces";
 import { IUser } from "App/Interfaces/UserInterfaces";
 import File from "App/Models/File";
 import LpaListaParametro from "App/Models/LpaListaParametro";
@@ -107,8 +115,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async createResponse(
     pqrsdf: IPqrsdf,
-    file: MultipartFileContract
-    // supportFiles: MultipartFileContract[] = []
+    file: MultipartFileContract,
+    supportFiles: MultipartFileContract[] = []
   ): Promise<IPqrsdf | null> {
     let res: any = null;
     await Database.transaction(async (trx) => {
@@ -118,18 +126,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           .where("pqrsdfId", pqrsdf.id)
           .orderBy("createdAt", "desc")
           .first();
-        if (!pqrsdf?.person?.departmentId) {
-          delete pqrsdf?.person?.departmentId;
-        }
-        if (!pqrsdf?.person?.municipalityId) {
-          delete pqrsdf?.person?.municipalityId;
-        }
-        if (!pqrsdf?.person?.firstName) {
-          delete pqrsdf?.person?.firstName;
-          delete pqrsdf?.person?.secondName;
-          delete pqrsdf?.person?.firstSurname;
-          delete pqrsdf?.person?.secondSurname;
-        }
         if (pqrsdf?.person) {
           await this.updatePerson(pqrsdf.person);
         }
@@ -142,12 +138,31 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             name: responseFile.filePath,
           };
         }
+        let uploadSupportFiles: IFile[] = [];
+        if (supportFiles.length) {
+          for await (const supportFile of supportFiles) {
+            let responseSFile = await this.uploadBucket(supportFile);
+            if (responseSFile.upload) {
+              uploadSupportFiles.push({
+                isActive: true,
+                name: responseSFile.filePath,
+              });
+            }
+          }
+        }
         const newFile =
           pqrsdf?.response?.file && uploadResponseFile
             ? (await File.create(pqrsdf?.response?.file)).useTransaction(trx)
             : null;
         if (newFile) {
           pqrsdf.response.fileId = newFile.id;
+        }
+        let newSupportFiles: File[] = [];
+        if (uploadSupportFiles.length) {
+          for await (const supportFile of uploadSupportFiles) {
+            let newSupportFile = (await File.create(supportFile)).useTransaction(trx);
+            newSupportFiles.push(newSupportFile);
+          }
         }
 
         if (pqrsdf.motiveId) {
@@ -156,7 +171,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
         const respondingUserEntity = await this.getResponsibleByUserId(pqrsdf.response.respondingUserId);
         pqrsdf.response.respondingDependenceId = respondingUserEntity?.workEntityType.dependenceId;
-        pqrsdf.response.WorkEntityId = respondingUserEntity?.id;
+        pqrsdf.response.workEntityId = respondingUserEntity?.id;
         //set assignedUser response data
         pqrsdf.response.assignedUserId = lastResponse ? lastResponse.assignedUserId : pqrsdf.response?.assignedUserId;
         let assignedUserEntity: WorkEntity | null = null;
@@ -172,8 +187,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           (pqrsdf?.response?.responseTypeId == 1 || pqrsdf?.response?.responseTypeId == 2) &&
           pqrsdf.response?.assignedUserId
         ) {
-          pqrsdf.responsibleId = respondingUserEntity?.id;
-          pqrsdf.statusId = respondingUserEntity?.workEntityType.associatedStatusId;
+          pqrsdf.responsibleId = assignedUserEntity?.id;
+          updatePqrsdfFields.push("responsibleId");
+          pqrsdf.statusId = assignedUserEntity?.workEntityType.associatedStatusId;
           if (!lastResponse) {
             newResponsible = true;
           }
@@ -199,7 +215,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
               }.<br>
               Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.
                 ${satisfactionUrl ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>` : ""}`,
-              file?.tmpPath
+              [
+                ...supportFiles.map((sfile) => {
+                  return sfile.tmpPath + "." + sfile.extname;
+                }),
+                file?.tmpPath + "." + file.extname,
+              ]
             );
           }
         }
@@ -226,7 +247,12 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
               } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
                 pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
               } días más.`,
-              file?.tmpPath
+              [
+                ...supportFiles.map((sfile) => {
+                  return sfile.tmpPath + "." + sfile.extname;
+                }),
+                file?.tmpPath + "." + file.extname,
+              ]
             );
           }
         }
@@ -240,7 +266,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (pqrsdf?.statusId) {
           updatePqrsdfFields.push("statusId");
         }
-        res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
+        res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields, newSupportFiles);
       }
     });
     return res?.id ? res : null;
@@ -541,6 +567,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       if (pqrsdf?.fileId) {
         await pqrsdf.load("file");
       }
+      await pqrsdf.load("supportFiles");
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
 
@@ -556,6 +583,11 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       serializePqrsdf = pqrsdf.serialize() as IPqrsdf;
       if (pqrsdf?.fileId && pqrsdf.file) {
         serializePqrsdf.file.filePath = await this.getFile(pqrsdf.file.name);
+      }
+      if (pqrsdf?.supportFiles?.length) {
+        for (let index = 0; index < serializePqrsdf.supportFiles.length; index++) {
+          serializePqrsdf.supportFiles[index] = await this.getFile(pqrsdf.supportFiles[index].name);
+        }
       }
       serializePqrsdf.responsible.user = user;
       if (serializePqrsdf.person) {
@@ -585,6 +617,18 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
   async updatePerson(personData: IPerson): Promise<IPerson | null> {
     const person = await Person.query().where("identification", personData.identification).firstOrFail();
     if (person) {
+      if (!personData?.departmentId) {
+        delete personData?.departmentId;
+      }
+      if (!personData?.municipalityId) {
+        delete personData?.municipalityId;
+      }
+      if (!personData?.firstName) {
+        delete personData?.firstName;
+        delete personData?.secondName;
+        delete personData?.firstSurname;
+        delete personData?.secondSurname;
+      }
       delete personData.documentType;
       if (personData?.birthdate) {
         personData.birthdate = new Date(personData.birthdate);
@@ -616,7 +660,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async updatePqrsdf(
     pqrsdf: IPqrsdf,
-    fields: string[] = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"]
+    fields: string[] = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"],
+    newSupportFiles: File[] = []
   ): Promise<IPqrsdf | null> {
     const pqrsdfToUpdate = await Pqrsdf.find(pqrsdf.id);
     let formattedPqrsdf = pqrsdf;
@@ -625,6 +670,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         pqrsdfToUpdate[field] = pqrsdf[field];
       });
       await pqrsdfToUpdate.save();
+      if (newSupportFiles.length) {
+        await pqrsdfToUpdate.related("supportFiles").attach(
+          newSupportFiles.map((supportFile) => {
+            return supportFile.id;
+          })
+        );
+      }
       const newPqrsdfData = await this.formatPqrsdf(pqrsdfToUpdate);
       formattedPqrsdf = newPqrsdfData ?? pqrsdf;
       formattedPqrsdf.response = pqrsdf.response;
@@ -685,6 +737,87 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     } catch (error) {}
 
     return res;
+  }
+
+  async formatResponses(pqrsdfResponses: PqrsdfResponse[]): Promise<IPqrsdfResponse[]> {
+    let pqrsdfResponsesFormatted: IPqrsdfResponse[] = [];
+    let ids = [
+      ...new Set([
+        ...pqrsdfResponses.map((response) => response.assignedUserId),
+        ...pqrsdfResponses.map((response) => response.respondingUserId),
+      ]),
+    ];
+    let users: IUser[] = [];
+    if (!users.length) {
+      users = (await this.AuthExternalService.getUsersByIds(ids)).data;
+    }
+    for await (const pqrsdfResponse of pqrsdfResponses) {
+      let pqrsdfResponseFormatted: IPqrsdfResponse = await this.formatResponse(pqrsdfResponse, users);
+      pqrsdfResponsesFormatted.push(pqrsdfResponseFormatted);
+    }
+    return pqrsdfResponsesFormatted;
+  }
+
+  async formatResponse(pqrsdfResponse: PqrsdfResponse, users: IUser[]): Promise<IPqrsdfResponse> {
+    if (pqrsdfResponse?.assignedDependenceId) {
+      await pqrsdfResponse.load("assignedDependence");
+    }
+    if (pqrsdfResponse?.workEntityId) {
+      await pqrsdfResponse.load("workEntity");
+    }
+    if (pqrsdfResponse?.respondingDependenceId) {
+      await pqrsdfResponse.load("respondingDependence");
+    }
+    if (pqrsdfResponse?.factorId) {
+      await pqrsdfResponse.load("factor");
+    }
+    if (pqrsdfResponse?.fileId) {
+      await pqrsdfResponse.load("file");
+    }
+    await pqrsdfResponse.load("responseType");
+    await pqrsdfResponse.load("pqrsdf", (pqrsdf) => {
+      pqrsdf.preload("status");
+    });
+
+    let pqrsdfResponseFormatted = pqrsdfResponse.serialize() as IPqrsdfResponse;
+    if (pqrsdfResponse?.fileId && pqrsdfResponse.file && pqrsdfResponseFormatted?.file) {
+      pqrsdfResponseFormatted.file.filePath = await this.getFile(pqrsdfResponse.file.name);
+    }
+    if (pqrsdfResponseFormatted.assignedUserId) {
+      pqrsdfResponseFormatted.assignedUser = users.filter(
+        (user) => user.id == pqrsdfResponseFormatted.assignedUserId
+      )[0];
+    }
+    if (pqrsdfResponseFormatted.respondingUserId) {
+      pqrsdfResponseFormatted.respondingUser = users.filter(
+        (user) => user.id == pqrsdfResponseFormatted.respondingUserId
+      )[0];
+    }
+
+    return pqrsdfResponseFormatted;
+  }
+
+  async getPqrsdfResponnses(filters: IResponseFilters): Promise<IPagingData<IPqrsdfResponse | null>> {
+    if (!filters?.pqrsdfId) {
+      return {
+        array: [],
+        meta: {
+          total: 0,
+        },
+      };
+    }
+    const responsePagination = await PqrsdfResponse.query()
+      .where("pqrsdfId", filters.pqrsdfId)
+      .orderBy("createdAt", "asc")
+      .paginate(filters?.page ?? 1, filters?.perPage ?? 10);
+
+    const { meta } = responsePagination.serialize();
+    let serializeResponses = await this.formatResponses(responsePagination.all());
+
+    return {
+      array: serializeResponses,
+      meta,
+    };
   }
 
   async createRequestReopen(justification: IReopenRequest): Promise<IReopenRequest | null> {

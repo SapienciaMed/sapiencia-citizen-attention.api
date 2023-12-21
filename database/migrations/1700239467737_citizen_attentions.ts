@@ -19,12 +19,13 @@ export default class extends BaseSchema {
       table.string("ACI_SEGUNDO_APELLIDO", 50).nullable();
       table.string("ACI_NUMERO_CONTACTO_PRIMARIO", 30);
       table.string("ACI_NUMERO_CONTACTO_SECUNDARIO", 30).nullable();
-      table.string("ACI_CORREO", 150);
+      table.string("ACI_CORREO", 150).nullable();
 
       table
-      .integer("ACI_CODEST_ESTRATO")
-      .unsigned()
-      .comment("Llave foranea a la tabla maestra estrato(FK EST_ESTRATO");
+        .integer("ACI_CODEST_ESTRATO")
+        .nullable()
+        .unsigned()
+        .comment("Llave foranea a la tabla maestra estrato(FK EST_ESTRATO");
       //ATENCION
       table
         .integer("ACI_CODCAD_CANAL_DETALLE")
@@ -72,10 +73,7 @@ export default class extends BaseSchema {
         .comment("Llave foranea a la tabla tipos de usuarios (FK_TUS_TIPO_USUARIO");
       table.text("ACI_OBSERVACION", "longtext");
 
-      table
-      .integer("USUARIO_CREA")
-      .unsigned()
-      .comment("Llave foranea al usuario(FK USUARIO_CREA");
+      table.integer("USUARIO_CREA").unsigned().comment("Llave foranea al usuario(FK USUARIO_CREA");
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

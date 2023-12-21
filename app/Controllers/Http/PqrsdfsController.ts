@@ -6,7 +6,7 @@ import EmailProvider from "@ioc:core.EmailProvider";
 import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IResponseFilters, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
 import jwt from "jsonwebtoken";
@@ -58,6 +58,15 @@ export default class PqrsdfsController {
     try {
       const filters = request.body() as IPersonFilters;
       return response.send(await PqrsdfProvider.getPeopleByFilters(filters));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
+  public async getPqrsdfResponnses({ request, response }: HttpContextContract) {
+    try {
+      const pagination = request.body() as IResponseFilters;
+      return response.send(await PqrsdfProvider.getPqrsdfResponnses(pagination));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
@@ -170,7 +179,7 @@ export default class PqrsdfsController {
       const filingNumber = await this.getFilingNumber();
 
       const file = request.files("file");
-      // const supportFiles = request.files("supportFiles");
+      const supportFiles = request.files("supportFiles") ?? [];
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf) as IPqrsdf;
       if (dataPqrsdf.response) {
@@ -180,7 +189,7 @@ export default class PqrsdfsController {
         dataPqrsdf.exitFilingNumber = await this.getFilingNumber("03");
       }
 
-      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0]));
+      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0], supportFiles));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
