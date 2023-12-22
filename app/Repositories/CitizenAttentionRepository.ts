@@ -30,7 +30,8 @@ import { IResponseMedium } from "App/Interfaces/ResponseMediumInterfaces";
 import MreMedioRespuesta from "App/Models/MreMedioRespuesta";
 import { IResponseType } from "App/Interfaces/ResponseTypeInterfaces";
 import ResponseType from "App/Models/ResponseType";
-import Database from "@ioc:Adonis/Lucid/Database";
+
+export default class CitizenAttimport Database from "@ioc:Adonis/Lucid/Database";
 
 export default class CitizenAttentionRepository implements ICitizenAttentionRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -279,5 +280,4 @@ async getSubjectByUser(payload): Promise<any> {
     const data = result[0]
 
     return data
-}
 }
