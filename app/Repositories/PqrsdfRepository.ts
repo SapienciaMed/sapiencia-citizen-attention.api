@@ -27,7 +27,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-// const keyFilename = process.env.GCLOUD_KEYFILE;
+const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -38,8 +38,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    // this.storage = new Storage({ keyFilename }); //-->Local
-    this.storage = new Storage();
+    this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage();
   }
 
   async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
@@ -176,7 +176,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         pqrsdf.response.assignedUserId = lastResponse ? lastResponse.assignedUserId : pqrsdf.response?.assignedUserId;
         let assignedUserEntity: WorkEntity | null = null;
         if (pqrsdf.response?.assignedUserId) {
-          assignedUserEntity = lastResponse ? null : await this.getResponsibleByUserId(pqrsdf.response.assignedUserId);
+          if (lastResponse?.assignedUserId) {
+            assignedUserEntity = await this.getResponsibleByUserId(lastResponse.assignedUserId);
+          }
+          if (!lastResponse?.assignedUserId || (lastResponse?.assignedUserId && !assignedUserEntity)) {
+            assignedUserEntity = await this.getResponsibleByUserId(pqrsdf.response.assignedUserId);
+          }
+
           pqrsdf.response.assignedDependenceId = lastResponse
             ? lastResponse.assignedDependenceId
             : assignedUserEntity?.workEntityType.dependenceId;
@@ -554,11 +560,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       await pqrsdf.load("person", (person) => {
         person.preload("entityType");
       });
-      await pqrsdf.load("responsible", (responsible) => {
-        responsible.preload("workEntityType", (workEntityType) => {
-          workEntityType.preload("dependence");
+      if (pqrsdf.responsibleId) {
+        await pqrsdf.load("responsible", (responsible) => {
+          responsible.preload("workEntityType", (workEntityType) => {
+            workEntityType.preload("dependence");
+          });
         });
-      });
+      }
       await pqrsdf.load("status");
       await pqrsdf.load("pqrsdfResponses");
       await pqrsdf.load("requestSubject", (requestSubject) => {
@@ -667,7 +675,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     let formattedPqrsdf = pqrsdf;
     if (pqrsdfToUpdate) {
       fields.forEach((field) => {
-        pqrsdfToUpdate[field] = pqrsdf[field];
+        if (pqrsdf[field]) {
+          pqrsdfToUpdate[field] = pqrsdf[field];
+        }
       });
       await pqrsdfToUpdate.save();
       if (newSupportFiles.length) {
