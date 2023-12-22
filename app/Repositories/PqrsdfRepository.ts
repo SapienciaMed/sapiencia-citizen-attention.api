@@ -173,7 +173,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         pqrsdf.response.respondingDependenceId = respondingUserEntity?.workEntityType.dependenceId;
         pqrsdf.response.workEntityId = respondingUserEntity?.id;
         //set assignedUser response data
-        pqrsdf.response.assignedUserId = lastResponse ? lastResponse.assignedUserId : pqrsdf.response?.assignedUserId;
         let assignedUserEntity: WorkEntity | null = null;
         if (pqrsdf.response?.assignedUserId) {
           if (lastResponse?.assignedUserId) {

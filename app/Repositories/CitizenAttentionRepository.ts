@@ -30,8 +30,7 @@ import { IResponseMedium } from "App/Interfaces/ResponseMediumInterfaces";
 import MreMedioRespuesta from "App/Models/MreMedioRespuesta";
 import { IResponseType } from "App/Interfaces/ResponseTypeInterfaces";
 import ResponseType from "App/Models/ResponseType";
-
-export default class CitizenAttimport Database from "@ioc:Adonis/Lucid/Database";
+import Database from "@ioc:Adonis/Lucid/Database";
 
 export default class CitizenAttentionRepository implements ICitizenAttentionRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -226,6 +225,12 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     if (filters?.userTypeId) {
       query.where("userTypeId", filters.userTypeId);
     }
+    if (filters.createdAt) {
+      const startDate = filters.createdAt.startOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
+      const endDate = filters.createdAt.endOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
+      query.whereBetween("createdAt", [startDate, endDate]);
+    }
+
     const citizenAttentionsPagination = await query.paginate(filters?.page ?? 1, filters?.perPage ?? 10);
     const { meta } = citizenAttentionsPagination.serialize();
     let serializeCitizenAttention = await this.formatCitizenAttentions(citizenAttentionsPagination.all());
@@ -253,8 +258,7 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
   }
 
   async getProgramByUser(payload): Promise<any> {
-
-    const { identification } = payload
+    const { identification } = payload;
     const query = `SELECT DISTINCT(PRG.PRG_CODIGO) AS value , PRG.PRG_DESCRIPCION as name FROM PRG_PROGRAMAS PRG
     INNER JOIN PQR_PQRSDF PQR ON PQR.PQR_CODPRG_PROGRAMA = PRG.PRG_CODIGO
     INNER JOIN PER_PERSONAS PER ON PER.PER_CODIGO = PQR.PQR_CODPER_PERSONA
@@ -262,13 +266,13 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
 
     const result = await Database.rawQuery(query);
 
-    const data = result[0]
+    const data = result[0];
 
-    return data
-}
-async getSubjectByUser(payload): Promise<any> {
+    return data;
+  }
 
-    const { identification } = payload
+  async getSubjectByUser(payload): Promise<any> {
+    const { identification } = payload;
     const query = `SELECT DISTINCT(ASO.ASO_CODIGO) AS value, ASO.ASO_ASUNTO AS name
     FROM ASO_ASUNTO_SOLICITUD ASO
     INNER JOIN PQR_PQRSDF PQR ON PQR.PQR_CODASO_ASO_ASUNTO_SOLICITUD = ASO.ASO_CODIGO
@@ -277,7 +281,8 @@ async getSubjectByUser(payload): Promise<any> {
 
     const result = await Database.rawQuery(query);
 
-    const data = result[0]
+    const data = result[0];
 
-    return data
+    return data;
+  }
 }

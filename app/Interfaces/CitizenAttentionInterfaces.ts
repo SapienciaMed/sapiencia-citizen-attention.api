@@ -60,6 +60,7 @@ export interface ICitizenAttentionFilters {
   observation?: string;
   page?: number;
   perPage?: number;
+  createdAt?: DateTime;
 }
 
 export interface ICorregimiento {
