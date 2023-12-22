@@ -132,7 +132,7 @@ export default class Pqrsdf extends BaseModel {
 
   @belongsTo(() => AsoAsuntoSolicitud, {
     localKey: "aso_codigo",
-    foreignKey: "responseMediumId",
+    foreignKey: "requestSubjectId",
   })
   public requestSubject: BelongsTo<typeof AsoAsuntoSolicitud>;
 
