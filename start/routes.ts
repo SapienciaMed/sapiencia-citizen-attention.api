@@ -83,7 +83,6 @@ Route.group(() => {
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
     Route.post("/response", "PqrsdfsController.createResponse");
   }).prefix("/pqrsdf");
-
   /* Citizen attentions */
   Route.group(() => {
     Route.get("/get-stratums", "CitizenAttentionController.getStratums");
