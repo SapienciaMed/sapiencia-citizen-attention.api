@@ -567,7 +567,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         });
       }
       await pqrsdf.load("status");
-      await pqrsdf.load("pqrsdfResponses");
+      await pqrsdf.load("pqrsdfResponses",(response) => {
+        response.preload("file");
+      });
       await pqrsdf.load("requestSubject", (requestSubject) => {
         requestSubject.preload("requestObject");
       });
