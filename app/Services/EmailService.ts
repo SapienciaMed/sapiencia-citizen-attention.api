@@ -58,7 +58,13 @@ export default class EmailService implements IEmailService {
     emails: string[],
     subject: string = "PQRSDF",
     body: string = "",
-    attach: string[] = []
+    attach: {
+      path: string;
+      properties: {
+        filename: string;
+        contentDisposition: string;
+      };
+    }[] = []
   ): Promise<ApiResponse<boolean | null>> {
     try {
       for (const email of emails) {
@@ -91,7 +97,7 @@ export default class EmailService implements IEmailService {
           if (attach) {
             message = message.from("sapiencia@example.com").to(email).subject(subject).html(html);
             attach.forEach((file) => {
-              message.attach(file);
+              message.attach(file?.path, file?.properties);
             });
           } else {
             message.from("sapiencia@example.com").to(email).subject(subject).html(html);

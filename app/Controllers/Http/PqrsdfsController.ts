@@ -182,10 +182,10 @@ export default class PqrsdfsController {
       const supportFiles = request.files("supportFiles") ?? [];
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf) as IPqrsdf;
-      if (dataPqrsdf.response) {
+      if (dataPqrsdf?.response) {
         dataPqrsdf.response.filingNumber = filingNumber;
       }
-      if (dataPqrsdf.closedAt) {
+      if (dataPqrsdf?.closedAt) {
         dataPqrsdf.exitFilingNumber = await this.getFilingNumber("03");
       }
 

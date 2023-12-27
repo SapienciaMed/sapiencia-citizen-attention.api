@@ -27,7 +27,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-// const keyFilename = process.env.GCLOUD_KEYFILE;
+const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -38,8 +38,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    // this.storage = new Storage({ keyFilename }); //-->Local
-    this.storage = new Storage();
+    this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage();
   }
 
   async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
@@ -130,6 +130,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           await this.updatePerson(pqrsdf.person);
         }
         let uploadResponseFile = false;
+        let attachments: any[] = [];
         if (file) {
           const responseFile = await this.uploadBucket(file);
           uploadResponseFile = responseFile.upload;
@@ -137,6 +138,15 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             isActive: true,
             name: responseFile.filePath,
           };
+          if (uploadResponseFile) {
+            attachments.push({
+              path: file?.tmpPath,
+              properties: {
+                filename: file?.clientName,
+                contentDisposition: "attachment",
+              },
+            });
+          }
         }
         let uploadSupportFiles: IFile[] = [];
         if (supportFiles.length) {
@@ -146,6 +156,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
               uploadSupportFiles.push({
                 isActive: true,
                 name: responseSFile.filePath,
+              });
+              attachments.push({
+                path: supportFile?.tmpPath,
+                properties: {
+                  filename: supportFile?.clientName,
+                  contentDisposition: "attachment",
+                },
               });
             }
           }
@@ -221,12 +238,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
               }.<br>
               Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.
                 ${satisfactionUrl ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>` : ""}`,
-              [
-                ...supportFiles.map((sfile) => {
-                  return sfile.tmpPath + "." + sfile.extname;
-                }),
-                file?.tmpPath + "." + file.extname,
-              ]
+              attachments
             );
           }
         }
@@ -253,12 +265,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
               } para poder darle una respuesta de fondo, la entidad solicita prórroga por ${
                 pqrsdf.requestSubject?.requestObject?.obs_termino_dias ?? 10
               } días más.`,
-              [
-                ...supportFiles.map((sfile) => {
-                  return sfile.tmpPath + "." + sfile.extname;
-                }),
-                file?.tmpPath + "." + file.extname,
-              ]
+              attachments
             );
           }
         }
