@@ -27,7 +27,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-// const keyFilename = process.env.GCLOUD_KEYFILE;
+const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -38,8 +38,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    // this.storage = new Storage({ keyFilename }); //-->Local
-    this.storage = new Storage();
+    this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage();
   }
 
   async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
@@ -567,7 +567,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         });
       }
       await pqrsdf.load("status");
-      await pqrsdf.load("pqrsdfResponses",(response) => {
+      await pqrsdf.load("pqrsdfResponses", (response) => {
         response.preload("file");
       });
       await pqrsdf.load("requestSubject", (requestSubject) => {
@@ -716,7 +716,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     let res: any;
 
     try {
-      if (userId && typeReques !== 3) {
+      if (userId) {
         const query = Pqrsdf.query()
           .preload("person", (person) => {
             person.preload("entityType");
