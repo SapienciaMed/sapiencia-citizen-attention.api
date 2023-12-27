@@ -27,7 +27,7 @@ import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-//const keyFilename = process.env.GCLOUD_KEYFILE;
+// const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -38,7 +38,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    //this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage({ keyFilename }); //-->Local
     this.storage = new Storage();
   }
 
@@ -595,7 +595,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       }
       if (pqrsdf?.supportFiles?.length) {
         for (let index = 0; index < serializePqrsdf.supportFiles.length; index++) {
-          serializePqrsdf.supportFiles[index] = await this.getFile(pqrsdf.supportFiles[index].name);
+          serializePqrsdf.supportFiles[index].filePath = await this.getFile(pqrsdf.supportFiles[index].name);
         }
       }
       serializePqrsdf.responsible.user = user;
