@@ -204,6 +204,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
         if (isClose) {
           pqrsdf.statusId = 3;
+          updatePqrsdfFields.push("closedAt");
         }
 
         if (pqrsdf.response?.isPetitioner) {

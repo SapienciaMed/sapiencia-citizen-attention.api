@@ -31,6 +31,7 @@ import MreMedioRespuesta from "App/Models/MreMedioRespuesta";
 import { IResponseType } from "App/Interfaces/ResponseTypeInterfaces";
 import ResponseType from "App/Models/ResponseType";
 import Database from "@ioc:Adonis/Lucid/Database";
+import { DateTime } from "luxon";
 
 export default class CitizenAttentionRepository implements ICitizenAttentionRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
@@ -225,9 +226,11 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     if (filters?.userTypeId) {
       query.where("userTypeId", filters.userTypeId);
     }
+
     if (filters.createdAt) {
-      const startDate = filters.createdAt.startOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
-      const endDate = filters.createdAt.endOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
+      const date = DateTime.fromISO(String(filters.createdAt))
+      const startDate = date.startOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
+      const endDate = date.endOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
       query.whereBetween("createdAt", [startDate, endDate]);
     }
 
