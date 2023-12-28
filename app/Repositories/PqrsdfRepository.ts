@@ -217,15 +217,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           }
         }
 
-        const isClose = pqrsdf?.response?.responseTypeId == 5 || pqrsdf?.response?.responseTypeId == 4;
+        const isClose =
+          pqrsdf?.response?.responseTypeId == 5 || pqrsdf?.response?.responseTypeId == 4 || pqrsdf?.closedAt;
 
         if (isClose) {
           pqrsdf.statusId = 3;
           updatePqrsdfFields.push("closedAt");
+          updatePqrsdfFields.push("exitFilingNumber");
         }
 
-        if (pqrsdf.response?.isPetitioner) {
-          updatePqrsdfFields.push("exitFilingNumber");
+        if (pqrsdf.response?.isPetitioner || isClose) {
           if (pqrsdf.person?.email) {
             const satisfactionUrl = await LpaListaParametro.find(3);
             await this.EmailService.sendEmail(
