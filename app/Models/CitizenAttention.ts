@@ -7,6 +7,7 @@ import PrgPrograma from "./PrgPrograma";
 import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
 import Corregimiento from "./Corregimiento";
 import UserType from "./UserType";
+import CnaCanalesAtencion from "./CnaCanalesAtencion";
 
 export default class CitizenAttention extends BaseModel {
   public static table = "ACI_ATENCION_CIUDADANA";
@@ -53,7 +54,10 @@ export default class CitizenAttention extends BaseModel {
   @column({ columnName: "USUARIO_CREA", serializeAs: "userId" })
   public userId: number;
 
-  @column({ columnName: "ACI_CODCAD_CANAL_DETALLE", serializeAs: "DetailServiceChannelId" })
+  @column({ columnName: "ACI_CODCNA_CANAL", serializeAs: "serviceChannelId" })
+  public serviceChannelId: number;
+
+  @column({ columnName: "ACI_CODCAD_CANAL_DETALLE", serializeAs: "detailServiceChannelId" })
   public detailServiceChannelId: number;
 
   @column({ columnName: "ACI_CODTSA_TIPO_SOLICITUD", serializeAs: "attentionRequestTypeId" })
@@ -79,6 +83,12 @@ export default class CitizenAttention extends BaseModel {
     foreignKey: "detailServiceChannelId",
   })
   public detailServiceChannel: BelongsTo<typeof CadCanalesAtencionDetalle>;
+
+  @belongsTo(() => CnaCanalesAtencion, {
+    localKey: "cna_codigo",
+    foreignKey: "serviceChannelId",
+  })
+  public serviceChannel: BelongsTo<typeof CnaCanalesAtencion>;
 
   @belongsTo(() => AttentionRequestType, {
     localKey: "id",

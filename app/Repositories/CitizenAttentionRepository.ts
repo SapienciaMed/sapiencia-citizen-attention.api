@@ -158,6 +158,7 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
       }
       await citizenAttention.load("requestSubjectType");
       await citizenAttention.load("attentionRequestType");
+      await citizenAttention.load("serviceChannel");
       if (citizenAttention.detailServiceChannelId) {
         await citizenAttention.load("detailServiceChannel");
       }
