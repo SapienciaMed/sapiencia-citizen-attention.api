@@ -10,16 +10,21 @@ export default class extends BaseSchema {
         .integer("ARP_CODPQR_PQRSDF")
         .unsigned()
         .references("PQR_PQRSDF.PQR_CODIGO")
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE')
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE")
         .comment("Llave foranea a la tabla pqrsdf(FK_PQR_CODIGO)");
       table
         .integer("ARP_CODARC_ARCHVIO")
         .unsigned()
         .references("ARC_ARCHIVO.ARC_CODIGO")
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE')
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE")
         .comment("Llave foranea a la tabla archivos(FK_ARC_CODIGO)");
+      table.boolean("ARP_VISIBLE_PETICIONARIO").defaultTo(false);
+      table
+        .integer("ARP_USUARIO_CREA")
+        .unsigned()
+        .comment("Este campo pertenece a la tabla usuarios, usuario que crea el archivo");
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

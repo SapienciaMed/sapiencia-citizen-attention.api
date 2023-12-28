@@ -155,7 +155,7 @@ export default class CitizenAttentionController {
 
     const token = req.authorization?.replace("Bearer ", "");
 
-    const { id } = jwt.verify(token!, key) as { id: number; document: string };
+    const { id } = jwt.verify(token, key) as { id: number; document: string };
 
     return id;
   }

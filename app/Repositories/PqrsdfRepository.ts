@@ -19,6 +19,7 @@ import Person from "App/Models/Person";
 import Pqrsdf from "App/Models/Pqrsdf";
 import PqrsdfResponse from "App/Models/PqrsdfResponse";
 import SrbSolicitudReabrir from "App/Models/SrbSolicitudReabrir";
+import SupportFile from "App/Models/SupportFile";
 import WorkEntity from "App/Models/WorkEntity";
 import { IEmailService } from "App/Services/Contracts/IEmailService";
 import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
@@ -153,9 +154,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           for await (const supportFile of supportFiles) {
             let responseSFile = await this.uploadBucket(supportFile);
             if (responseSFile.upload) {
+              let currentFile = pqrsdf.supportFiles?.filter((sp) => {
+                return sp.name == supportFile.clientName;
+              })?.[0];
               uploadSupportFiles.push({
                 isActive: true,
                 name: responseSFile.filePath,
+                visiblePetitioner: currentFile?.visiblePetitioner,
+                userId: currentFile?.userId,
               });
               attachments.push({
                 path: supportFile?.tmpPath,
@@ -174,12 +180,20 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (newFile) {
           pqrsdf.response.fileId = newFile.id;
         }
-        let newSupportFiles: File[] = [];
         if (uploadSupportFiles.length) {
           for await (const supportFile of uploadSupportFiles) {
-            let newSupportFile = (await File.create(supportFile)).useTransaction(trx);
-            newSupportFiles.push(newSupportFile);
+            let newSupportFile = (
+              await File.create({
+                isActive: supportFile.isActive,
+                name: supportFile.name,
+              })
+            ).useTransaction(trx);
+            supportFile.id = newSupportFile.id;
           }
+          const mappedSupportFiles = pqrsdf.supportFiles?.length
+            ? pqrsdf.supportFiles.filter((supportFile) => supportFile?.id)
+            : [];
+          pqrsdf.supportFiles = [...mappedSupportFiles, ...uploadSupportFiles];
         }
 
         if (pqrsdf.motiveId) {
@@ -280,7 +294,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (pqrsdf?.statusId) {
           updatePqrsdfFields.push("statusId");
         }
-        res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields, newSupportFiles);
+        res = await this.updatePqrsdf(pqrsdf, updatePqrsdfFields);
       }
     });
     return res?.id ? res : null;
@@ -348,7 +362,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           ? await existPerson.useTransaction(trx).refresh()
           : (await Person.create(pqrsdf.person)).useTransaction(trx);
 
-        //TODO UPLOAD
         let upload = false;
         if (file) {
           const responseFile = await this.uploadBucket(file);
@@ -373,7 +386,6 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         const newPqrsdf = await newPerson.related("pqrsdfs").create(pqrsdf);
         res = await this.formatPqrsdf(newPqrsdf);
 
-        //TODO EMAIL
         if (pqrsdf.person?.email) {
           const queryPqrsdfUrl = await LpaListaParametro.find(2);
           await this.EmailService.sendEmail(
@@ -585,7 +597,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
       if (pqrsdf?.fileId) {
         await pqrsdf.load("file");
       }
-      await pqrsdf.load("supportFiles");
+      await pqrsdf.load("supportFiles", (supportFile) => {
+        supportFile.preload("file");
+      });
       await pqrsdf.load("requestType");
       await pqrsdf.load("responseMedium");
 
@@ -603,8 +617,18 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         serializePqrsdf.file.filePath = await this.getFile(pqrsdf.file.name);
       }
       if (pqrsdf?.supportFiles?.length) {
+        const supportFilesUsers = (
+          await this.AuthExternalService.getUsersByIds(
+            pqrsdf?.supportFiles.map((supportFile) => {
+              return supportFile.userId;
+            })
+          )
+        ).data;
         for (let index = 0; index < serializePqrsdf.supportFiles.length; index++) {
-          serializePqrsdf.supportFiles[index].filePath = await this.getFile(pqrsdf.supportFiles[index].name);
+          serializePqrsdf.supportFiles[index].file.filePath = await this.getFile(pqrsdf.supportFiles[index].file.name);
+          serializePqrsdf.supportFiles[index].file.user = supportFilesUsers.filter(
+            (user) => user.id == serializePqrsdf.supportFiles[index].userId
+          )[0];
         }
       }
       serializePqrsdf.responsible.user = user;
@@ -678,8 +702,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
   async updatePqrsdf(
     pqrsdf: IPqrsdf,
-    fields: string[] = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"],
-    newSupportFiles: File[] = []
+    fields: string[] = ["requestTypeId", "responseMediumId", "programId", "requestSubjectId"]
   ): Promise<IPqrsdf | null> {
     const pqrsdfToUpdate = await Pqrsdf.find(pqrsdf.id);
     let formattedPqrsdf = pqrsdf;
@@ -690,10 +713,16 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         }
       });
       await pqrsdfToUpdate.save();
-      if (newSupportFiles.length) {
-        await pqrsdfToUpdate.related("supportFiles").attach(
-          newSupportFiles.map((supportFile) => {
-            return supportFile.id;
+      if (pqrsdf.supportFiles?.length) {
+        await SupportFile.updateOrCreateMany(
+          ["fileId", "pqrsdfId"],
+          pqrsdf.supportFiles.map((sFile) => {
+            return {
+              fileId: sFile.id,
+              pqrsdfId: pqrsdfToUpdate.id,
+              userId: sFile.userId,
+              visiblePetitioner: sFile.visiblePetitioner,
+            };
           })
         );
       }

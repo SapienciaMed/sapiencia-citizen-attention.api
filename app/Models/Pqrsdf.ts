@@ -1,17 +1,25 @@
-import { BaseModel, BelongsTo, HasMany, ManyToMany, belongsTo, column, hasMany, manyToMany } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  BelongsTo,
+  HasMany,
+  belongsTo,
+  column,
+  hasMany
+} from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
-import File from "./File";
 import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
+import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
+import File from "./File";
+import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
+import Motive from "./Motive";
 import MreMedioRespuesta from "./MreMedioRespuesta";
 import Person from "./Person";
-import TsoTipoSolicitud from "./TsoTipoSolicitud";
-import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
-import WorkEntity from "./WorkEntity";
-import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
-import PrgPrograma from "./PrgPrograma";
-import Motive from "./Motive";
 import PqrsdfResponse from "./PqrsdfResponse";
+import PrgPrograma from "./PrgPrograma";
 import SrbSolicitudReabrir from "./SrbSolicitudReabrir";
+import SupportFile from "./SupportFile";
+import TsoTipoSolicitud from "./TsoTipoSolicitud";
+import WorkEntity from "./WorkEntity";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -148,18 +156,11 @@ export default class Pqrsdf extends BaseModel {
   })
   public file: BelongsTo<typeof File>;
 
-  @manyToMany(() => File, {
-    pivotTable: 'ARP_ARCHIVO_APOYO_PQRSDF',
-    localKey: 'id',
-    relatedKey: 'id',
-    pivotForeignKey: 'ARP_CODPQR_PQRSDF',
-    serializeAs:'supportFiles',
-    pivotRelatedForeignKey: 'ARP_CODARC_ARCHVIO',
-    pivotColumns:[
-      'ARP_CODIGO'
-    ]
+  @hasMany(() => SupportFile, {
+    foreignKey: "pqrsdfId",
+    localKey: "id",
   })
-  public supportFiles: ManyToMany<typeof File>;
+  public supportFiles: HasMany<typeof SupportFile>;
 
   @column.dateTime({
     columnName: "PQR_FECHA_CIERRE",
