@@ -37,6 +37,9 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
 
   async createCitizenAttention(citizenAttention: ICitizenAttention): Promise<ICitizenAttention | null> {
+    if (!citizenAttention?.detailServiceChannelId) {
+      delete citizenAttention.detailServiceChannelId;
+    }
     const res = await CitizenAttention.create(citizenAttention);
     return await this.formatCitizenAttention(res);
   }
@@ -155,7 +158,9 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
       }
       await citizenAttention.load("requestSubjectType");
       await citizenAttention.load("attentionRequestType");
-      await citizenAttention.load("detailServiceChannel");
+      if (citizenAttention.detailServiceChannelId) {
+        await citizenAttention.load("detailServiceChannel");
+      }
 
       serializeCitizenAttention = citizenAttention.serialize() as ICitizenAttention;
     }
@@ -228,7 +233,7 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     }
 
     if (filters.createdAt) {
-      const date = DateTime.fromISO(String(filters.createdAt))
+      const date = DateTime.fromISO(String(filters.createdAt));
       const startDate = date.startOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
       const endDate = date.endOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
       query.whereBetween("createdAt", [startDate, endDate]);
