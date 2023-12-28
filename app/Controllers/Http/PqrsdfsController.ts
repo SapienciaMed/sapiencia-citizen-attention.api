@@ -82,7 +82,7 @@ export default class PqrsdfsController {
   }
 
   private async getFilingNumber(code: string = "02"): Promise<number> {
-    const filingNumberResponse = await DocumentManagementProvider.getFilingNumber();
+    const filingNumberResponse = await DocumentManagementProvider.getFilingNumber(code);
     const filing = filingNumberResponse.data;
     const filingToString = filing.toString();
     const dataString = filingToString.slice(0, 4);
