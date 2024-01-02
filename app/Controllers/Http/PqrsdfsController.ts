@@ -89,7 +89,7 @@ export default class PqrsdfsController {
     const addnumberToData = dataString.padEnd(5, code);
     const filingNumber = parseInt(`${addnumberToData}${filingToString.slice(5)}`) + 1;
 
-    await DocumentManagementProvider.putFilingNumber(filingNumber);
+    await DocumentManagementProvider.putFilingNumber(filingNumber, code);
 
     return filingNumber;
   }

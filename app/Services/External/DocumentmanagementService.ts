@@ -31,9 +31,13 @@ export default class DocumentManagementService implements IDocumentManagement {
     return items.data;
   }
 
-  public async putFilingNumber(radicado: number): Promise<ApiResponse<IRadicado>> {
+  public async putFilingNumber(radicado: number, code: string = "02"): Promise<ApiResponse<IRadicado>> {
+    let type = "recibido";
+    if (code == "03") {
+      type = "externo";
+    }
     const items = await this.apiCore.put<ApiResponse<IRadicado>>(
-      `general-configuration/update-radicado-code/recibido`,
+      `general-configuration/update-radicado-code/${type}`,
       { radicado: radicado },
       {
         headers: {
