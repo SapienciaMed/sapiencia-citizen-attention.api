@@ -54,13 +54,18 @@ export default class extends BaseSchema {
         .inTable("ARC_ARCHIVO")
         .nullable()
         .comment("llave foranea a la tabla tipos de solicitud (FK ARC_ARCHIVO)");
-
+      table
+        .integer("PQR_CODPRG_PROGRAMA")
+        .unsigned()
+        .references("PRG_CODIGO")
+        .inTable("PRG_PROGRAMAS")
+        .comment("llave foranea de la tabla PQRSDF (FK_PROGRAMA)")
+        .nullable();
       table
         .integer("PQR_CODMOV_MOTIVO")
         .unsigned()
         .nullable()
         .references("MOV_MOTIVOS.MOV_CODIGO")
-        .after("PQR_CODPRG_PROGRAMA")
         .comment("Llave foranea a la tabla motivos(FK_MOV_CODIGO)");
 
       /**
