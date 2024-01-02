@@ -206,10 +206,14 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         //set assignedUser response data
         let assignedUserEntity: WorkEntity | null = null;
         if (pqrsdf.response?.assignedUserId) {
-          if (lastResponse?.assignedUserId) {
+          if (lastResponse?.assignedUserId && pqrsdf?.response?.responseTypeId == 3) {
             assignedUserEntity = await this.getResponsibleByUserId(lastResponse.assignedUserId);
           }
-          if (!lastResponse?.assignedUserId || (lastResponse?.assignedUserId && !assignedUserEntity)) {
+          if (
+            !lastResponse?.assignedUserId ||
+            (lastResponse?.assignedUserId && !assignedUserEntity) ||
+            pqrsdf?.response?.responseTypeId != 3
+          ) {
             assignedUserEntity = await this.getResponsibleByUserId(pqrsdf.response.assignedUserId);
           }
 
