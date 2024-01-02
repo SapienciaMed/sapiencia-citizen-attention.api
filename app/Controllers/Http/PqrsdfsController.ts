@@ -185,7 +185,7 @@ export default class PqrsdfsController {
       if (dataPqrsdf?.response) {
         dataPqrsdf.response.filingNumber = filingNumber;
       }
-      if (dataPqrsdf?.closedAt) {
+      if (dataPqrsdf?.response?.responseTypeId == 4) {
         dataPqrsdf.exitFilingNumber = await this.getFilingNumber("03");
       }
 

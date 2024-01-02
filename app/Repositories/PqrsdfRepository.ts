@@ -241,11 +241,13 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (isClose) {
           pqrsdf.statusId = 3;
           updatePqrsdfFields.push("closedAt");
-          updatePqrsdfFields.push("exitFilingNumber");
+          if (pqrsdf?.response?.responseTypeId == 4) {
+            updatePqrsdfFields.push("exitFilingNumber");
+          }
         }
 
         if (pqrsdf.response?.isPetitioner || isClose) {
-          if (pqrsdf.person?.email) {
+          if (pqrsdf.person?.email && pqrsdf?.response?.responseTypeId == 4) {
             const satisfactionUrl = await LpaListaParametro.find(3);
             await this.EmailService.sendEmail(
               [pqrsdf.person.email],
