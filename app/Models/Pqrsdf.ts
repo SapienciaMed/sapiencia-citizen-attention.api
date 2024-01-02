@@ -40,7 +40,7 @@ export default class Pqrsdf extends BaseModel {
   public statusId: number;
 
   @column({ columnName: "PQR_CODENT_ENTIDAD_TRABAJO", serializeAs: "responsibleId" })
-  public responsibleId: number;
+  public responsibleId: number|null;
 
   @column({ columnName: "PQR_CODASO_ASO_ASUNTO_SOLICITUD", serializeAs: "requestSubjectId" })
   public requestSubjectId: number;
