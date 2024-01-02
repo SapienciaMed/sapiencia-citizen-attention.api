@@ -96,7 +96,7 @@ export default class PqrsdfsController {
 
   public async createPqrsdf({ request, response }: HttpContextContract) {
     try {
-      const filingNumber = await this.getFilingNumber();
+      const filingNumber = await this.getFilingNumber("02");
 
       const files = request.files("files");
       const { pqrsdf } = request.body();
@@ -176,7 +176,7 @@ export default class PqrsdfsController {
 
   public async createResponse({ request, response }: HttpContextContract) {
     try {
-      const filingNumber = await this.getFilingNumber();
+      const filingNumber = await this.getFilingNumber("02");
 
       const file = request.files("file");
       const supportFiles = request.files("supportFiles") ?? [];

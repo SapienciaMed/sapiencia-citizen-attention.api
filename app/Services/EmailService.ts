@@ -1,7 +1,7 @@
 import { ApiResponse } from "App/Utils/ApiResponses";
 import Mail from "@ioc:Adonis/Addons/Mail";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
-import { IEmailService } from "./Contracts/IEmailService";
+import { IAttach, IEmailService } from "./Contracts/IEmailService";
 
 export default class EmailService implements IEmailService {
   public async responseEmail(
@@ -58,13 +58,7 @@ export default class EmailService implements IEmailService {
     emails: string[],
     subject: string = "PQRSDF",
     body: string = "",
-    attach: {
-      path: string;
-      properties: {
-        filename: string;
-        contentDisposition: string;
-      };
-    }[] = []
+    attach: IAttach[] = []
   ): Promise<ApiResponse<boolean | null>> {
     try {
       for (const email of emails) {
@@ -97,7 +91,11 @@ export default class EmailService implements IEmailService {
           if (attach) {
             message = message.from("sapiencia@example.com").to(email).subject(subject).html(html);
             attach.forEach((file) => {
-              message.attach(file?.path, file?.properties);
+              if (typeof file?.path == "string") {
+                message.attach(file?.path, file?.properties);
+              } else if (Buffer.isBuffer(file?.path)) {
+                message.attachData(file?.path, file?.properties);
+              }
             });
           } else {
             message.from("sapiencia@example.com").to(email).subject(subject).html(html);

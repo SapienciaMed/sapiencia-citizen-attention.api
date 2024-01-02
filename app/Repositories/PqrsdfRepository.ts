@@ -21,14 +21,14 @@ import PqrsdfResponse from "App/Models/PqrsdfResponse";
 import SrbSolicitudReabrir from "App/Models/SrbSolicitudReabrir";
 import SupportFile from "App/Models/SupportFile";
 import WorkEntity from "App/Models/WorkEntity";
-import { IEmailService } from "App/Services/Contracts/IEmailService";
+import { IAttach, IEmailService } from "App/Services/Contracts/IEmailService";
 import { IAuthExternalService } from "App/Services/External/Contracts/IAuthExternalService";
 import { IGenericListsExternalService } from "App/Services/External/Contracts/IGenericListsExternalService";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 import { IPqrsdfRepository } from "./Contracts/IPqrsdfRepository";
 
-// const keyFilename = process.env.GCLOUD_KEYFILE;
+const keyFilename = process.env.GCLOUD_KEYFILE;
 const bucketName = process.env.GCLOUD_BUCKET ?? "";
 
 export default class PqrsdfRepository implements IPqrsdfRepository {
@@ -39,8 +39,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     private AuthExternalService: IAuthExternalService,
     private EmailService: IEmailService
   ) {
-    // this.storage = new Storage({ keyFilename }); //-->Local
-    this.storage = new Storage();
+    this.storage = new Storage({ keyFilename }); //-->Local
+    // this.storage = new Storage();
   }
 
   async getPqrsdfByFilters(filters: IPqrsdfFilters): Promise<IPagingData<IPqrsdf>> {
@@ -131,7 +131,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           await this.updatePerson(pqrsdf.person);
         }
         let uploadResponseFile = false;
-        let attachments: any[] = [];
+        let attachments: IAttach[] = [];
         if (file) {
           const responseFile = await this.uploadBucket(file);
           uploadResponseFile = responseFile.upload;
@@ -180,6 +180,9 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (newFile) {
           pqrsdf.response.fileId = newFile.id;
         }
+        const mappedSupportFiles = pqrsdf.supportFiles?.length
+          ? pqrsdf.supportFiles.filter((supportFile) => supportFile?.id)
+          : [];
         if (uploadSupportFiles.length) {
           for await (const supportFile of uploadSupportFiles) {
             let newSupportFile = (
@@ -190,9 +193,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
             ).useTransaction(trx);
             supportFile.id = newSupportFile.id;
           }
-          const mappedSupportFiles = pqrsdf.supportFiles?.length
-            ? pqrsdf.supportFiles.filter((supportFile) => supportFile?.id)
-            : [];
+
           pqrsdf.supportFiles = [...mappedSupportFiles, ...uploadSupportFiles];
         }
 
@@ -248,6 +249,38 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
           }
         }
 
+        //get Support files
+        let downloaderSupportFiles = pqrsdf.supportFiles?.filter((sFile) => {
+          return (
+            !attachments.filter((attach) => sFile.name.includes(attach.properties.filename)).length &&
+            sFile.visiblePetitioner
+          );
+        });
+        let SupportAttachments = attachments.filter((attach) => {
+          return pqrsdf.supportFiles?.filter(
+            (sFile) => sFile.name.includes(attach.properties.filename) && sFile.visiblePetitioner
+          )?.length;
+        });
+
+        let responseAttachments = attachments.filter((attach) => {
+          return !pqrsdf.supportFiles?.filter((sFile) => sFile.name.includes(attach.properties.filename))?.length;
+        });
+        if (downloaderSupportFiles?.length) {
+          for await (const sFile of downloaderSupportFiles) {
+            let file = await this.getFile(sFile.name, true);
+            if (Buffer.isBuffer(file)) {
+              let fileNameSplit = sFile?.name.split("/");
+              let fileName = fileNameSplit[fileNameSplit.length - 2];
+              SupportAttachments.push({
+                path: file,
+                properties: {
+                  filename: fileName,
+                },
+              });
+            }
+          }
+        }
+
         if (pqrsdf.response?.isPetitioner || isClose) {
           if (pqrsdf.person?.email && pqrsdf?.response?.responseTypeId == 4) {
             const satisfactionUrl = await LpaListaParametro.find(3);
@@ -261,7 +294,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
               }.<br>
               Tu opinión es muy importante para continuar con el mejoramiento del servicio, por favor diligencia la encuesta de satisfacción.
                 ${satisfactionUrl ? `<a href="${satisfactionUrl?.lpa_valor}" target="_blank">Clic Aquí</a>` : ""}`,
-              attachments
+              [...SupportAttachments, ...responseAttachments]
             );
           }
         }
@@ -430,9 +463,11 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
     }
   }
 
-  async getFile(filePath: string) {
+  async getFile(filePath: string | Buffer, asBuffer: boolean = false) {
     try {
-      let path = filePath.replace(bucketName + "/", "").split("/");
+      let path = String(filePath)
+        .replace(bucketName + "/", "")
+        .split("/");
       if (path.length > 1) {
         path.pop();
       }
@@ -442,8 +477,10 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         .file(path.join("/"))
         .download()
         .then(function (data) {
-          filePath = data[0].toString("base64");
-          filePath = `data:${_this.getBase64Encode(filePath)};base64,${filePath}`;
+          filePath = asBuffer ? data[0] : data[0].toString("base64");
+          if (!asBuffer && typeof filePath == "string") {
+            filePath = `data:${_this.getBase64Encode(filePath)};base64,${filePath}`;
+          }
         });
     } catch (error) {
       return "";
@@ -838,7 +875,7 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
 
     let pqrsdfResponseFormatted = pqrsdfResponse.serialize() as IPqrsdfResponse;
     if (pqrsdfResponse?.fileId && pqrsdfResponse.file && pqrsdfResponseFormatted?.file) {
-      pqrsdfResponseFormatted.file.filePath = await this.getFile(pqrsdfResponse.file.name);
+      pqrsdfResponseFormatted.file.filePath = String(await this.getFile(pqrsdfResponse.file.name));
     }
     if (pqrsdfResponseFormatted.assignedUserId) {
       pqrsdfResponseFormatted.assignedUser = users.filter(
