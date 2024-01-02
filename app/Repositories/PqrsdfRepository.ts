@@ -241,6 +241,8 @@ export default class PqrsdfRepository implements IPqrsdfRepository {
         if (isClose) {
           pqrsdf.statusId = 3;
           updatePqrsdfFields.push("closedAt");
+          pqrsdf.responsibleId = null;
+          updatePqrsdfFields.push("responsibleId");
           if (pqrsdf?.response?.responseTypeId == 4) {
             updatePqrsdfFields.push("exitFilingNumber");
           }

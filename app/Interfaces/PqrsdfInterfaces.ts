@@ -17,7 +17,7 @@ export interface IPqrsdf {
   personId?: number;
   responseMediumId: number;
   programId?: number;
-  responsibleId?: number;
+  responsibleId?: number | null;
   requestSubjectId: number;
   fileId?: number;
   motiveId?: number;
