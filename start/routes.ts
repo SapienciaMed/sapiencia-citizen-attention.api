@@ -84,7 +84,7 @@ Route.group(() => {
     Route.post("/response", "PqrsdfsController.createResponse");
 
     Route.post("/get-programs-by-user", "PqrsdfsController.getProgramByUser")
-    Route.post("/get-subject-by-user", "PqrsdfsController.getSubjectBysUser")
+    Route.post("/get-subject-by-user", "PqrsdfsController.getSubjectByUser")
   }).prefix("/pqrsdf");
   /* Citizen attentions */
   Route.group(() => {
