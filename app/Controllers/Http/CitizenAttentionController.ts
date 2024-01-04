@@ -194,13 +194,13 @@ export default class CitizenAttentionController {
         return response.badRequest(apiResp);
     }
 }
-public async getSubjectByUser(ctx: HttpContextContract) {
+public async getRequestTypesByUser(ctx: HttpContextContract) {
     const { request, response, logger } = ctx;
 
     let payload = request.body()
 
     try {
-        const res = await CitizenAttentionProvider.getSubjectByUser(payload)
+        const res = await CitizenAttentionProvider.getRequestTypesByUser(payload)
         return response.ok(res)
     } catch (err) {
         logger.error(err);

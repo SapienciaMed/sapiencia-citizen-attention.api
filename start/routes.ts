@@ -82,6 +82,9 @@ Route.group(() => {
     Route.post("/update-person", "PqrsdfsController.updatePerson");
     Route.post("/get-request-by-filters", "PqrsdfsController.getPqrsdfByRequest");
     Route.post("/response", "PqrsdfsController.createResponse");
+
+    Route.post("/get-programs-by-user", "PqrsdfsController.getProgramByUser")
+    Route.post("/get-subject-by-user", "PqrsdfsController.getSubjectBysUser")
   }).prefix("/pqrsdf");
   /* Citizen attentions */
   Route.group(() => {
@@ -103,9 +106,8 @@ Route.group(() => {
       "auth:ATENCION_CIUDADANA_CREAR"
     );
     Route.post("/get-programs-by-user", "CitizenAttentionController.getProgramByUser")
-    Route.post("/get-subject-by-user", "CitizenAttentionController.getSubjectByUser")
+    Route.post("/get-request-types-by-user", "CitizenAttentionController.getRequestTypesByUser")
   }).prefix("/citizen-attention");
-
 
 
   /* Work entities */
@@ -138,7 +140,7 @@ Route.group(() => {
   }).prefix("file");
 })
   .prefix("/api/v1/")
-  .middleware("auth");
+  // .middleware("auth");
 
 /**************************
  ******TABLAS MAESTRAS******

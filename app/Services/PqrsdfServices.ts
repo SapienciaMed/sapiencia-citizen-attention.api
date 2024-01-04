@@ -133,4 +133,13 @@ export default class PqrsdfServices implements IPqrsdfServices {
     }
     return new ApiResponse(res, EResponseCodes.OK, "Solicitud creada con éxito");
   }
+
+  async getProgramByUser(payload: any) {
+    const res = await this.PqrsdfRepository.getProgramByUser(payload)
+    return new ApiResponse(res, EResponseCodes.OK)
+}
+async getSubjectByUser(payload: any) {
+    const res = await this.PqrsdfRepository.getSubjectByUser(payload)
+    return new ApiResponse(res, EResponseCodes.OK)
+}
 }

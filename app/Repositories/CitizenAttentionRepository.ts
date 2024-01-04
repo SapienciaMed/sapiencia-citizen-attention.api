@@ -268,9 +268,10 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
 
   async getProgramByUser(payload): Promise<any> {
     const { identification } = payload;
-    const query = `SELECT DISTINCT(PRG.PRG_CODIGO) AS value , PRG.PRG_DESCRIPCION as name FROM PRG_PROGRAMAS PRG
-    INNER JOIN PQR_PQRSDF PQR ON PQR.PQR_CODPRG_PROGRAMA = PRG.PRG_CODIGO
-    INNER JOIN PER_PERSONAS PER ON PER.PER_CODIGO = PQR.PQR_CODPER_PERSONA
+    const query = `SELECT DISTINCT(pp.PRG_CODIGO) AS value, pp.PRG_DESCRIPCION as name 
+    FROM PRG_PROGRAMAS pp 
+    INNER JOIN ACI_ATENCION_CIUDADANA aac ON aac.ACI_CODPRG_PROGRAMA = pp.PRG_CODIGO
+    INNER JOIN PER_PERSONAS PER ON PER.PER_NUMERO_DOCUMENTO = aac.ACI_NUMERO_DOCUMENTO 
     WHERE PER.PER_NUMERO_DOCUMENTO = "${identification}"`;
 
     const result = await Database.rawQuery(query);
@@ -280,13 +281,13 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     return data;
   }
 
-  async getSubjectByUser(payload): Promise<any> {
+  async getRequestTypesByUser(payload): Promise<any> {
     const { identification } = payload;
     const query = `SELECT DISTINCT(ASO.ASO_CODIGO) AS value, ASO.ASO_ASUNTO AS name
     FROM ASO_ASUNTO_SOLICITUD ASO
-    INNER JOIN PQR_PQRSDF PQR ON PQR.PQR_CODASO_ASO_ASUNTO_SOLICITUD = ASO.ASO_CODIGO
-    INNER JOIN PER_PERSONAS PER ON PER.PER_CODIGO = PQR.PQR_CODPER_PERSONA
-    WHERE PER.PER_NUMERO_DOCUMENTO = "${identification}" AND ASO.ASO_ACTIVO = 1`;
+    INNER JOIN ACI_ATENCION_CIUDADANA aac ON aac.ACI_CODASO_ASUNTO  = ASO.ASO_CODIGO
+    INNER JOIN PER_PERSONAS PER ON PER.PER_NUMERO_DOCUMENTO = aac.ACI_NUMERO_DOCUMENTO
+    WHERE PER.PER_NUMERO_DOCUMENTO = "${identification}" AND ASO.ASO_ACTIVO=1`;
 
     const result = await Database.rawQuery(query);
 

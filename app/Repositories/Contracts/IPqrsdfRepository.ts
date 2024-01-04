@@ -30,4 +30,7 @@ export interface IPqrsdfRepository {
   uploadFile(file: MultipartFileContract): Promise<boolean>;
   getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<IPqrsdf[]>;
   createRequestReopen(justification: IReopenRequest): Promise<IReopenRequest | null>;
+
+  getProgramByUser(payload: any): Promise<any>
+  getSubjectByUser(payload: any): Promise<any>
 }
