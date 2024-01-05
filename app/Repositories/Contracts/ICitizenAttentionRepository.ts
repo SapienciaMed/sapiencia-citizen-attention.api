@@ -36,4 +36,6 @@ export interface ICitizenAttentionRepository {
   createCitizenAttention(citizenAttention: ICitizenAttention): Promise<ICitizenAttention | null>;
   updateCitizenAttention(citizenAttention: ICitizenAttention): Promise<ICitizenAttention | null>;
   getCitizenAttentionByFilters(filters: ICitizenAttentionFilters): Promise<IPagingData<ICitizenAttention | null>>;
+  getProgramByUser(payload: any): Promise<any>
+  getRequestTypesByUser(payload: any): Promise<any>
 }

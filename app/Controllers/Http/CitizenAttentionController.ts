@@ -155,7 +155,7 @@ export default class CitizenAttentionController {
 
     const token = req.authorization?.replace("Bearer ", "");
 
-    const { id } = jwt.verify(token!, key) as { id: number; document: string };
+    const { id } = jwt.verify(token, key) as { id: number; document: string };
 
     return id;
   }
@@ -179,4 +179,33 @@ export default class CitizenAttentionController {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
+
+  public async getProgramByUser(ctx: HttpContextContract) {
+    const { request, response, logger } = ctx;
+
+    let payload = request.body()
+
+    try {
+        const res = await CitizenAttentionProvider.getProgramByUser(payload)
+        return response.ok(res)
+    } catch (err) {
+        logger.error(err);
+        const apiResp = new ApiResponse(null, EResponseCodes.FAIL, err.message);
+        return response.badRequest(apiResp);
+    }
+}
+public async getRequestTypesByUser(ctx: HttpContextContract) {
+    const { request, response, logger } = ctx;
+
+    let payload = request.body()
+
+    try {
+        const res = await CitizenAttentionProvider.getRequestTypesByUser(payload)
+        return response.ok(res)
+    } catch (err) {
+        logger.error(err);
+        const apiResp = new ApiResponse(null, EResponseCodes.FAIL, err.message);
+        return response.badRequest(apiResp);
+    }
+}
 }

@@ -6,7 +6,7 @@ import EmailProvider from "@ioc:core.EmailProvider";
 import PqrsdfProvider from "@ioc:core.PqrsdfProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
-import { IPqrsdf, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
+import { IPqrsdf, IResponseFilters, IrequestPqrsdf } from "App/Interfaces/PqrsdfInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import PqrsdfFiltersValidator from "App/Validators/PqrsdfFiltersValidator";
 import jwt from "jsonwebtoken";
@@ -63,6 +63,15 @@ export default class PqrsdfsController {
     }
   }
 
+  public async getPqrsdfResponnses({ request, response }: HttpContextContract) {
+    try {
+      const pagination = request.body() as IResponseFilters;
+      return response.send(await PqrsdfProvider.getPqrsdfResponnses(pagination));
+    } catch (err) {
+      return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
+    }
+  }
+
   public async getPqrsdfByIdentificationAndFilingNumber({ request, response }: HttpContextContract) {
     try {
       const { identification, filingNumber } = request.all();
@@ -73,21 +82,21 @@ export default class PqrsdfsController {
   }
 
   private async getFilingNumber(code: string = "02"): Promise<number> {
-    const filingNumberResponse = await DocumentManagementProvider.getFilingNumber();
+    const filingNumberResponse = await DocumentManagementProvider.getFilingNumber(code);
     const filing = filingNumberResponse.data;
     const filingToString = filing.toString();
     const dataString = filingToString.slice(0, 4);
     const addnumberToData = dataString.padEnd(5, code);
     const filingNumber = parseInt(`${addnumberToData}${filingToString.slice(5)}`) + 1;
 
-    await DocumentManagementProvider.putFilingNumber(filingNumber);
+    await DocumentManagementProvider.putFilingNumber(filingNumber, code);
 
     return filingNumber;
   }
 
   public async createPqrsdf({ request, response }: HttpContextContract) {
     try {
-      const filingNumber = await this.getFilingNumber();
+      const filingNumber = await this.getFilingNumber("02");
 
       const files = request.files("files");
       const { pqrsdf } = request.body();
@@ -167,22 +176,51 @@ export default class PqrsdfsController {
 
   public async createResponse({ request, response }: HttpContextContract) {
     try {
-      const filingNumber = await this.getFilingNumber();
+      const filingNumber = await this.getFilingNumber("02");
 
       const file = request.files("file");
-      // const supportFiles = request.files("supportFiles");
+      const supportFiles = request.files("supportFiles") ?? [];
       const { pqrsdf } = request.body();
       const dataPqrsdf = JSON.parse(pqrsdf) as IPqrsdf;
-      if (dataPqrsdf.response) {
+      if (dataPqrsdf?.response) {
         dataPqrsdf.response.filingNumber = filingNumber;
       }
-      if (dataPqrsdf.closedAt) {
+      if (dataPqrsdf?.response?.responseTypeId == 4) {
         dataPqrsdf.exitFilingNumber = await this.getFilingNumber("03");
       }
 
-      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0]));
+      return response.send(await PqrsdfProvider.createResponse(dataPqrsdf, file[0], supportFiles));
     } catch (err) {
       return response.badRequest(new ApiResponse(null, EResponseCodes.FAIL, String(err)));
     }
   }
+
+  public async getProgramByUser(ctx: HttpContextContract) {
+    const { request, response, logger } = ctx;
+
+    let payload = request.body()
+
+    try {
+        const res = await PqrsdfProvider.getProgramByUser(payload)
+        return response.ok(res)
+    } catch (err) {
+        logger.error(err);
+        const apiResp = new ApiResponse(null, EResponseCodes.FAIL, err.message);
+        return response.badRequest(apiResp);
+    }
+}
+public async getSubjectByUser(ctx: HttpContextContract) {
+    const { request, response, logger } = ctx;
+
+    let payload = request.body()
+
+    try {
+        const res = await PqrsdfProvider.getSubjectByUser(payload)
+        return response.ok(res)
+    } catch (err) {
+        logger.error(err);
+        const apiResp = new ApiResponse(null, EResponseCodes.FAIL, err.message);
+        return response.badRequest(apiResp);
+    }
+}
 }

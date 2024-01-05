@@ -1,17 +1,25 @@
-import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  BelongsTo,
+  HasMany,
+  belongsTo,
+  column,
+  hasMany
+} from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
-import File from "./File";
 import AsoAsuntoSolicitud from "./AsoAsuntoSolicitud";
+import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
+import File from "./File";
+import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
+import Motive from "./Motive";
 import MreMedioRespuesta from "./MreMedioRespuesta";
 import Person from "./Person";
-import TsoTipoSolicitud from "./TsoTipoSolicitud";
-import CadCanalesAtencionDetalle from "./CadCanalesAtencionDetalle";
-import WorkEntity from "./WorkEntity";
-import LepListadoEstadoPqrsdf from "./LepListadoEstadoPqrsdf";
-import PrgPrograma from "./PrgPrograma";
-import Motive from "./Motive";
 import PqrsdfResponse from "./PqrsdfResponse";
+import PrgPrograma from "./PrgPrograma";
 import SrbSolicitudReabrir from "./SrbSolicitudReabrir";
+import SupportFile from "./SupportFile";
+import TsoTipoSolicitud from "./TsoTipoSolicitud";
+import WorkEntity from "./WorkEntity";
 
 export default class Pqrsdf extends BaseModel {
   public static table = "PQR_PQRSDF";
@@ -32,7 +40,7 @@ export default class Pqrsdf extends BaseModel {
   public statusId: number;
 
   @column({ columnName: "PQR_CODENT_ENTIDAD_TRABAJO", serializeAs: "responsibleId" })
-  public responsibleId: number;
+  public responsibleId: number|null;
 
   @column({ columnName: "PQR_CODASO_ASO_ASUNTO_SOLICITUD", serializeAs: "requestSubjectId" })
   public requestSubjectId: number;
@@ -132,7 +140,7 @@ export default class Pqrsdf extends BaseModel {
 
   @belongsTo(() => AsoAsuntoSolicitud, {
     localKey: "aso_codigo",
-    foreignKey: "responseMediumId",
+    foreignKey: "requestSubjectId",
   })
   public requestSubject: BelongsTo<typeof AsoAsuntoSolicitud>;
 
@@ -147,6 +155,12 @@ export default class Pqrsdf extends BaseModel {
     foreignKey: "fileId",
   })
   public file: BelongsTo<typeof File>;
+
+  @hasMany(() => SupportFile, {
+    foreignKey: "pqrsdfId",
+    localKey: "id",
+  })
+  public supportFiles: HasMany<typeof SupportFile>;
 
   @column.dateTime({
     columnName: "PQR_FECHA_CIERRE",

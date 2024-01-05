@@ -205,4 +205,14 @@ export default class CitizenAttentionServices implements ICitizenAttentionServic
     }
     return new ApiResponse(res, EResponseCodes.OK, "Atención ciudadana actualizada con éxito");
   }
+
+  
+  async getProgramByUser(payload: any) {
+      const res = await this.CitizenAttentionRepository.getProgramByUser(payload)
+      return new ApiResponse(res, EResponseCodes.OK)
+  }
+  async getRequestTypesByUser(payload: any) {
+      const res = await this.CitizenAttentionRepository.getRequestTypesByUser(payload)
+      return new ApiResponse(res, EResponseCodes.OK)
+  }
 }

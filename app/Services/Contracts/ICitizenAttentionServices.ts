@@ -38,4 +38,6 @@ export interface ICitizenAttentionServices {
   getCitizenAttentionByFilters(
     filters: ICitizenAttentionFilters
   ): Promise<ApiResponse<IPagingData<ICitizenAttention | null>>>;
+  getProgramByUser(payload: any)
+  getRequestTypesByUser(payload: any)
 }

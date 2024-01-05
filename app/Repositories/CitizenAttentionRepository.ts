@@ -30,11 +30,16 @@ import { IResponseMedium } from "App/Interfaces/ResponseMediumInterfaces";
 import MreMedioRespuesta from "App/Models/MreMedioRespuesta";
 import { IResponseType } from "App/Interfaces/ResponseTypeInterfaces";
 import ResponseType from "App/Models/ResponseType";
+import Database from "@ioc:Adonis/Lucid/Database";
+import { DateTime } from "luxon";
 
 export default class CitizenAttentionRepository implements ICitizenAttentionRepository {
   constructor(private GenericListsExternalService: IGenericListsExternalService) {}
 
   async createCitizenAttention(citizenAttention: ICitizenAttention): Promise<ICitizenAttention | null> {
+    if (!citizenAttention?.detailServiceChannelId) {
+      delete citizenAttention.detailServiceChannelId;
+    }
     const res = await CitizenAttention.create(citizenAttention);
     return await this.formatCitizenAttention(res);
   }
@@ -153,7 +158,10 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
       }
       await citizenAttention.load("requestSubjectType");
       await citizenAttention.load("attentionRequestType");
-      await citizenAttention.load("detailServiceChannel");
+      await citizenAttention.load("serviceChannel");
+      if (citizenAttention.detailServiceChannelId) {
+        await citizenAttention.load("detailServiceChannel");
+      }
 
       serializeCitizenAttention = citizenAttention.serialize() as ICitizenAttention;
     }
@@ -224,6 +232,14 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     if (filters?.userTypeId) {
       query.where("userTypeId", filters.userTypeId);
     }
+
+    if (filters.createdAt) {
+      const date = DateTime.fromISO(String(filters.createdAt));
+      const startDate = date.startOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
+      const endDate = date.endOf("day").toFormat("yyyy-MM-dd HH:mm:ss");
+      query.whereBetween("createdAt", [startDate, endDate]);
+    }
+
     const citizenAttentionsPagination = await query.paginate(filters?.page ?? 1, filters?.perPage ?? 10);
     const { meta } = citizenAttentionsPagination.serialize();
     let serializeCitizenAttention = await this.formatCitizenAttentions(citizenAttentionsPagination.all());
@@ -248,5 +264,35 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     res.fill(citizenAttention);
     await res.save();
     return await this.formatCitizenAttention(res);
+  }
+
+  async getProgramByUser(payload): Promise<any> {
+    const { identification } = payload;
+    const query = `SELECT DISTINCT(pp.PRG_CODIGO) AS value, pp.PRG_DESCRIPCION as name 
+    FROM PRG_PROGRAMAS pp 
+    INNER JOIN ACI_ATENCION_CIUDADANA aac ON aac.ACI_CODPRG_PROGRAMA = pp.PRG_CODIGO
+    INNER JOIN PER_PERSONAS PER ON PER.PER_NUMERO_DOCUMENTO = aac.ACI_NUMERO_DOCUMENTO 
+    WHERE PER.PER_NUMERO_DOCUMENTO = "${identification}"`;
+
+    const result = await Database.rawQuery(query);
+
+    const data = result[0];
+
+    return data;
+  }
+
+  async getRequestTypesByUser(payload): Promise<any> {
+    const { identification } = payload;
+    const query = `SELECT DISTINCT(ASO.ASO_CODIGO) AS value, ASO.ASO_ASUNTO AS name
+    FROM ASO_ASUNTO_SOLICITUD ASO
+    INNER JOIN ACI_ATENCION_CIUDADANA aac ON aac.ACI_CODASO_ASUNTO  = ASO.ASO_CODIGO
+    INNER JOIN PER_PERSONAS PER ON PER.PER_NUMERO_DOCUMENTO = aac.ACI_NUMERO_DOCUMENTO
+    WHERE PER.PER_NUMERO_DOCUMENTO = "${identification}" AND ASO.ASO_ACTIVO=1`;
+
+    const result = await Database.rawQuery(query);
+
+    const data = result[0];
+
+    return data;
   }
 }

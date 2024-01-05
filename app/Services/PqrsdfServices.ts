@@ -4,8 +4,10 @@ import { IPerson, IPersonFilters } from "App/Interfaces/PersonInterfaces";
 import {
   IPqrsdf,
   IPqrsdfFilters,
+  IPqrsdfResponse,
   IReopenRequest,
-  IrequestPqrsdf
+  IResponseFilters,
+  IrequestPqrsdf,
 } from "App/Interfaces/PqrsdfInterfaces";
 import { IPqrsdfRepository } from "App/Repositories/Contracts/IPqrsdfRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
@@ -19,8 +21,22 @@ export default class PqrsdfServices implements IPqrsdfServices {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  public async createResponse(prsdf: IPqrsdf, file: MultipartFileContract): Promise<ApiResponse<IPqrsdf | null>> {
-    const res = await this.PqrsdfRepository.createResponse(prsdf, file);
+  async getPqrsdfResponnses(filters: IResponseFilters): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>> {
+    const res = await this.PqrsdfRepository.getPqrsdfResponnses(filters);
+
+    if (!res.array.length) {
+      return new ApiResponse(res, EResponseCodes.FAIL, "Registros no encontrados");
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  public async createResponse(
+    prsdf: IPqrsdf,
+    file: MultipartFileContract,
+    supportFiles: MultipartFileContract[] = []
+  ): Promise<ApiResponse<IPqrsdf | null>> {
+    const res = await this.PqrsdfRepository.createResponse(prsdf, file, supportFiles);
     if (!res) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "No se puede crear la respuesta de la PQRSDF");
     }
@@ -117,4 +133,13 @@ export default class PqrsdfServices implements IPqrsdfServices {
     }
     return new ApiResponse(res, EResponseCodes.OK, "Solicitud creada con éxito");
   }
+
+  async getProgramByUser(payload: any) {
+    const res = await this.PqrsdfRepository.getProgramByUser(payload)
+    return new ApiResponse(res, EResponseCodes.OK)
+}
+async getSubjectByUser(payload: any) {
+    const res = await this.PqrsdfRepository.getSubjectByUser(payload)
+    return new ApiResponse(res, EResponseCodes.OK)
+}
 }

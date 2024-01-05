@@ -16,7 +16,8 @@ export interface ICitizenAttention {
   secondContactNumber?: string;
   email?: string;
   stratumId: number;
-  detailServiceChannelId: number;
+  serviceChannelId?: number;
+  detailServiceChannelId?: number;
   attentionRequestTypeId: number;
   dependencyId: number;
   programId: number;
@@ -60,6 +61,7 @@ export interface ICitizenAttentionFilters {
   observation?: string;
   page?: number;
   perPage?: number;
+  createdAt?: DateTime;
 }
 
 export interface ICorregimiento {

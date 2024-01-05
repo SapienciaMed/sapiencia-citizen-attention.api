@@ -16,7 +16,8 @@ export default class extends BaseSchema {
         .unsigned()
         .references("ENT_ENTIDAD_TRABAJO.ENT_CODIGO")
         .comment("Llave foranea a la tabla entidad de trabajo(FK_ENT_CODIGO)")
-        .nullable();;
+        .nullable()
+        .defaultTo(null)
     });
   }
 
