@@ -150,7 +150,9 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
     if (citizenAttention) {
       await citizenAttention.load("program");
       if (citizenAttention.userTypeId) {
-        await citizenAttention.load("userType");
+        await citizenAttention.load("userType", (userType) => {
+          userType.preload("valueGroup");
+        });
       }
       await citizenAttention.load("dependency");
       if (citizenAttention.corregimientoId) {
@@ -268,10 +270,10 @@ export default class CitizenAttentionRepository implements ICitizenAttentionRepo
 
   async getProgramByUser(payload): Promise<any> {
     const { identification } = payload;
-    const query = `SELECT DISTINCT(pp.PRG_CODIGO) AS value, pp.PRG_DESCRIPCION as name 
-    FROM PRG_PROGRAMAS pp 
+    const query = `SELECT DISTINCT(pp.PRG_CODIGO) AS value, pp.PRG_DESCRIPCION as name
+    FROM PRG_PROGRAMAS pp
     INNER JOIN ACI_ATENCION_CIUDADANA aac ON aac.ACI_CODPRG_PROGRAMA = pp.PRG_CODIGO
-    INNER JOIN PER_PERSONAS PER ON PER.PER_NUMERO_DOCUMENTO = aac.ACI_NUMERO_DOCUMENTO 
+    INNER JOIN PER_PERSONAS PER ON PER.PER_NUMERO_DOCUMENTO = aac.ACI_NUMERO_DOCUMENTO
     WHERE PER.PER_NUMERO_DOCUMENTO = "${identification}"`;
 
     const result = await Database.rawQuery(query);
